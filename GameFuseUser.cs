@@ -5,9 +5,9 @@ using UnityEngine;
 using Boomlagoon.JSON;
 using UnityEngine.Networking;
 
-namespace GameConnectCSharp
+namespace GameFuseCSharp
 {
-    public class GameConnectUser : MonoBehaviour
+    public class GameFuseUser : MonoBehaviour
     {
 
         #region instance vars
@@ -20,7 +20,7 @@ namespace GameConnectCSharp
         private int credits;
         private int id;
         private Dictionary<string, string> attributes = new Dictionary<string, string>();
-        private List<GameConnectStoreItem> purchasedStoreItems = new List<GameConnectStoreItem>();
+        private List<GameFuseStoreItem> purchasedStoreItems = new List<GameFuseStoreItem>();
 
         #endregion
 
@@ -100,8 +100,8 @@ namespace GameConnectCSharp
 
 
         #region singleton management
-        private static GameConnectUser _instance;
-        public static GameConnectUser CurrentUser { get { return _instance; } }
+        private static GameFuseUser _instance;
+        public static GameFuseUser CurrentUser { get { return _instance; } }
         private void Awake()
         {
             if (_instance != null && _instance != this)
@@ -126,22 +126,22 @@ namespace GameConnectCSharp
         private IEnumerator AddCreditsRoutine(int credits, Action<string, bool> callback = null)
         {
 
-            GameConnect.Log("GameConnectUser Add Credits: " + credits.ToString());
-            if (GameConnect.GetGameId() == null)
-                throw new GameConnectException("Please set up your game with GameConnect.SetUpGame before modifying users");
+            GameFuse.Log("GameFuseUser Add Credits: " + credits.ToString());
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
 
             WWWForm form = new WWWForm();
             form.AddField("authentication_token", GetAuthenticationToken());
             form.AddField("credits", credits);
-            var request = UnityWebRequest.Post(GameConnect.GetBaseURL() + "/users/" + CurrentUser.id + "/add_credits", form);
-            request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/add_credits", form);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameConnect.Log("GameConnectUser Add Credits Success: " + credits.ToString());
+                GameFuse.Log("GameFuseUser Add Credits Success: " + credits.ToString());
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
@@ -150,10 +150,10 @@ namespace GameConnectCSharp
             }
             else
             {
-                GameConnect.Log("GameConnectUser Add Credits Failure: " + credits.ToString());
+                GameFuse.Log("GameFuseUser Add Credits Failure: " + credits.ToString());
 
             }
-            GameConnectUtilities.HandleCallback(request, "Credits have been added to user", callback);
+            GameFuseUtilities.HandleCallback(request, "Credits have been added to user", callback);
 
 
         }
@@ -168,23 +168,23 @@ namespace GameConnectCSharp
         private IEnumerator SetCreditsRoutine(int credits, Action<string, bool> callback = null)
         {
 
-            GameConnect.Log("GameConnectUser Set Credits: " + credits.ToString());
+            GameFuse.Log("GameFuseUser Set Credits: " + credits.ToString());
 
-            if (GameConnect.GetGameId() == null)
-                throw new GameConnectException("Please set up your game with GameConnect.SetUpGame before modifying users");
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
 
             WWWForm form = new WWWForm();
             form.AddField("authentication_token", GetAuthenticationToken());
             form.AddField("credits", credits);
-            var request = UnityWebRequest.Post(GameConnect.GetBaseURL() + "/users/" + CurrentUser.id + "/set_credits", form);
-            request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/set_credits", form);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameConnect.Log("GameConnectUser Set Credits Success: " + credits.ToString());
+                GameFuse.Log("GameFuseUser Set Credits Success: " + credits.ToString());
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
@@ -192,11 +192,11 @@ namespace GameConnectCSharp
             }
             else
             {
-                GameConnect.Log("GameConnectUser Set Credits Failure: " + credits.ToString());
+                GameFuse.Log("GameFuseUser Set Credits Failure: " + credits.ToString());
 
             }
 
-            GameConnectUtilities.HandleCallback(request, "Credits have been added to user", callback);
+            GameFuseUtilities.HandleCallback(request, "Credits have been added to user", callback);
         }
         #endregion
 
@@ -209,31 +209,31 @@ namespace GameConnectCSharp
         private IEnumerator AddScoreRoutine(int score, Action<string, bool> callback = null)
         {
 
-            GameConnect.Log("GameConnectUser Add Score: " + score.ToString());
+            GameFuse.Log("GameFuseUser Add Score: " + score.ToString());
 
-            if (GameConnect.GetGameId() == null)
-                throw new GameConnectException("Please set up your game with GameConnect.SetUpGame before modifying users");
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
 
             WWWForm form = new WWWForm();
             form.AddField("authentication_token", GetAuthenticationToken());
             form.AddField("score", score);
 
-            var request = UnityWebRequest.Post(GameConnect.GetBaseURL() + "/users/" + CurrentUser.id + "/add_score", form);
-            request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/add_score", form);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameConnect.Log("GameConnectUser Add Score Succcess: " + score.ToString());
+                GameFuse.Log("GameFuseUser Add Score Succcess: " + score.ToString());
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
                 SetScoreInternal(Convert.ToInt32(json.GetNumber("score")));
             }
 
-            GameConnectUtilities.HandleCallback(request, "Score have been added to user", callback);
+            GameFuseUtilities.HandleCallback(request, "Score have been added to user", callback);
         }
         #endregion
 
@@ -245,29 +245,29 @@ namespace GameConnectCSharp
 
         private IEnumerator SetScoreRoutine(int score, Action<string, bool> callback = null)
         {
-            GameConnect.Log("GameConnectUser Set Score: " + score.ToString());
+            GameFuse.Log("GameFuseUser Set Score: " + score.ToString());
 
-            if (GameConnect.GetGameId() == null)
-                throw new GameConnectException("Please set up your game with GameConnect.SetUpGame before modifying users");
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
             WWWForm form = new WWWForm();
             form.AddField("authentication_token", GetAuthenticationToken());
             form.AddField("score", score);
-            var request = UnityWebRequest.Post(GameConnect.GetBaseURL() + "/users/" + CurrentUser.id + "/set_score", form);
-            request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/set_score", form);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameConnect.Log("GameConnectUser Set Score Success: " + score.ToString());
+                GameFuse.Log("GameFuseUser Set Score Success: " + score.ToString());
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
                 SetScoreInternal(Convert.ToInt32(json.GetNumber("score")));
             }
 
-            GameConnectUtilities.HandleCallback(request, "Score have been added to user", callback);
+            GameFuseUtilities.HandleCallback(request, "Score have been added to user", callback);
         }
         #endregion
 
@@ -283,22 +283,22 @@ namespace GameConnectCSharp
 
         private IEnumerator DownloadAttributesRoutine(bool chainedFromLogin, Action<string, bool> callback = null)
         {
-            GameConnect.Log("GameConnectUser Get Attributes");
+            GameFuse.Log("GameFuseUser Get Attributes");
 
-            if (GameConnect.GetGameId() == null)
-                throw new GameConnectException("Please set up your game with GameConnect.SetUpGame before modifying users");
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
             var parameters = "?authentication_token=" + GetAuthenticationToken();
 
 
-            var request = UnityWebRequest.Get(GameConnect.GetBaseURL() + "/users/" + this.id + "/game_user_attributes"+ parameters);
-            request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + this.id + "/game_user_attributes"+ parameters);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameConnect.Log("GameConnectUser Get Attributes Success");
+                GameFuse.Log("GameFuseUser Get Attributes Success");
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
@@ -311,7 +311,7 @@ namespace GameConnectCSharp
                 }
                 DownloadStoreItems(chainedFromLogin, callback);
             } else 
-                GameConnectUtilities.HandleCallback(request, chainedFromLogin ? "Users has been signed in successfully" : "Users attributes have been downloaded", callback);
+                GameFuseUtilities.HandleCallback(request, chainedFromLogin ? "Users has been signed in successfully" : "Users attributes have been downloaded", callback);
 
         }
 
@@ -341,24 +341,24 @@ namespace GameConnectCSharp
 
         private IEnumerator SetAttributeRoutine(string key, string value, Action<string, bool> callback = null)
         {
-            GameConnect.Log("GameConnectUser Set Attributes: "+key);
+            GameFuse.Log("GameFuseUser Set Attributes: "+key);
 
-            if (GameConnect.GetGameId() == null)
-                throw new GameConnectException("Please set up your game with GameConnect.SetUpGame before modifying users");
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
             WWWForm form = new WWWForm();
             form.AddField("authentication_token", GetAuthenticationToken());
             form.AddField("key", key);
             form.AddField("value", value);
 
-            var request = UnityWebRequest.Post(GameConnect.GetBaseURL() + "/users/" + CurrentUser.id + "/add_game_user_attribute", form);
-            request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/add_game_user_attribute", form);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameConnect.Log("GameConnectUser Set Attributes Success: " + key);
+                GameFuse.Log("GameFuseUser Set Attributes Success: " + key);
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
@@ -373,7 +373,7 @@ namespace GameConnectCSharp
                 }
             }
 
-            GameConnectUtilities.HandleCallback(request, "Attribute has been added to user", callback);
+            GameFuseUtilities.HandleCallback(request, "Attribute has been added to user", callback);
         }
 
         public void RemoveAttribute(string key, Action<string, bool> callback = null)
@@ -383,20 +383,20 @@ namespace GameConnectCSharp
 
         private IEnumerator RemoveAttributeRoutine(string key, Action<string, bool> callback = null)
         {
-            GameConnect.Log("GameConnectUser Remove Attributes: " + key);
+            GameFuse.Log("GameFuseUser Remove Attributes: " + key);
 
-            if (GameConnect.GetGameId() == null)
-                throw new GameConnectException("Please set up your game with GameConnect.SetUpGame before modifying users");
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
             var parameters = "?authentication_token=" + GetAuthenticationToken() + "&game_user_attribute_key=" + key;
-            var request = UnityWebRequest.Get(GameConnect.GetBaseURL() + "/users/" + CurrentUser.id + "/remove_game_user_attributes" + parameters);
-            request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/remove_game_user_attributes" + parameters);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameConnect.Log("GameConnectUser Remove Attributes Success: " + key);
+                GameFuse.Log("GameFuseUser Remove Attributes Success: " + key);
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
@@ -411,7 +411,7 @@ namespace GameConnectCSharp
                 }
             }
 
-            GameConnectUtilities.HandleCallback(request, "Attribute has been removed", callback);
+            GameFuseUtilities.HandleCallback(request, "Attribute has been removed", callback);
         }
 
 
@@ -426,22 +426,22 @@ namespace GameConnectCSharp
 
         private IEnumerator DownloadStoreItemsRoutine(bool chainedFromLogin, Action<string, bool> callback = null)
         {
-            GameConnect.Log("GameConnectUser Download Store Items: ");
+            GameFuse.Log("GameFuseUser Download Store Items: ");
 
-            if (GameConnect.GetGameId() == null)
-                throw new GameConnectException("Please set up your game with GameConnect.SetUpGame before modifying users");
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
             var parameters = "?authentication_token=" + GetAuthenticationToken();
 
 
-            var request = UnityWebRequest.Get(GameConnect.GetBaseURL() + "/users/" + CurrentUser.id + "/game_user_store_items" + parameters);
-            request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/game_user_store_items" + parameters);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameConnect.Log("GameConnectUser Download Store Items Success: ");
+                GameFuse.Log("GameFuseUser Download Store Items Success: ");
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
@@ -450,7 +450,7 @@ namespace GameConnectCSharp
 
                 foreach (var item in game_user_store_items)
                 {
-                    purchasedStoreItems.Add(new GameConnectStoreItem(
+                    purchasedStoreItems.Add(new GameFuseStoreItem(
                         item.Obj.GetString("name"),
                         item.Obj.GetString("category"),
                         item.Obj.GetString("description"),
@@ -461,16 +461,16 @@ namespace GameConnectCSharp
 
             }
 
-            GameConnectUtilities.HandleCallback(request, chainedFromLogin ? "Users has been signed in successfully" : "Users store items have been downloaded", callback);
+            GameFuseUtilities.HandleCallback(request, chainedFromLogin ? "Users has been signed in successfully" : "Users store items have been downloaded", callback);
 
         }
 
-        public List<GameConnectStoreItem> GetPurchasedStoreItems()
+        public List<GameFuseStoreItem> GetPurchasedStoreItems()
         {
             return purchasedStoreItems;
         }
 
-        public void PurchaseStoreItem(GameConnectStoreItem storeItem, Action<string, bool> callback = null)
+        public void PurchaseStoreItem(GameFuseStoreItem storeItem, Action<string, bool> callback = null)
         {
             StartCoroutine(PurchaseStoreItemRoutine(storeItem.GetId(), callback));
         }
@@ -483,23 +483,23 @@ namespace GameConnectCSharp
         private IEnumerator PurchaseStoreItemRoutine(int storeItemId, Action<string, bool> callback = null)
         {
 
-            GameConnect.Log("GameConnectUser Purchase Store Items: ");
+            GameFuse.Log("GameFuseUser Purchase Store Items: ");
 
-            if (GameConnect.GetGameId() == null)
-                throw new GameConnectException("Please set up your game with GameConnect.SetUpGame before modifying users");
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
             WWWForm form = new WWWForm();
             form.AddField("authentication_token", GetAuthenticationToken());
             form.AddField("store_item_id", storeItemId.ToString());
 
-            var request = UnityWebRequest.Post(GameConnect.GetBaseURL() + "/users/" + CurrentUser.id + "/purchase_game_user_store_item", form);
-            request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/purchase_game_user_store_item", form);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameConnect.Log("GameConnectUser Purchase Store Items Success: ");
+                GameFuse.Log("GameFuseUser Purchase Store Items Success: ");
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
@@ -509,7 +509,7 @@ namespace GameConnectCSharp
 
                 foreach (var item in game_user_store_items)
                 {
-                    purchasedStoreItems.Add(new GameConnectStoreItem(
+                    purchasedStoreItems.Add(new GameFuseStoreItem(
                         item.Obj.GetString("name"),
                         item.Obj.GetString("category"),
                         item.Obj.GetString("description"),
@@ -518,34 +518,34 @@ namespace GameConnectCSharp
                 }
             }
 
-            GameConnectUtilities.HandleCallback(request, "Store Item has been purchased by user", callback);
+            GameFuseUtilities.HandleCallback(request, "Store Item has been purchased by user", callback);
         }
 
         public void RemoveStoreItem(int storeItemID, bool reimburseUser, Action<string, bool> callback = null)
         {
             StartCoroutine(RemoveStoreItemRoutine(storeItemID, reimburseUser, callback));
         }
-        public void RemoveStoreItem(GameConnectStoreItem storeItem, bool reimburseUser, Action<string, bool> callback = null)
+        public void RemoveStoreItem(GameFuseStoreItem storeItem, bool reimburseUser, Action<string, bool> callback = null)
         {
             StartCoroutine(RemoveStoreItemRoutine(storeItem.GetId(), reimburseUser, callback));
         }
 
         private IEnumerator RemoveStoreItemRoutine(int storeItemID, bool reimburseUser, Action<string, bool> callback = null)
         {
-            GameConnect.Log("GameConnectUser Remove Store Item: "+ storeItemID);
+            GameFuse.Log("GameFuseUser Remove Store Item: "+ storeItemID);
 
-            if (GameConnect.GetGameId() == null)
-                throw new GameConnectException("Please set up your game with GameConnect.SetUpGame before modifying users");
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
             var parameters = "?authentication_token=" + GetAuthenticationToken() + "&store_item_id=" + storeItemID+ "&reimburse=" + reimburseUser.ToString();
-            var request = UnityWebRequest.Get(GameConnect.GetBaseURL() + "/users/" + CurrentUser.id + "/remove_game_user_store_item" + parameters);
-            request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/remove_game_user_store_item" + parameters);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameConnect.Log("GameConnectUser Remove Store Item Success: " + storeItemID);
+                GameFuse.Log("GameFuseUser Remove Store Item Success: " + storeItemID);
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
@@ -555,7 +555,7 @@ namespace GameConnectCSharp
 
                 foreach (var item in game_user_store_items)
                 {
-                    purchasedStoreItems.Add(new GameConnectStoreItem(
+                    purchasedStoreItems.Add(new GameFuseStoreItem(
                         item.Obj.GetString("name"),
                         item.Obj.GetString("category"),
                         item.Obj.GetString("description"),
@@ -564,7 +564,7 @@ namespace GameConnectCSharp
                 }
             }
 
-            GameConnectUtilities.HandleCallback(request, "Store Item has been removed", callback);
+            GameFuseUtilities.HandleCallback(request, "Store Item has been removed", callback);
         }
 
         #endregion
@@ -584,10 +584,10 @@ namespace GameConnectCSharp
 
         private IEnumerator AddLeaderboardEntryRoutine(string leaderboardName, int score, Dictionary<string, string> extraAttributes, Action<string, bool> callback = null)
         {
-            GameConnect.Log("GameConnectUser Adding Leaderboard Entry: " + leaderboardName + ": "+score.ToString());
+            GameFuse.Log("GameFuseUser Adding Leaderboard Entry: " + leaderboardName + ": "+score.ToString());
 
-            if (GameConnect.GetGameId() == null)
-                throw new GameConnectException("Please set up your game with GameConnect.SetUpGame before modifying users");
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
             List<string> extraAttributesList = new List<string>();
             foreach (KeyValuePair<string, string> entry in extraAttributes)
@@ -602,19 +602,19 @@ namespace GameConnectCSharp
             form.AddField("extra_attributes", extraAttributesJson);
             form.AddField("score", score);
 
-            var request = UnityWebRequest.Post(GameConnect.GetBaseURL() + "/users/" + CurrentUser.id + "/add_leaderboard_entry", form);
-            request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/add_leaderboard_entry", form);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameConnect.Log("GameConnectUser Add Leaderboard Entry: " + leaderboardName+ ": "+score);
+                GameFuse.Log("GameFuseUser Add Leaderboard Entry: " + leaderboardName+ ": "+score);
 
                 var data = request.downloadHandler.text;
             }
 
-            GameConnectUtilities.HandleCallback(request, "Leaderboard Entry Has Been Added", callback);
+            GameFuseUtilities.HandleCallback(request, "Leaderboard Entry Has Been Added", callback);
         }
 
         public void ClearLeaderboardEntries(string leaderboardName, Action<string, bool> callback = null)
@@ -625,28 +625,28 @@ namespace GameConnectCSharp
 
         private IEnumerator ClearLeaderboardEntriesRoutine(string leaderboardName, Action<string, bool> callback = null)
         {
-            GameConnect.Log("GameConnectUser Clearing Leaderboard Entry: " + leaderboardName);
+            GameFuse.Log("GameFuseUser Clearing Leaderboard Entry: " + leaderboardName);
 
-            if (GameConnect.GetGameId() == null)
-                throw new GameConnectException("Please set up your game with GameConnect.SetUpGame before modifying users");
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
             WWWForm form = new WWWForm();
             form.AddField("authentication_token", GetAuthenticationToken());
             form.AddField("leaderboard_name", leaderboardName);
 
-            var request = UnityWebRequest.Post(GameConnect.GetBaseURL() + "/users/" + CurrentUser.id + "/clear_my_leaderboard_entries", form);
-            request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/clear_my_leaderboard_entries", form);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameConnect.Log("GameConnectUser Clear Leaderboard Entry: " + leaderboardName);
+                GameFuse.Log("GameFuseUser Clear Leaderboard Entry: " + leaderboardName);
 
                 var data = request.downloadHandler.text;
             }
 
-            GameConnectUtilities.HandleCallback(request, "Leaderboard Entries Have Been Cleared", callback);
+            GameFuseUtilities.HandleCallback(request, "Leaderboard Entries Have Been Cleared", callback);
         }
 
         public void GetLeaderboard(int limit, bool onePerUser, Action<string, bool> callback = null)
@@ -656,29 +656,29 @@ namespace GameConnectCSharp
 
         private IEnumerator GetLeaderboardRoutine(int limit, bool onePerUser, Action<string, bool> callback = null)
         {
-            GameConnect.Log("GameConnectUser Get Leaderboard: " +limit.ToString());
+            GameFuse.Log("GameFuseUser Get Leaderboard: " +limit.ToString());
 
-            if (GameConnect.GetGameId() == null)
-                throw new GameConnectException("Please set up your game with GameConnect.SetUpGame before modifying users");
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
             var parameters = "?authentication_token=" + GetAuthenticationToken() + "&limit=" + limit.ToString()+ "&one_per_user="+ onePerUser.ToString();
-            var request = UnityWebRequest.Get(GameConnect.GetBaseURL() + "/users/" + CurrentUser.id + "/leaderboard_entries" + parameters);
-            request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/leaderboard_entries" + parameters);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameConnect.Log("GameConnectUser Get Leaderboard Success: : " + limit.ToString());
+                GameFuse.Log("GameFuseUser Get Leaderboard Success: : " + limit.ToString());
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
                 Debug.Log("got " + json);
                 var storeItems = json.GetArray("leaderboard_entries");
-                GameConnect.Instance.leaderboardEntries.Clear();
+                GameFuse.Instance.leaderboardEntries.Clear();
                 foreach (var storeItem in storeItems)
                 {
-                    GameConnect.Instance.leaderboardEntries.Add(new GameConnectLeaderboardEntry(
+                    GameFuse.Instance.leaderboardEntries.Add(new GameFuseLeaderboardEntry(
                         storeItem.Obj.GetString("username"),
                         Convert.ToInt32(storeItem.Obj.GetNumber("score")),
                         storeItem.Obj.GetString("leaderboard_name"),
@@ -690,7 +690,7 @@ namespace GameConnectCSharp
 
             }
 
-            GameConnectUtilities.HandleCallback(request, "Store Item has been removed", callback);
+            GameFuseUtilities.HandleCallback(request, "Store Item has been removed", callback);
         }
 
         #endregion Leaderboard 

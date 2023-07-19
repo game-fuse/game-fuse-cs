@@ -2,12 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GameConnectCSharp;
+using GameFuseCSharp;
 using System.Linq;
 using UnityEditor;
 using Random = UnityEngine.Random;
 
-public class GameConnectExample : MonoBehaviour {
+public class GameFuseExample : MonoBehaviour {
 
     public string gameToken = "";
     public string gameID = "";
@@ -28,9 +28,9 @@ public class GameConnectExample : MonoBehaviour {
         }
         else
         {
-            Debug.Log("GameConnect start");
-            GameConnect.SetVerboseLogging(true);
-            GameConnect.SetUpGame(gameID, gameToken, ApplicationSetUp, true);
+            Debug.Log("GameFuse start");
+            GameFuse.SetVerboseLogging(true);
+            GameFuse.SetUpGame(gameID, gameToken, ApplicationSetUp, true);
         }
 
        
@@ -46,9 +46,9 @@ public class GameConnectExample : MonoBehaviour {
         else
         {
         
-            print("<color=yellow>GAME CONNECTED!!" + GameConnect.GetGameId() + "</color>");
+            print("<color=yellow>GAME CONNECTED!!" + GameFuse.GetGameId() + "</color>");
             print("Store Items:");
-            foreach (GameConnectStoreItem storeItem in GameConnect.GetStoreItems())
+            foreach (GameFuseStoreItem storeItem in GameFuse.GetStoreItems())
             {
                 print("      " + storeItem.GetName() + ": " + storeItem.GetCost());
             }
@@ -56,7 +56,7 @@ public class GameConnectExample : MonoBehaviour {
             print("*****************************************");
 
             print("Signing Up");
-            GameConnect.SignUp(userEmail, "password", "password", username, SignedUp);
+            GameFuse.SignUp(userEmail, "password", "password", username, SignedUp);
         }
 
 
@@ -74,9 +74,9 @@ public class GameConnectExample : MonoBehaviour {
             print("signed up!");
             print("<color=yellow>Adding credits!</color>");
 
-            print("Before Credits: " + GameConnectUser.CurrentUser.GetCredits());
+            print("Before Credits: " + GameFuseUser.CurrentUser.GetCredits());
 
-            GameConnectUser.CurrentUser.AddCredits(50, AddCreditsCallback);
+            GameFuseUser.CurrentUser.AddCredits(50, AddCreditsCallback);
 
         }
 
@@ -90,11 +90,11 @@ public class GameConnectExample : MonoBehaviour {
         }
         else
         {
-            print("After Credits: " + GameConnectUser.CurrentUser.GetCredits());
-            print("currently attribute color is null?"+ (GameConnectUser.CurrentUser.GetAttributeValue("Color") == null).ToString());
+            print("After Credits: " + GameFuseUser.CurrentUser.GetCredits());
+            print("currently attribute color is null?"+ (GameFuseUser.CurrentUser.GetAttributeValue("Color") == null).ToString());
             print("<color=yellow>Setting attribute color = blue</color>");
 
-            GameConnectUser.CurrentUser.SetAttribute("Color","Blue", SetAttributeCallback);
+            GameFuseUser.CurrentUser.SetAttribute("Color","Blue", SetAttributeCallback);
 
         }
        
@@ -109,10 +109,10 @@ public class GameConnectExample : MonoBehaviour {
         }
         else
         {
-            print("currently attribute color is null?" + (GameConnectUser.CurrentUser.GetAttributeValue("Color") == null).ToString());
-            print("currently attribute color " + GameConnectUser.CurrentUser.GetAttributeValue("Color"));
+            print("currently attribute color is null?" + (GameFuseUser.CurrentUser.GetAttributeValue("Color") == null).ToString());
+            print("currently attribute color " + GameFuseUser.CurrentUser.GetAttributeValue("Color"));
             print("<color=yellow>Setting attribute color = red</color>");
-            GameConnectUser.CurrentUser.SetAttribute("Color","Red", updateAttributeCallback);
+            GameFuseUser.CurrentUser.SetAttribute("Color","Red", updateAttributeCallback);
 
         }
     }
@@ -125,10 +125,10 @@ public class GameConnectExample : MonoBehaviour {
         }
         else
         {
-            print("currently attribute color is null?" + (GameConnectUser.CurrentUser.GetAttributeValue("Color") == "").ToString());
-            print("currently attribute color " + GameConnectUser.CurrentUser.GetAttributeValue("Color"));
+            print("currently attribute color is null?" + (GameFuseUser.CurrentUser.GetAttributeValue("Color") == "").ToString());
+            print("currently attribute color " + GameFuseUser.CurrentUser.GetAttributeValue("Color"));
             print("deleting attribute color");
-            GameConnectUser.CurrentUser.RemoveAttribute("Color",removeAttributeCallback);
+            GameFuseUser.CurrentUser.RemoveAttribute("Color",removeAttributeCallback);
 
         }
     }
@@ -141,17 +141,17 @@ public class GameConnectExample : MonoBehaviour {
         }
         else
         {
-            print("currently attribute color is null?" + (GameConnectUser.CurrentUser.GetAttributeValue("Color") == "").ToString());
-            print("currently attribute color " + GameConnectUser.CurrentUser.GetAttributeValue("Color"));
+            print("currently attribute color is null?" + (GameFuseUser.CurrentUser.GetAttributeValue("Color") == "").ToString());
+            print("currently attribute color " + GameFuseUser.CurrentUser.GetAttributeValue("Color"));
             print("ALL STORE ITEMS:");
-            foreach (var pair in GameConnectUser.CurrentUser.GetAttributes())
+            foreach (var pair in GameFuseUser.CurrentUser.GetAttributes())
             {
 
                 Console.WriteLine("Key: " + pair.Key + ", Value: " + pair.Value);
             }
-            var item = GameConnect.GetStoreItems().First();
+            var item = GameFuse.GetStoreItems().First();
             print("Purchase Store Item: " + item.GetName() + ": " + item.GetCost());
-            GameConnectUser.CurrentUser.PurchaseStoreItem(GameConnect.GetStoreItems().First(), PurchasedItem);
+            GameFuseUser.CurrentUser.PurchaseStoreItem(GameFuse.GetStoreItems().First(), PurchasedItem);
 
         }
     }
@@ -165,14 +165,14 @@ public class GameConnectExample : MonoBehaviour {
         else
         {
             print("Purchased Item");
-            print("Current Credits: " + GameConnectUser.CurrentUser.GetCredits());
+            print("Current Credits: " + GameFuseUser.CurrentUser.GetCredits());
         }
 
         var extraAttributes = new Dictionary<string, string>();
         extraAttributes.Add("deaths", "15");
         extraAttributes.Add("Jewels", "12");
 
-        GameConnectUser.CurrentUser.AddLeaderboardEntry("TimeRound",10, extraAttributes, LeaderboardEntryAdded);
+        GameFuseUser.CurrentUser.AddLeaderboardEntry("TimeRound",10, extraAttributes, LeaderboardEntryAdded);
     }
 
 
@@ -190,7 +190,7 @@ public class GameConnectExample : MonoBehaviour {
             extraAttributes.Add("deaths", "25");
             extraAttributes.Add("Jewels", "15");
 
-            GameConnectUser.CurrentUser.AddLeaderboardEntry("TimeRound", 7, extraAttributes, LeaderboardEntryAdded2);
+            GameFuseUser.CurrentUser.AddLeaderboardEntry("TimeRound", 7, extraAttributes, LeaderboardEntryAdded2);
 
         }
     }
@@ -204,7 +204,7 @@ public class GameConnectExample : MonoBehaviour {
         else
         {
             print("Set Leaderboard Entry 2");
-            GameConnectUser.CurrentUser.GetLeaderboard(5, true, LeaderboardEntriesRetrieved);
+            GameFuseUser.CurrentUser.GetLeaderboard(5, true, LeaderboardEntriesRetrieved);
         }
     }
 
@@ -218,7 +218,7 @@ public class GameConnectExample : MonoBehaviour {
         {
 
             print("Got leaderboard entries for specific user!");
-            foreach( GameConnectLeaderboardEntry entry in GameConnect.Instance.leaderboardEntries)
+            foreach( GameFuseLeaderboardEntry entry in GameFuse.Instance.leaderboardEntries)
             {
                 print(entry.GetUsername() + ": " + entry.GetScore().ToString() + ": " + entry.GetLeaderboardName() );
                 foreach (KeyValuePair<string,string> kvPair in entry.GetExtraAttributes())
@@ -227,7 +227,7 @@ public class GameConnectExample : MonoBehaviour {
                 }
                 
             }
-            GameConnect.Instance.GetLeaderboard(5, true, "TimeRound", LeaderboardEntriesRetrievedAll);
+            GameFuse.Instance.GetLeaderboard(5, true, "TimeRound", LeaderboardEntriesRetrievedAll);
 
         }
     }
@@ -241,7 +241,7 @@ public class GameConnectExample : MonoBehaviour {
         else
         {
             print("Got leaderboard entries for whole game!");
-            foreach (GameConnectLeaderboardEntry entry in GameConnect.Instance.leaderboardEntries)
+            foreach (GameFuseLeaderboardEntry entry in GameFuse.Instance.leaderboardEntries)
             {
                 print(entry.GetUsername() + ": " + entry.GetScore().ToString() + ": " + entry.GetLeaderboardName());
                 foreach (KeyValuePair<string, string> kvPair in entry.GetExtraAttributes())
@@ -252,7 +252,7 @@ public class GameConnectExample : MonoBehaviour {
             }
 
         }
-        print("GameConnect Test Complete");
+        print("GameFuse Test Complete");
     }
 
 

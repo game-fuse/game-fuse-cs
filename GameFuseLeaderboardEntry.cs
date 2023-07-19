@@ -6,14 +6,14 @@ using UnityEngine;
 
 
 
-namespace GameConnectCSharp
+namespace GameFuseCSharp
 {
-    /// <summary>Class <c>GameConnectStoreItem</c> models a store item added 
-    /// through the GameConnect web portal
-    /// they can be retrieved and 'purchased' by GameConnectUsers through
+    /// <summary>Class <c>GameFuseStoreItem</c> models a store item added 
+    /// through the GameFuse web portal
+    /// they can be retrieved and 'purchased' by GameFuseUsers through
     /// the API SDK, but not created.</summary>
     ///
-    public class GameConnectLeaderboardEntry : MonoBehaviour
+    public class GameFuseLeaderboardEntry : MonoBehaviour
     {
 
         #region instance vars
@@ -54,7 +54,7 @@ namespace GameConnectCSharp
 
         #region constructor
 
-        public GameConnectLeaderboardEntry(string username, int score, string leaderboard_name, string extra_attributes, int game_user_id)
+        public GameFuseLeaderboardEntry(string username, int score, string leaderboard_name, string extra_attributes, int game_user_id)
         {
             this.username = username;
             this.score = score;

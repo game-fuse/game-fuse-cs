@@ -6,14 +6,14 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 
-namespace GameConnectCSharp
+namespace GameFuseCSharp
 {
-    /// <summary>Class <c>GameConnectUtilities</c> is your connection with the GameConnect
+    /// <summary>Class <c>GameFuseUtilities</c> is your connection with the GameFuse
     /// API.  Thorugh this class you can connect to your apps, login users,
-    /// create users.  When a user is signed in you can use GameConnectUser to 
+    /// create users.  When a user is signed in you can use GameFuseUser to 
     /// access your account, attributes and purchased store items.
     /// </summary>
-    public class GameConnectUtilities : MonoBehaviour
+    public class GameFuseUtilities : MonoBehaviour
     {
 
         internal static void HandleCallback(UnityWebRequest request, string successString, Action<string, bool> callback = null)

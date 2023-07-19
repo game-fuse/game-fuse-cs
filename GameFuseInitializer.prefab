@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6555452950312691992}
   - component: {fileID: 699416940648823755}
   m_Layer: 0
-  m_Name: CloudLoginInitializer
+  m_Name: GameFuseInitializer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

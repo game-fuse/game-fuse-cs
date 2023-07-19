@@ -6,14 +6,14 @@ using UnityEngine.Networking;
 using Boomlagoon.JSON;
 //using UnityEditor;
 
-namespace GameConnectCSharp
+namespace GameFuseCSharp
 {
-    /// <summary>Class <c>GameConnect</c> is your connection with the GameConnect
+    /// <summary>Class <c>GameFuse</c> is your connection with the GameFuse
     /// API.  Through this class you can connect to your apps, login users,
-    /// create users.  When a user is signed in you can use GameConnectUser to 
+    /// create users.  When a user is signed in you can use GameFuseUser to 
     /// access your account, attributes and purchased store items.
     /// </summary>
-    public class GameConnect : MonoBehaviour
+    public class GameFuse : MonoBehaviour
     {
 
         static UnityWebRequestAsyncOperation request;
@@ -24,14 +24,14 @@ namespace GameConnectCSharp
         private string name;
         private string description;
         private bool verboseLogging = false;
-        private List<GameConnectStoreItem> store = new List<GameConnectStoreItem>();
-        public List<GameConnectLeaderboardEntry> leaderboardEntries = new List<GameConnectLeaderboardEntry>();
+        private List<GameFuseStoreItem> store = new List<GameFuseStoreItem>();
+        public List<GameFuseLeaderboardEntry> leaderboardEntries = new List<GameFuseLeaderboardEntry>();
 
         #endregion
 
         #region singleton management
-        private static GameConnect _instance;
-        public static GameConnect Instance { get { return _instance; } }
+        private static GameFuse _instance;
+        public static GameFuse Instance { get { return _instance; } }
         private void Awake()
         {
             if (_instance != null && _instance != this)
@@ -46,7 +46,7 @@ namespace GameConnectCSharp
         #endregion
 
         #region globals
-        // private static string baseURL = "https://gameconnect.io/api/v1";
+        // private static string baseURL = "https://gamefuse.co/api/v1";
         private static string baseURL = "http://localhost/api/v1";
 
         public static string GetBaseURL()
@@ -100,7 +100,7 @@ namespace GameConnectCSharp
         #region request: set up applicaton
         public static void SetUpGame(string gameId, string token, Action<string, bool> callback = null, bool seedStore = false)
         {
-            Log("GameConnect Setting Up Game: "+ gameId+": "+ token);
+            Log("GameFuse Setting Up Game: "+ gameId+": "+ token);
             Instance.SetUpGamePrivate(gameId, token, callback, seedStore);
         }
 
@@ -113,13 +113,13 @@ namespace GameConnectCSharp
         {
             var body = "game_id=" + gameId + "&game_token=" + token;
             if (seedStore) body = body + "&seed_store=true";
-            Log("GameConnect Setting Up Game Sending Request: " + baseURL + "/games/verify?" + body);
+            Log("GameFuse Setting Up Game Sending Request: " + baseURL + "/games/verify?" + body);
             var request = UnityWebRequest.Get(baseURL + "/games/verify?" + body);
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                Log("GameConnect Setting Up Game Recieved Request Success: " + gameId + ": " + token);
+                Log("GameFuse Setting Up Game Recieved Request Success: " + gameId + ": " + token);
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
                 Instance.id = json.GetNumber("id").ToString();
@@ -131,8 +131,8 @@ namespace GameConnectCSharp
             }
             else
             {
-                Log("GameConnect Setting Up Game Recieved Request Failure: " + gameId + ": " + token);
-                GameConnectUtilities.HandleCallback(request, "Game has failed to set up!", callback);
+                Log("GameFuse Setting Up Game Recieved Request Failure: " + gameId + ": " + token);
+                GameFuseUtilities.HandleCallback(request, "Game has failed to set up!", callback);
             }
 
 
@@ -145,17 +145,17 @@ namespace GameConnectCSharp
 
         private IEnumerator DownloadStoreItemsRoutine(Action<string, bool> callback = null)
         {
-            Log("GameConnect Downloading Store Items");
+            Log("GameFuse Downloading Store Items");
             var body = "game_id=" + id + "&game_token=" + token;
             var request = UnityWebRequest.Get(baseURL + "/games/store_items?" + body);
-            if (GameConnectUser.CurrentUser.GetAuthenticationToken() != null)
-                request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            if (GameFuseUser.CurrentUser.GetAuthenticationToken() != null)
+                request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                Log("GameConnect Downloading Store Items Success");
+                Log("GameFuse Downloading Store Items Success");
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
@@ -163,7 +163,7 @@ namespace GameConnectCSharp
                 store.Clear();
                 foreach (var storeItem in storeItems)
                 {
-                    store.Add(new GameConnectStoreItem(
+                    store.Add(new GameFuseStoreItem(
                         storeItem.Obj.GetString("name"),
                         storeItem.Obj.GetString("category"),
                         storeItem.Obj.GetString("description"),
@@ -175,16 +175,16 @@ namespace GameConnectCSharp
             }
             else
             {
-                GameConnectUtilities.HandleCallback(request, "Game has failed to set up!", callback);
-                Log("GameConnect Downloading Store Items FAiled");
+                GameFuseUtilities.HandleCallback(request, "Game has failed to set up!", callback);
+                Log("GameFuse Downloading Store Items FAiled");
 
             }
 
-            GameConnectUtilities.HandleCallback(request, "Game has been set up!", callback);
+            GameFuseUtilities.HandleCallback(request, "Game has been set up!", callback);
 
         }
 
-        public static List<GameConnectStoreItem> GetStoreItems()
+        public static List<GameFuseStoreItem> GetStoreItems()
         {
             return Instance.store;
         }
@@ -206,10 +206,10 @@ namespace GameConnectCSharp
         private IEnumerator SignInRoutine(string email, string password, Action<string, bool> callback = null)
         {
 
-            Log("GameConnect Sign In: " + email );
+            Log("GameFuse Sign In: " + email );
 
             if (GetGameId() == null)
-                throw new GameConnectException("Please set up your game with PainLessAuth.SetUpGame before signing in users");
+                throw new GameFuseException("Please set up your game with PainLessAuth.SetUpGame before signing in users");
 
             WWWForm form = new WWWForm();
             form.AddField("email", email);
@@ -220,28 +220,28 @@ namespace GameConnectCSharp
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                Log("GameConnect Sign In Success: " + email);
+                Log("GameFuse Sign In Success: " + email);
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
-                GameConnectUser.CurrentUser.SetSignedInInternal();
-                GameConnectUser.CurrentUser.SetScoreInternal(Convert.ToInt32(json.GetNumber("score")));
-                GameConnectUser.CurrentUser.SetCreditsInternal(Convert.ToInt32(json.GetNumber("credits")));
-                GameConnectUser.CurrentUser.SetUsernameInternal(json.GetString("username"));
-                GameConnectUser.CurrentUser.SetLastLoginInternal(DateTime.Parse(json.GetString("last_login")));
-                GameConnectUser.CurrentUser.SetNumberOfLoginsInternal(Convert.ToInt32(json.GetNumber("number_of_logins")));
-                GameConnectUser.CurrentUser.SetAuthenticationTokenInternal(json.GetString("authentication_token"));
-                GameConnectUser.CurrentUser.SetIDInternal(Convert.ToInt32(json.GetNumber("id")));
-                GameConnectUser.CurrentUser.DownloadAttributes(true, callback); // Chain next request - download users attributes
+                GameFuseUser.CurrentUser.SetSignedInInternal();
+                GameFuseUser.CurrentUser.SetScoreInternal(Convert.ToInt32(json.GetNumber("score")));
+                GameFuseUser.CurrentUser.SetCreditsInternal(Convert.ToInt32(json.GetNumber("credits")));
+                GameFuseUser.CurrentUser.SetUsernameInternal(json.GetString("username"));
+                GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse(json.GetString("last_login")));
+                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal(Convert.ToInt32(json.GetNumber("number_of_logins")));
+                GameFuseUser.CurrentUser.SetAuthenticationTokenInternal(json.GetString("authentication_token"));
+                GameFuseUser.CurrentUser.SetIDInternal(Convert.ToInt32(json.GetNumber("id")));
+                GameFuseUser.CurrentUser.DownloadAttributes(true, callback); // Chain next request - download users attributes
 
             }
             else
             {
-                Log("GameConnect Sign In Failure: " + email);
+                Log("GameFuse Sign In Failure: " + email);
 
-                GameConnectUtilities.HandleCallback(request, "User has been signed in successfully", callback);
+                GameFuseUtilities.HandleCallback(request, "User has been signed in successfully", callback);
             }
 
 
@@ -265,10 +265,10 @@ namespace GameConnectCSharp
 
         private IEnumerator SignUpRoutine(string email, string password, string password_confirmation, string username, Action<string, bool> callback = null)
         {
-            Log("GameConnect Sign Up: " + email);
+            Log("GameFuse Sign Up: " + email);
 
             if (GetGameId() == null)
-                throw new GameConnectException("Please set up your game with PainLessAuth.SetUpGame before signing up users");
+                throw new GameFuseException("Please set up your game with PainLessAuth.SetUpGame before signing up users");
 
             WWWForm form = new WWWForm();
             form.AddField("email", email);
@@ -283,27 +283,27 @@ namespace GameConnectCSharp
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
 
-                Log("GameConnect Sign Up Success: " + email);
+                Log("GameFuse Sign Up Success: " + email);
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
-                GameConnectUser.CurrentUser.SetSignedInInternal();
-                GameConnectUser.CurrentUser.SetScoreInternal(Convert.ToInt32(json.GetNumber("score")));
-                GameConnectUser.CurrentUser.SetCreditsInternal(Convert.ToInt32(json.GetNumber("credits")));
-                GameConnectUser.CurrentUser.SetUsernameInternal(json.GetString("username"));
-                GameConnectUser.CurrentUser.SetLastLoginInternal(DateTime.Parse(json.GetString("last_login")));
-                GameConnectUser.CurrentUser.SetNumberOfLoginsInternal(Convert.ToInt32(json.GetNumber("number_of_logins")));
-                GameConnectUser.CurrentUser.SetAuthenticationTokenInternal(json.GetString("authentication_token"));
-                GameConnectUser.CurrentUser.SetIDInternal(Convert.ToInt32(json.GetNumber("id")));
-                GameConnectUser.CurrentUser.DownloadAttributes(true, callback); // Chain next request - download users attributes
+                GameFuseUser.CurrentUser.SetSignedInInternal();
+                GameFuseUser.CurrentUser.SetScoreInternal(Convert.ToInt32(json.GetNumber("score")));
+                GameFuseUser.CurrentUser.SetCreditsInternal(Convert.ToInt32(json.GetNumber("credits")));
+                GameFuseUser.CurrentUser.SetUsernameInternal(json.GetString("username"));
+                GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse(json.GetString("last_login")));
+                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal(Convert.ToInt32(json.GetNumber("number_of_logins")));
+                GameFuseUser.CurrentUser.SetAuthenticationTokenInternal(json.GetString("authentication_token"));
+                GameFuseUser.CurrentUser.SetIDInternal(Convert.ToInt32(json.GetNumber("id")));
+                GameFuseUser.CurrentUser.DownloadAttributes(true, callback); // Chain next request - download users attributes
 
             }
             else
             {
-                Log("GameConnect Sign Up Failure: " + email);
-                GameConnectUtilities.HandleCallback(request, "User could not sign up: " + request.error, callback);
+                Log("GameFuse Sign Up Failure: " + email);
+                GameFuseUtilities.HandleCallback(request, "User could not sign up: " + request.error, callback);
             }
 
         }
@@ -321,29 +321,29 @@ namespace GameConnectCSharp
 
         private IEnumerator GetLeaderboardRoutine(int limit, bool onePerUser, string LeaderboardName, Action<string, bool> callback = null)
         {
-            GameConnect.Log("GameConnect Get Leaderboard: " + limit.ToString());
+            GameFuse.Log("GameFuse Get Leaderboard: " + limit.ToString());
 
-            if (GameConnect.GetGameId() == null)
-                throw new GameConnectException("Please set up your game with GameConnect.SetUpGame before modifying users");
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
-            var parameters = "?authentication_token=" + GameConnectUser.CurrentUser.GetAuthenticationToken() + "&limit=" + limit.ToString() + "&one_per_user=" + onePerUser.ToString()+ "&leaderboard_name="+ LeaderboardName.ToString();
-            var request = UnityWebRequest.Get(GameConnect.GetBaseURL() + "/games/" + GameConnect.GetGameId() + "/leaderboard_entries" + parameters);
-            request.SetRequestHeader("authentication_token", GameConnectUser.CurrentUser.GetAuthenticationToken());
+            var parameters = "?authentication_token=" + GameFuseUser.CurrentUser.GetAuthenticationToken() + "&limit=" + limit.ToString() + "&one_per_user=" + onePerUser.ToString()+ "&leaderboard_name="+ LeaderboardName.ToString();
+            var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/games/" + GameFuse.GetGameId() + "/leaderboard_entries" + parameters);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
-            if (GameConnectUtilities.RequestIsSuccessful(request))
+            if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameConnect.Log("GameConnect Get Leaderboard Success: : " + limit.ToString());
+                GameFuse.Log("GameFuse Get Leaderboard Success: : " + limit.ToString());
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
                 Debug.Log("got " + json);
                 var storeItems = json.GetArray("leaderboard_entries");
-                GameConnect.Instance.leaderboardEntries.Clear();
+                GameFuse.Instance.leaderboardEntries.Clear();
                 foreach (var storeItem in storeItems)
                 {
-                    GameConnect.Instance.leaderboardEntries.Add(new GameConnectLeaderboardEntry(
+                    GameFuse.Instance.leaderboardEntries.Add(new GameFuseLeaderboardEntry(
                         storeItem.Obj.GetString("username"),
                         Convert.ToInt32(storeItem.Obj.GetNumber("score")),
                         storeItem.Obj.GetString("leaderboard_name"),
@@ -355,7 +355,7 @@ namespace GameConnectCSharp
 
             }
 
-            GameConnectUtilities.HandleCallback(request, "Store Item has been removed", callback);
+            GameFuseUtilities.HandleCallback(request, "Store Item has been removed", callback);
         }
         #endregion
 
@@ -365,18 +365,18 @@ namespace GameConnectCSharp
 
 
 
-public class GameConnectException : Exception
+public class GameFuseException : Exception
 {
-    public GameConnectException()
+    public GameFuseException()
     {
     }
 
-    public GameConnectException(string message)
+    public GameFuseException(string message)
         : base(message)
     {
     }
 
-    public GameConnectException(string message, Exception inner)
+    public GameFuseException(string message, Exception inner)
         : base(message, inner)
     {
     }

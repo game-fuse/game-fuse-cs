@@ -4,14 +4,14 @@ using UnityEngine;
 
 
 
-namespace GameConnectCSharp
+namespace GameFuseCSharp
 {
-    /// <summary>Class <c>GameConnectStoreItem</c> models a store item added 
-    /// through the GameConnect web portal
-    /// they can be retrieved and 'purchased' by GameConnectUsers through
+    /// <summary>Class <c>GameFuseStoreItem</c> models a store item added 
+    /// through the GameFuse web portal
+    /// they can be retrieved and 'purchased' by GameFuseUsers through
     /// the API SDK, but not created.</summary>
     ///
-    public class GameConnectStoreItem : MonoBehaviour
+    public class GameFuseStoreItem : MonoBehaviour
     {
 
         #region instance vars
@@ -48,7 +48,7 @@ namespace GameConnectCSharp
 
         #region constructor
 
-        public GameConnectStoreItem(string name, string category, string description, int cost, int id)
+        public GameFuseStoreItem(string name, string category, string description, int cost, int id)
         {
             this.name = name;
             this.category = category;
