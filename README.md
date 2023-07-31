@@ -9,16 +9,49 @@ Add this to your Unity project in the Scripts folder.
 
 At this point in time, you would add the prefab in this folder GameFuseInitializer
 You can also build this manually by adding new GameObject to your first scene, and add a number of script componenets:
-- GameFuse
-- GameFuseLeaderboardEntry
-- GameFuseUser
-- GameFuseUtilities
-- GameFuseStoreItem
+- GameFuse.cs
+- GameFuseLeaderboardEntry.cs
+- GameFuseUser.cs
+- GameFuseUtilities.cs
+- GameFuseStoreItem.cs
 
+At this point in time you have the library installed in your game, and you are ready to connect
 
-## Creating a new game
 
 ## Connecting to Game Fuse
+
+The first step in using GameFuse after it is installed and your account is regestered is to run the SetUpGame function. After this step you can run other functions to register users, sign in users, read and write game data.
+
+In any script on your first scene you can run:
+
+```
+
+void Start () {
+    var gameID = 'Your Game ID Here';
+    var gameToken 'your Game Token Here';
+
+    # 3rd param is the function below, GameFuse will call this function when it is done connecting your game
+    GameFuse.SetUpGame(gameID, gameToken, GameSetUpCallback);
+}
+
+
+
+void GameSetUpCallback(string message, bool hasError) {
+    if (hasError)
+    {
+        Debug.Error("Error connecting game: "+message);
+    }
+    else
+    {
+        Debug.Log("Game Connected Successfully")
+        foreach (CloudLoginStoreItem storeItem in CloudLogin.GetStoreItems())
+        {
+            Debug.Log(storeItem.GetName() + ": " + storeItem.GetCost());
+        }
+    }
+}
+
+```
 
 ## Signing game users up
 
