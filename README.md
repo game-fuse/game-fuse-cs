@@ -6,6 +6,7 @@ The first step of integrating GameFuse with your project, is to make an account 
 After creating your account, add your first game and note the ID and API Token.
 With this setup, you can now connect via your game client. Download and unzip the code from https://github.com/game-fuse/game-fuse-cs
 then add to your Unity project in the Scripts folder.
+If you would like to see an example of how the code works, check out https://github.com/game-fuse/game-fuse-unity-example
 
 At this point in time, you would add the prefab in this folder GameFuseInitializer
 You can also build this manually by adding new GameObject to your first scene, and add a number of script componenets:
