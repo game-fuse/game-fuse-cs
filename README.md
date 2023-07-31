@@ -9,11 +9,11 @@ Add this to your Unity project in the Scripts folder.
 
 At this point in time, you would add the prefab in this folder GameFuseInitializer
 You can also build this manually by adding new GameObject to your first scene, and add a number of script componenets:
-*GameFuse
-*GameFuseLeaderboardEntry
-*GameFuseUser
-*GameFuseUtilities
-*GameFuseStoreItem
+- GameFuse
+- GameFuseLeaderboardEntry
+- GameFuseUser
+- GameFuseUtilities
+- GameFuseStoreItem
 
 
 ## Creating a new game
