@@ -20,6 +20,7 @@ namespace GameFuseCSharp
         private string description;
         private int cost;
         private int id;
+        private string icon_url;
         #endregion
 
         #region instance getters
@@ -43,19 +44,23 @@ namespace GameFuseCSharp
         {
             return id;
         }
+        public string GetIconUrl()
+        {
+            return icon_url;
+        }
 
         #endregion
 
         #region constructor
 
-        public GameFuseStoreItem(string name, string category, string description, int cost, int id)
+        public GameFuseStoreItem(string name, string category, string description, int cost, int id, string icon_url)
         {
             this.name = name;
             this.category = category;
             this.description = description;
             this.cost = cost;
             this.id = id;
-
+            this.icon_url = icon_url;
         }
 
         #endregion

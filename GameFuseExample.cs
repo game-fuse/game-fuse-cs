@@ -56,6 +56,7 @@ public class GameFuseExample : MonoBehaviour {
             print("*****************************************");
 
             print("Signing Up");
+
             GameFuse.SignUp(userEmail, "password", "password", username, SignedUp);
         }
 

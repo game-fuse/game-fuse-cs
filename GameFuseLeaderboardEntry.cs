@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Boomlagoon.JSON;
 using UnityEngine;
+using System;
 
 
 
@@ -22,6 +23,8 @@ namespace GameFuseCSharp
         private string username;
         private int game_user_id;
         private string extra_attributes;
+        private DateTime timestamp;
+
         #endregion
 
         #region instance getters
@@ -49,19 +52,24 @@ namespace GameFuseCSharp
 
         }
 
+        public DateTime GetTimestamp()
+        {
+            return timestamp;
+        }
+
 
         #endregion
 
         #region constructor
 
-        public GameFuseLeaderboardEntry(string username, int score, string leaderboard_name, string extra_attributes, int game_user_id)
+        public GameFuseLeaderboardEntry(string username, int score, string leaderboard_name, string extra_attributes, int game_user_id, string created_at)
         {
             this.username = username;
             this.score = score;
             this.leaderboard_name = leaderboard_name;
             this.extra_attributes = extra_attributes;
             this.game_user_id = game_user_id;
-
+            this.timestamp = DateTime.ParseExact(created_at, "yyyy-MM-ddTHH:mm:ss.fffZ", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal);
         }
 
         #endregion

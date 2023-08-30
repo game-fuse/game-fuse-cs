@@ -455,7 +455,10 @@ namespace GameFuseCSharp
                         item.Obj.GetString("category"),
                         item.Obj.GetString("description"),
                         Convert.ToInt32(item.Obj.GetNumber("cost")),
-                        Convert.ToInt32(item.Obj.GetNumber("id"))));
+                        Convert.ToInt32(item.Obj.GetNumber("id")),
+                        item.Obj.GetString("icon_url")
+                        )
+                    );
                 }
 
 
@@ -514,7 +517,10 @@ namespace GameFuseCSharp
                         item.Obj.GetString("category"),
                         item.Obj.GetString("description"),
                         Convert.ToInt32(item.Obj.GetNumber("cost")),
-                        Convert.ToInt32(item.Obj.GetNumber("id"))));
+                        Convert.ToInt32(item.Obj.GetNumber("id")),
+                        item.Obj.GetString("icon_url")
+                        )
+                    );
                 }
             }
 
@@ -560,7 +566,10 @@ namespace GameFuseCSharp
                         item.Obj.GetString("category"),
                         item.Obj.GetString("description"),
                         Convert.ToInt32(item.Obj.GetNumber("cost")),
-                        Convert.ToInt32(item.Obj.GetNumber("id"))));
+                        Convert.ToInt32(item.Obj.GetNumber("id")),
+                        item.Obj.GetString("icon_url")
+                        )
+                    );
                 }
             }
 
@@ -683,7 +692,8 @@ namespace GameFuseCSharp
                         Convert.ToInt32(storeItem.Obj.GetNumber("score")),
                         storeItem.Obj.GetString("leaderboard_name"),
                         storeItem.Obj.GetString("extra_attributes"),
-                        Convert.ToInt32(storeItem.Obj.GetNumber("game_user_id"))
+                        Convert.ToInt32(storeItem.Obj.GetNumber("game_user_id")),
+                        storeItem.Obj.GetString("created_at")
                         )
                    );
                 }
