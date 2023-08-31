@@ -47,7 +47,7 @@ namespace GameFuseCSharp
 
         #region globals
         private static string baseURL = "https://gamefuse.co/api/v1";
-        // private static string baseURL = "http://localhost/api/v1";
+        // private static string baseURL = "http://localhost:3000/api/v1";
 
         public static string GetBaseURL()
         {
@@ -360,6 +360,39 @@ namespace GameFuseCSharp
             }
 
             GameFuseUtilities.HandleCallback(request, "Store Item has been removed", callback);
+        }
+        #endregion
+
+
+        #region Forgot Password
+
+        public void SendPasswordResetEmail(string email, Action<string, bool> callback = null)
+        {
+            StartCoroutine(SendPasswordResetEmailRoutine(email, callback));
+        }
+
+        private IEnumerator SendPasswordResetEmailRoutine(string email, Action<string, bool> callback = null)
+        {
+            GameFuse.Log("GameFuse SendPasswordResetEmail: " + email.ToString());
+
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before sending password resets");
+
+            var parameters = "?game_token=" + GameFuse.GetGameToken() + "&game_id=" + GameFuse.GetGameId().ToString() + "&email=" + email.ToString();
+            var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/games/" + GameFuse.GetGameId().ToString() + "/forget_password" + parameters);
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+
+            yield return request.SendWebRequest();
+            Debug.Log(request);
+
+            if (GameFuseUtilities.RequestIsSuccessful(request))
+            {
+                GameFuseUtilities.HandleCallback(request, "Forgot password email sent!", callback);
+            } else {
+                GameFuseUtilities.HandleCallback(request, "Forgot password email failed to send!", callback);
+            }
+
+            
         }
         #endregion
 
