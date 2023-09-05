@@ -26,7 +26,7 @@ namespace GameFuseCSharp
         private bool verboseLogging = false;
         private List<GameFuseStoreItem> store = new List<GameFuseStoreItem>();
         public List<GameFuseLeaderboardEntry> leaderboardEntries = new List<GameFuseLeaderboardEntry>();
-
+        public Dictionary<string, string> gameVariables = new Dictionary<string, string>();
         #endregion
 
         #region singleton management
@@ -126,6 +126,17 @@ namespace GameFuseCSharp
                 Instance.name = json.GetString("name");
                 Instance.description = json.GetString("description");
                 Instance.token = json.GetString("token");
+
+                Dictionary<string, string> gameVariables = new Dictionary<string, string>();
+                JSONArray gameVariablesArray = json.GetArray("game_variables");
+                for (int i = 0; i < gameVariablesArray.Length; i++) 
+                {
+                    JSONObject iterjson = JSONObject.Parse(gameVariablesArray[i].ToString());
+                    string key = iterjson.GetString("key");
+                    string value = iterjson.GetString("value");
+                    gameVariables[key] = value;
+                }
+                Instance.gameVariables = gameVariables;
                 DownloadStoreItemsPrivate(callback);
 
             }
@@ -135,7 +146,60 @@ namespace GameFuseCSharp
                 GameFuseUtilities.HandleCallback(request, "Game has failed to set up!", callback);
             }
 
+        }
 
+        public static void FetchGameVariables(string gameId, string token, Action<string, bool> callback = null)
+        {
+            Log("GameFuse Fetch Game Variables: "+ gameId+": "+ token);
+            Instance.FetchGameVariablesPrivate(gameId, token, callback);
+        }
+
+        private void FetchGameVariablesPrivate(string gameId, string token, Action<string, bool> callback = null)
+        {
+            StartCoroutine(FetchGameVariablesRoutine(gameId, token, callback));
+        }
+
+        private IEnumerator FetchGameVariablesRoutine(string gameId, string token, Action<string, bool> callback = null)
+        {
+            var body = "game_id=" + gameId + "&game_token=" + token;
+            Log("GameFuse Fetch Game Variables Sending Request: " + baseURL + "/games/fetch_game_variables?" + body);
+            var request = UnityWebRequest.Get(baseURL + "/games/fetch_game_variables?" + body);
+            yield return request.SendWebRequest();
+
+            if (GameFuseUtilities.RequestIsSuccessful(request))
+            {
+                Log("GameFuse Fetch Game Variables Recieved Request Success: " + gameId + ": " + token);
+                var data = request.downloadHandler.text;
+                JSONObject json = JSONObject.Parse(data);
+                Instance.id = json.GetNumber("id").ToString();
+                Instance.name = json.GetString("name");
+                Instance.description = json.GetString("description");
+                Instance.token = json.GetString("token");
+
+                Dictionary<string, string> gameVariables = new Dictionary<string, string>();
+                JSONArray gameVariablesArray = json.GetArray("game_variables");
+                for (int i = 0; i < gameVariablesArray.Length; i++) 
+                {
+                    JSONObject iterjson = JSONObject.Parse(gameVariablesArray[i].ToString());
+                    string key = iterjson.GetString("key");
+                    string value = iterjson.GetString("value");
+                    gameVariables[key] = value;
+                }
+                Instance.gameVariables = gameVariables;
+                DownloadStoreItemsPrivate(callback);
+
+            }
+            else
+            {
+                Log("GameFuse Fetch Game Variables Recieved Request Failure: " + gameId + ": " + token);
+                GameFuseUtilities.HandleCallback(request, "Game has failed to set up!", callback);
+            }
+
+        }
+
+        public static string GetGameVariable(string key)
+        {
+            return Instance.gameVariables[key];
         }
 
         private void DownloadStoreItemsPrivate(Action<string, bool> callback = null)
@@ -212,7 +276,7 @@ namespace GameFuseCSharp
             Log("GameFuse Sign In: " + email );
 
             if (GetGameId() == null)
-                throw new GameFuseException("Please set up your game with PainLessAuth.SetUpGame before signing in users");
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before signing in users");
 
             WWWForm form = new WWWForm();
             form.AddField("email", email);
@@ -271,7 +335,7 @@ namespace GameFuseCSharp
             Log("GameFuse Sign Up: " + email);
 
             if (GetGameId() == null)
-                throw new GameFuseException("Please set up your game with PainLessAuth.SetUpGame before signing up users");
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before signing up users");
 
             WWWForm form = new WWWForm();
             form.AddField("email", email);
