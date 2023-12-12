@@ -18,11 +18,12 @@ namespace GameFuseCSharp
 
         internal static void HandleCallback(UnityWebRequest request, string successString, Action<string, bool> callback = null)
         {
+            Debug.Log("Recieved "+request.responseCode+" response for "+request.url);
             if (request.result == UnityWebRequest.Result.ProtocolError || request.result == UnityWebRequest.Result.ConnectionError)
             {
-                Debug.LogError("Request had error: " + request.error);
+                Debug.LogError("Request had error: " + request.downloadHandler.text);
                 if (callback != null)
-                    callback("An unknown error occurred: " + request.error, true);
+                    callback("An error occurred: " + request.downloadHandler.text, true);
             }
             else if (request.responseCode == 299)
             {

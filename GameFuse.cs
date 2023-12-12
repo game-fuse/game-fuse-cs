@@ -23,7 +23,7 @@ namespace GameFuseCSharp
         private string token;
         private string name;
         private string description;
-        private bool verboseLogging = false;
+        private bool verboseLogging = true;
         private List<GameFuseStoreItem> store = new List<GameFuseStoreItem>();
         public List<GameFuseLeaderboardEntry> leaderboardEntries = new List<GameFuseLeaderboardEntry>();
         public Dictionary<string, string> gameVariables = new Dictionary<string, string>();
@@ -46,8 +46,8 @@ namespace GameFuseCSharp
         #endregion
 
         #region globals
-        private static string baseURL = "https://gamefuse.co/api/v1";
-        // private static string baseURL = "http://localhost:3000/api/v1";
+        // private static string baseURL = "https://gamefuse.co/api/v1";
+        private static string baseURL = "http://localhost/api/v2";
 
         public static string GetBaseURL()
         {
@@ -113,8 +113,8 @@ namespace GameFuseCSharp
         {
             var body = "game_id=" + gameId + "&game_token=" + token;
             if (seedStore) body = body + "&seed_store=true";
-            Log("GameFuse Setting Up Game Sending Request: " + baseURL + "/games/verify?" + body);
-            var request = UnityWebRequest.Get(baseURL + "/games/verify?" + body);
+            Log("GameFuse Setting Up Game Sending Request: " + baseURL + "/games/verify?client_from_library=cs&" + body);
+            var request = UnityWebRequest.Get(baseURL + "/games/verify?client_from_library=cs&" + body);
             yield return request.SendWebRequest();
 
             if (GameFuseUtilities.RequestIsSuccessful(request))
@@ -311,11 +311,7 @@ namespace GameFuseCSharp
                 GameFuseUtilities.HandleCallback(request, "User has been signed in successfully", callback);
             }
 
-
-
         }
-
-
 
         #endregion
 
