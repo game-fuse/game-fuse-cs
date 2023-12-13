@@ -23,7 +23,7 @@ namespace GameFuseCSharp
         private string token;
         private string name;
         private string description;
-        private bool verboseLogging = false;
+        private bool verboseLogging = true;
         private List<GameFuseStoreItem> store = new List<GameFuseStoreItem>();
         public List<GameFuseLeaderboardEntry> leaderboardEntries = new List<GameFuseLeaderboardEntry>();
         public Dictionary<string, string> gameVariables = new Dictionary<string, string>();

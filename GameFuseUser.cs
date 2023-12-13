@@ -21,6 +21,7 @@ namespace GameFuseCSharp
         private int credits;
         private int id;
         private Dictionary<string, string> attributes = new Dictionary<string, string>();
+        private Dictionary<string, string> dirtyAttributes = new Dictionary<string, string>();
         private List<GameFuseStoreItem> purchasedStoreItems = new List<GameFuseStoreItem>();
 
         #endregion
@@ -345,6 +346,28 @@ namespace GameFuseCSharp
                 return "";
         }
 
+        public void SetAttributeLocal(string key, string  val){
+            if (attributes.ContainsKey(key))
+            {
+                attributes.Remove(key);
+            }
+            if (dirtyAttributes.ContainsKey(key))
+            {
+                dirtyAttributes.Remove(key);
+            }
+            attributes.Add(key, val);
+            dirtyAttributes.Add(key,val);
+        }
+
+        public void SyncLocalAttributes(Action<string, bool> callback = null)
+        {
+            SetAttributes(attributes, callback, true);
+        }
+
+        public Dictionary<string,string> GetDirtyAttributes(){
+            return dirtyAttributes;
+        }
+
         public void SetAttribute(string key, string value, Action<string, bool> callback = null)
         {
             StartCoroutine(SetAttributeRoutine(key,value, callback));
@@ -389,7 +412,7 @@ namespace GameFuseCSharp
 
         }
 
-        public void SetAttributes(Dictionary<string, string> newAttributes, Action<string, bool> callback = null)
+        public void SetAttributes(Dictionary<string, string> newAttributes, Action<string, bool> callback = null, bool isFromSync = false)
         {
             //TODO - Unity networking is weird, cant send auth headers with a body, so i guess we need to auth this way.
             string jsonData = "{\"authentication_token\": \""+GameFuseUser.CurrentUser.GetAuthenticationToken()+"\" ,\"attributes\": [";
@@ -401,10 +424,10 @@ namespace GameFuseCSharp
 
             jsonData = jsonData.TrimEnd(',') + "]}";
 
-            StartCoroutine(SetAttributesRoutine(jsonData, newAttributes, callback));
+            StartCoroutine(SetAttributesRoutine(jsonData, newAttributes, callback, isFromSync));
         }
 
-        private IEnumerator SetAttributesRoutine(string jsonData, Dictionary<string, string> newAttributes, Action<string, bool> callback = null)
+        private IEnumerator SetAttributesRoutine(string jsonData, Dictionary<string, string> newAttributes, Action<string, bool> callback = null, bool isFromSync = false)
         {
             GameFuse.Log("GameFuseUser Set Attributes: "+jsonData);
 
@@ -427,7 +450,8 @@ namespace GameFuseCSharp
 
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
-                foreach (var new_attribute in newAttributes)
+                var newAttributesLooper = new Dictionary<string, string>(newAttributes);
+                foreach (var new_attribute in newAttributesLooper)
                 {
                     if (attributes.ContainsKey(new_attribute.Key))
                     {
@@ -441,6 +465,8 @@ namespace GameFuseCSharp
                 {
                     print(attribute.Key + "," + attribute.Value);
                 }
+
+                dirtyAttributes = new Dictionary<string, string>(); 
             }
 
             GameFuseUtilities.HandleCallback(request, "Attribute has been added to user", callback);
