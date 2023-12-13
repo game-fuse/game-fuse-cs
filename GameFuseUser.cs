@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using Boomlagoon.JSON;
 using UnityEngine.Networking;
@@ -154,6 +155,8 @@ namespace GameFuseCSharp
 
             }
             GameFuseUtilities.HandleCallback(request, "Credits have been added to user", callback);
+            request.Dispose();
+
 
 
         }
@@ -197,6 +200,8 @@ namespace GameFuseCSharp
             }
 
             GameFuseUtilities.HandleCallback(request, "Credits have been added to user", callback);
+            request.Dispose();
+
         }
         #endregion
 
@@ -234,6 +239,8 @@ namespace GameFuseCSharp
             }
 
             GameFuseUtilities.HandleCallback(request, "Score have been added to user", callback);
+            request.Dispose();
+
         }
         #endregion
 
@@ -268,6 +275,8 @@ namespace GameFuseCSharp
             }
 
             GameFuseUtilities.HandleCallback(request, "Score have been added to user", callback);
+            request.Dispose();
+
         }
         #endregion
 
@@ -312,6 +321,8 @@ namespace GameFuseCSharp
                 DownloadStoreItems(chainedFromLogin, callback);
             } else 
                 GameFuseUtilities.HandleCallback(request, chainedFromLogin ? "Users has been signed in successfully" : "Users attributes have been downloaded", callback);
+            request.Dispose();
+
 
         }
 
@@ -374,7 +385,69 @@ namespace GameFuseCSharp
             }
 
             GameFuseUtilities.HandleCallback(request, "Attribute has been added to user", callback);
+            request.Dispose();
+
         }
+
+        public void SetAttributes(Dictionary<string, string> newAttributes, Action<string, bool> callback = null)
+        {
+            //TODO - Unity networking is weird, cant send auth headers with a body, so i guess we need to auth this way.
+            string jsonData = "{\"authentication_token\": \""+GameFuseUser.CurrentUser.GetAuthenticationToken()+"\" ,\"attributes\": [";
+
+            foreach (var attribute in newAttributes)
+            {
+                jsonData += "{\"key\":\"" + attribute.Key + "\",\"value\":\"" + attribute.Value + "\"},";
+            }
+
+            jsonData = jsonData.TrimEnd(',') + "]}";
+
+            StartCoroutine(SetAttributesRoutine(jsonData, newAttributes, callback));
+        }
+
+        private IEnumerator SetAttributesRoutine(string jsonData, Dictionary<string, string> newAttributes, Action<string, bool> callback = null)
+        {
+            GameFuse.Log("GameFuseUser Set Attributes: "+jsonData);
+
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
+
+
+            byte[] postData = Encoding.UTF8.GetBytes(jsonData);
+            var request = UnityWebRequest.PostWwwForm(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/add_game_user_attribute", "POST");
+            request.SetRequestHeader("Content-Type", "application/json"); 
+            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+            request.uploadHandler = new UploadHandlerRaw(postData);
+            request.downloadHandler = new DownloadHandlerBuffer();
+
+            yield return request.SendWebRequest();
+
+            if (GameFuseUtilities.RequestIsSuccessful(request))
+            {
+                GameFuse.Log("GameFuseUser Set Attributes Success: " + jsonData);
+
+                var data = request.downloadHandler.text;
+                JSONObject json = JSONObject.Parse(data);
+                foreach (var new_attribute in newAttributes)
+                {
+                    if (attributes.ContainsKey(new_attribute.Key))
+                    {
+                        attributes.Remove(new_attribute.Key);
+                    }
+                    attributes.Add(new_attribute.Key, new_attribute.Value);
+                }
+                
+                
+                foreach (var attribute in attributes)
+                {
+                    print(attribute.Key + "," + attribute.Value);
+                }
+            }
+
+            GameFuseUtilities.HandleCallback(request, "Attribute has been added to user", callback);
+            request.Dispose();
+
+        }
+
 
         public void RemoveAttribute(string key, Action<string, bool> callback = null)
         {
@@ -412,6 +485,8 @@ namespace GameFuseCSharp
             }
 
             GameFuseUtilities.HandleCallback(request, "Attribute has been removed", callback);
+            request.Dispose();
+
         }
 
 
@@ -465,6 +540,8 @@ namespace GameFuseCSharp
             }
 
             GameFuseUtilities.HandleCallback(request, chainedFromLogin ? "Users has been signed in successfully" : "Users store items have been downloaded", callback);
+            request.Dispose();
+
 
         }
 
@@ -525,6 +602,8 @@ namespace GameFuseCSharp
             }
 
             GameFuseUtilities.HandleCallback(request, "Store Item has been purchased by user", callback);
+            request.Dispose();
+
         }
 
         public void RemoveStoreItem(int storeItemID, bool reimburseUser, Action<string, bool> callback = null)
@@ -574,6 +653,8 @@ namespace GameFuseCSharp
             }
 
             GameFuseUtilities.HandleCallback(request, "Store Item has been removed", callback);
+            request.Dispose();
+
         }
 
         #endregion
@@ -624,6 +705,8 @@ namespace GameFuseCSharp
             }
 
             GameFuseUtilities.HandleCallback(request, "Leaderboard Entry Has Been Added", callback);
+            request.Dispose();
+
         }
 
         public void ClearLeaderboardEntries(string leaderboardName, Action<string, bool> callback = null)
@@ -656,6 +739,8 @@ namespace GameFuseCSharp
             }
 
             GameFuseUtilities.HandleCallback(request, "Leaderboard Entries Have Been Cleared", callback);
+            request.Dispose();
+
         }
 
         public void GetLeaderboard(int limit, bool onePerUser, Action<string, bool> callback = null)
@@ -701,6 +786,8 @@ namespace GameFuseCSharp
             }
 
             GameFuseUtilities.HandleCallback(request, "Store Item has been removed", callback);
+            request.Dispose();
+
         }
 
         #endregion Leaderboard 

@@ -27,10 +27,7 @@ namespace GameFuseCSharp
             }
             else if (request.responseCode == 299)
             {
-                var data = request.downloadHandler.text;
-                JSONObject json = JSONObject.Parse(data);
-                var errorString = json.GetString("error");
-
+                var errorString = request.downloadHandler.text;
                 if (errorString.Contains("has already been taken"))
                     errorString = "Username or email already taken";
 

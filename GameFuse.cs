@@ -23,7 +23,7 @@ namespace GameFuseCSharp
         private string token;
         private string name;
         private string description;
-        private bool verboseLogging = true;
+        private bool verboseLogging = false;
         private List<GameFuseStoreItem> store = new List<GameFuseStoreItem>();
         public List<GameFuseLeaderboardEntry> leaderboardEntries = new List<GameFuseLeaderboardEntry>();
         public Dictionary<string, string> gameVariables = new Dictionary<string, string>();
@@ -194,6 +194,8 @@ namespace GameFuseCSharp
                 Log("GameFuse Fetch Game Variables Recieved Request Failure: " + gameId + ": " + token);
                 GameFuseUtilities.HandleCallback(request, "Game has failed to set up!", callback);
             }
+            request.Dispose();
+
 
         }
 
@@ -248,6 +250,8 @@ namespace GameFuseCSharp
             }
 
             GameFuseUtilities.HandleCallback(request, "Game has been set up!", callback);
+            request.Dispose();
+
 
         }
 
@@ -310,6 +314,7 @@ namespace GameFuseCSharp
 
                 GameFuseUtilities.HandleCallback(request, "User has been signed in successfully", callback);
             }
+            request.Dispose();
 
         }
 
@@ -368,6 +373,8 @@ namespace GameFuseCSharp
                 Log("GameFuse Sign Up Failure: " + email);
                 GameFuseUtilities.HandleCallback(request, "User could not sign up: " + request.error, callback);
             }
+            request.Dispose();
+
 
         }
 
@@ -420,6 +427,8 @@ namespace GameFuseCSharp
             }
 
             GameFuseUtilities.HandleCallback(request, "Store Item has been removed", callback);
+            request.Dispose();
+
         }
         #endregion
 
@@ -451,6 +460,8 @@ namespace GameFuseCSharp
             } else {
                 GameFuseUtilities.HandleCallback(request, "Forgot password email failed to send!", callback);
             }
+            request.Dispose();
+
 
             
         }
