@@ -23,7 +23,7 @@ namespace GameFuseCSharp
         private string token;
         private string name;
         private string description;
-        private bool verboseLogging = true;
+        private bool verboseLogging = false;
         private List<GameFuseStoreItem> store = new List<GameFuseStoreItem>();
         public List<GameFuseLeaderboardEntry> leaderboardEntries = new List<GameFuseLeaderboardEntry>();
         public Dictionary<string, string> gameVariables = new Dictionary<string, string>();
@@ -46,8 +46,8 @@ namespace GameFuseCSharp
         #endregion
 
         #region globals
-        // private static string baseURL = "https://gamefuse.co/api/v1";
-        private static string baseURL = "http://localhost/api/v2";
+        private static string baseURL = "https://gamefuse.co/api/v2";
+        // private static string baseURL = "http://localhost/api/v2";
 
         public static string GetBaseURL()
         {
