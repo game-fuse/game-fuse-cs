@@ -436,7 +436,7 @@ namespace GameFuseCSharp
 
 
             byte[] postData = Encoding.UTF8.GetBytes(jsonData);
-            var request = UnityWebRequest.PostWwwForm(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/add_game_user_attribute", "POST");
+            var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/add_game_user_attribute", "POST");
             request.SetRequestHeader("Content-Type", "application/json"); 
             request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
             request.uploadHandler = new UploadHandlerRaw(postData);
