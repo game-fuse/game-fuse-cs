@@ -414,15 +414,24 @@ namespace GameFuseCSharp
 
         public void SetAttributes(Dictionary<string, string> newAttributes, Action<string, bool> callback = null, bool isFromSync = false)
         {
-            //TODO - Unity networking is weird, cant send auth headers with a body, so i guess we need to auth this way.
-            string jsonData = "{\"authentication_token\": \""+GameFuseUser.CurrentUser.GetAuthenticationToken()+"\" ,\"attributes\": [";
+            string token = GameFuseUser.CurrentUser.GetAuthenticationToken();
 
+            // Create a list to hold your attributes
+            List<AttributeItem> attributesList = new List<AttributeItem>();
             foreach (var attribute in newAttributes)
             {
-                jsonData += "{\"key\":\"" + attribute.Key + "\",\"value\":\"" + attribute.Value + "\"},";
+                attributesList.Add(new AttributeItem { key = attribute.Key, value = attribute.Value });
             }
 
-            jsonData = jsonData.TrimEnd(',') + "]}";
+            // Create an object to hold the entire payload
+            var payload = new AttributePayload
+            {
+                authentication_token = token,
+                attributes = attributesList
+            };
+
+            // Serialize the object to JSON
+            string jsonData = JsonUtility.ToJson(payload);
 
             StartCoroutine(SetAttributesRoutine(jsonData, newAttributes, callback, isFromSync));
         }
@@ -458,22 +467,35 @@ namespace GameFuseCSharp
                         attributes.Remove(new_attribute.Key);
                     }
                     attributes.Add(new_attribute.Key, new_attribute.Value);
-                }
-                
+                }                
                 
                 foreach (var attribute in attributes)
                 {
                     print(attribute.Key + "," + attribute.Value);
                 }
+
                 if (isFromSync){
                     dirtyAttributes = new Dictionary<string, string>(); 
                 }
-                
             }
 
             GameFuseUtilities.HandleCallback(request, "Attribute has been added to user", callback);
             request.Dispose();
 
+        }
+
+        [System.Serializable]
+        public class AttributeItem
+        {
+            public string key;
+            public string value;
+        }
+
+        [System.Serializable]
+        public class AttributePayload
+        {
+            public string authentication_token;
+            public List<AttributeItem> attributes;
         }
 
 
