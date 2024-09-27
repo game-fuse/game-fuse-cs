@@ -1,0 +1,25 @@
+{
+    "name": "com.gamefuse.sdk",
+    "version": "1.0.0",
+    "displayName": "GameFuse Unity SDK",
+    "description": "A Unity package for GameFuse integration.",
+    "unity": "2020.3",
+    "keywords": [
+      "gamefuse",
+      "sdk",
+      "unity"
+    ],
+    "author": {
+      "name": "Mitchell Meyer",
+      "email": "support@gamefuse.co",
+      "url": "https://gamefuse.co"
+    },
+    "samples": [
+    {
+      "displayName": "GameFuse Example",
+      "description": "An example scene demonstrating how to use the GameFuse SDK.",
+      "path": "Samples~/GameFuse Example"
+    }
+    ]
+  }
+  
