@@ -46,7 +46,7 @@ namespace GameFuseCSharp
         #endregion
 
         #region globals
-        private static string baseURL = "https://gamefuse.co/api/v2";
+        private static string baseURL = "https://gamefuse.co/api/v3";
         // private static string baseURL = "http://localhost/api/v2";
 
         public static string GetBaseURL()
