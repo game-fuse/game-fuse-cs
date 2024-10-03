@@ -1,0 +1,19 @@
+{
+    "name": "com.gamefuse.sdk.RuntimeTests",
+    "rootNamespace": "GameFuseCSharp.Tests.Runtime",
+    "references": [
+        "com.gamefuse.sdk.Runtime",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
