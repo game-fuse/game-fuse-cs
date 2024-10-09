@@ -22,7 +22,7 @@
         }
     ],
     "testDependencies": {
-        "com.unity.test-framework": "1.1.33"
+        "com.unity.test-framework": "1.4.5"
     },
     "testables": [ "com.gamefuse.sdk" ]
 }

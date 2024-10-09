@@ -118,12 +118,10 @@ public class FriendshipService : IFriendshipService
     private async Task<T> SendRequestAsync<T>(UnityWebRequest webRequest) where T : new()
     {
         var operation = webRequest.SendWebRequest();
-
         while (!operation.isDone)
         {
             await Task.Yield();
         }
-
         if (webRequest.result == UnityWebRequest.Result.Success)
         {
             string jsonResponse = webRequest.downloadHandler.text;
