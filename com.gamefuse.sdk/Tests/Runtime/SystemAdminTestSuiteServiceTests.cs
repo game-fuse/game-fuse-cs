@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using GameFuseCSharp;
 using UnityEngine;
 using System.IO;
 
@@ -24,10 +23,8 @@ namespace GameFuseCSharp.Tests.Runtime
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            Debug.Log("Running one time set up");
             // Read configuration from JSON file
             string configPath = Path.Combine(Application.dataPath, "TestConfiguration", "testConfig.json");
-            Debug.Log($"configPath {configPath}");
             if (File.Exists(configPath))
             {
                 string json = File.ReadAllText(configPath);
@@ -60,10 +57,7 @@ namespace GameFuseCSharp.Tests.Runtime
         public async Task CreateGameAsync_ReturnsValidResponse()
         {
             var response = await _service.CreateGameAsync();
-
             Assert.IsNotNull(response);
-            Debug.Log(JsonUtility.ToJson(response, true));
-
             // Clean up
             var cleanupResponse = await _service.CleanUpTestAsync(response.id);
             Assert.AreEqual("everything should have been destroyed!", cleanupResponse.message);            
@@ -77,7 +71,7 @@ namespace GameFuseCSharp.Tests.Runtime
             string userEmail = $"dave{UnityEngine.Random.Range(1, 1001)}@email.com";
             CreateUserResponse userResponse = await _service.CreateUserAsync(gameResponse.id, userName, userEmail);
             Assert.NotNull(userResponse);
-            Assert.AreEqual(userEmail, userResponse.email);
+            Assert.AreEqual(userEmail, userResponse.display_email);
             //Clean up
             CleanUpResponse cleanupResponse = await _service.CleanUpTestAsync(gameResponse.id);
             Assert.AreEqual("everything should have been destroyed!", cleanupResponse.message);

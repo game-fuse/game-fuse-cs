@@ -1,12 +1,9 @@
 using System;
-
 namespace GameFuseCSharp
 {
     [Serializable]
-    public class CreateUserResponse
+    public class FriendRequestData
     {
-        public int id;
         public string username;
-        public string email;
     }
 }

@@ -8,30 +8,12 @@ using System.Text;
 namespace GameFuseCSharp
 {
 
-    public class SystemAdminTestSuiteService : ISystemAdminTestSuiteService
+    public class SystemAdminTestSuiteService : AbstractService, ISystemAdminTestSuiteService
     {
-        private string _baseUrl = "https://gamefuse.co/api/v3/test_suite";
-        private string _serviceKeyToken;
-        private string _serviceKeyName;
-
-        private const int TimeoutSeconds = 10;
-
-        public void Initialize(string token, string name)
-        {
-            _serviceKeyToken = token;
-            _serviceKeyName = name;
-        }
-
-        public void Initialize(string baseUrl, string token, string name)
-        {
-            _baseUrl = baseUrl;
-            Initialize(token, name);
-        }
-
         public async Task<CreateGameResponse> CreateGameAsync()
         {
             string url = $"{_baseUrl}/create_game";
-            using (UnityWebRequest webRequest = CreatePostRequest(url, string.Empty))
+            using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST ,string.Empty))
             {
                 return await SendRequestAsync<CreateGameResponse>(webRequest);
             }
@@ -47,7 +29,7 @@ namespace GameFuseCSharp
                 email = email
             };
             string createUserJson = JsonUtility.ToJson(createUserRequest);
-            using(UnityWebRequest webRequest = CreatePostRequest(url, createUserJson))
+            using(UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, createUserJson))
             {
                 return await SendRequestAsync<CreateUserResponse>(webRequest);
             }
@@ -65,7 +47,7 @@ namespace GameFuseCSharp
                 cost = cost
             };
             string createStoreItemJson = JsonUtility.ToJson(createStoreItemRequest);
-            using(UnityWebRequest webRequest = CreatePostRequest(url, createStoreItemJson))
+            using(UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, createStoreItemJson))
             {
                 return await SendRequestAsync<CreateStoreItemResponse>(webRequest);
             }
@@ -76,61 +58,9 @@ namespace GameFuseCSharp
             string url = $"{_baseUrl}/clean_up_test";
             CleanUpGameRequest deleteGameRequest = new CleanUpGameRequest { game_id = gameId };
             string deleteGameJson = JsonUtility.ToJson(deleteGameRequest);
-            using(UnityWebRequest unityWebRequest = CreateDeleteRequest(url, deleteGameJson))
+            using(UnityWebRequest unityWebRequest = CreateRequest(url,HttpVerbs.DELETE,deleteGameJson))
             {
                 return await SendRequestAsync<CleanUpResponse>(unityWebRequest);
-            }
-        }
-
-        private UnityWebRequest CreatePostRequest(string url, string jsonBody)
-        {
-            UnityWebRequest webRequest = new UnityWebRequest(url, "POST");
-            SetRequestHeaders(webRequest);
-            SetRequestBody(webRequest, jsonBody);
-            webRequest.downloadHandler = new DownloadHandlerBuffer();
-            webRequest.timeout = TimeoutSeconds;
-            return webRequest;
-        }
-
-        private UnityWebRequest CreateDeleteRequest(string url, string jsonBody)
-        {
-            UnityWebRequest webRequest = UnityWebRequest.Delete(url);
-            SetRequestHeaders(webRequest);
-            SetRequestBody(webRequest, jsonBody);
-            webRequest.downloadHandler = new DownloadHandlerBuffer();
-            webRequest.timeout = TimeoutSeconds;
-            return webRequest;
-        }
-
-        private void SetRequestHeaders(UnityWebRequest webRequest)
-        {
-            webRequest.SetRequestHeader("service-key-token", _serviceKeyToken);
-            webRequest.SetRequestHeader("service-key-name", _serviceKeyName);
-            webRequest.SetRequestHeader("Content-Type", "application/json");
-        }
-
-        private void SetRequestBody(UnityWebRequest webRequest, string jsonBody)
-        {
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonBody);
-            webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        }
-
-        private async Task<T> SendRequestAsync<T>(UnityWebRequest webRequest) where T : class, new()
-        {
-            var operation = webRequest.SendWebRequest();
-            while (!operation.isDone)
-            {
-                await Task.Yield();
-            }
-            if (webRequest.result == UnityWebRequest.Result.Success)
-            {
-                string jsonResponse = webRequest.downloadHandler.text;
-                return JsonUtility.FromJson<T>(jsonResponse);
-            }
-            else
-            {
-                Debug.LogError($"Error: {webRequest.error}");
-                return default(T);
             }
         }
     }

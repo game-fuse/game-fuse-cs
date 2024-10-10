@@ -36,18 +36,20 @@ namespace GameFuseCSharp.Tests
             {
                 id = 1,
                 username = "dave",
-                email = "dave@email.com"
+                email = "server_dave@email.com",
+                display_email = "dave@email.com"
             };
 
             // Act
             string createUserResponseJson = JsonUtility.ToJson(createUserResponse);
 
             // Expected JSON output
-            string expectedJson = "{\"id\":1,\"username\":\"dave\",\"email\":\"dave@email.com\"}";
+            string expectedJson = "{\"id\":1,\"username\":\"dave\",\"email\":\"server_dave@email.com\",\"display_email\":\"dave@email.com\"}";
 
             // Assert
             Assert.AreEqual(expectedJson, createUserResponseJson);
         }
+
 
         [Test]
         public void CreateStoreItemRequest_SerializesCorrectly()
