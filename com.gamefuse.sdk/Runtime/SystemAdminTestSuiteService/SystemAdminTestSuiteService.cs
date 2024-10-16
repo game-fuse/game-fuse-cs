@@ -10,6 +10,27 @@ namespace GameFuseCSharp
 
     public class SystemAdminTestSuiteService : AbstractService, ISystemAdminTestSuiteService
     {
+        private string _serviceKeyToken;
+        private string _serviceKeyName;
+
+        public override void Initialize(string baseUrl, string token)
+        {
+            _baseUrl = $"{baseUrl}/test_suite";
+            _serviceKeyToken = token;
+        }
+
+        public void SetServiceKeyName(string serviceKeyName)
+        {
+            _serviceKeyName = serviceKeyName;
+        }
+
+        protected override void SetRequestHeaders(UnityWebRequest webRequest)
+        {
+            webRequest.SetRequestHeader("service-key-token", _serviceKeyToken);
+            webRequest.SetRequestHeader("service-key-name", _serviceKeyName);
+            webRequest.SetRequestHeader("Content-Type", "application/json");
+        }
+
         public async Task<CreateGameResponse> CreateGameAsync()
         {
             string url = $"{_baseUrl}/create_game";

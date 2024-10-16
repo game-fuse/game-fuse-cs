@@ -1,14 +1,14 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
+using System;
 
 namespace GameFuseCSharp
 {
     public abstract class AbstractService : IServiceInitializable
     {
-        protected string _baseUrl = "https://gamefuse.co/api/v3/test_suite";
-        protected string _serviceKeyToken;
-        protected string _serviceKeyName;
+        protected string _baseUrl;
+        protected string _token;
         protected const int TimeoutSeconds = 10;
 
         protected enum HttpVerbs
@@ -19,16 +19,10 @@ namespace GameFuseCSharp
             PUT
         }
 
-        public void Initialize(string token, string name)
-        {
-            _serviceKeyToken = token;
-            _serviceKeyName = name;
-        }
-
-        public void Initialize(string baseUrl, string token, string name)
+        public virtual void Initialize(string baseUrl, string token)
         {
             _baseUrl = baseUrl;
-            Initialize(token, name);
+            _token = token;
         }
 
         protected UnityWebRequest CreateRequest(string url, HttpVerbs method, string jsonBody)
@@ -47,10 +41,9 @@ namespace GameFuseCSharp
             return webRequest;
         }
 
-        protected void SetRequestHeaders(UnityWebRequest webRequest)
+        protected virtual void SetRequestHeaders(UnityWebRequest webRequest)
         {
-            webRequest.SetRequestHeader("service-key-token", _serviceKeyToken);
-            webRequest.SetRequestHeader("service-key-name", _serviceKeyName);
+            webRequest.SetRequestHeader("authentication-token", _token);
             webRequest.SetRequestHeader("Content-Type", "application/json");
         }
         protected void SetRequestBody(UnityWebRequest webRequest, string jsonBody)
@@ -61,21 +54,50 @@ namespace GameFuseCSharp
 
         protected async Task<T> SendRequestAsync<T>(UnityWebRequest webRequest) where T : class, new()
         {
-            var operation = webRequest.SendWebRequest();
-            while (!operation.isDone)
+            try
             {
-                await Task.Yield();
+                using (webRequest)
+                {
+                    var operation = webRequest.SendWebRequest();
+
+                    while (!operation.isDone)
+                    {
+                        await Task.Yield();
+                    }
+
+                    switch (webRequest.result)
+                    {
+                        case UnityWebRequest.Result.Success:
+                            string jsonResponse = webRequest.downloadHandler.text;
+                            return JsonUtility.FromJson<T>(jsonResponse);
+
+                        case UnityWebRequest.Result.ConnectionError:
+                        case UnityWebRequest.Result.ProtocolError:
+                        case UnityWebRequest.Result.DataProcessingError:
+                            throw new ApiException(
+                                webRequest.responseCode,
+                                $"{webRequest.result}: {webRequest.error}",
+                                webRequest.downloadHandler?.text ?? string.Empty
+                            );
+
+                        default:
+                            throw new ApiException(
+                                0,
+                                $"Unexpected error: {webRequest.result}",
+                                webRequest.downloadHandler?.text ?? string.Empty
+                            );
+                    }
+                }
             }
-            if (webRequest.result == UnityWebRequest.Result.Success)
+            catch (ApiException)
             {
-                string jsonResponse = webRequest.downloadHandler.text;
-                Debug.Log($"the raw json is: \n {jsonResponse}");
-                return JsonUtility.FromJson<T>(jsonResponse);
+                // Re-throw ApiException as it already contains all the necessary information
+                throw;
             }
-            else
+            catch (Exception ex)
             {
-                Debug.LogError($"Error: {webRequest.error}");
-                return default(T);
+                // Wrap any other exceptions in an ApiException
+                throw new ApiException(0, $"Unexpected error: {ex.Message}", string.Empty);
             }
         }
     }

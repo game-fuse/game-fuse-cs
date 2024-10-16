@@ -16,8 +16,8 @@ namespace GameFuseCSharp.Tests.Runtime
         [Serializable]
         private class TestConfig
         {
-            public string testToken;
-            public string testName;
+            public string adminToken;
+            public string adminName;
         }
 
         [OneTimeSetUp]
@@ -29,8 +29,8 @@ namespace GameFuseCSharp.Tests.Runtime
             {
                 string json = File.ReadAllText(configPath);
                 TestConfig config = JsonUtility.FromJson<TestConfig>(json);
-                _testToken = config.testToken;
-                _testName = config.testName;
+                _testToken = config.adminToken;
+                _testName = config.adminName;
             }
             else
             {
@@ -50,7 +50,8 @@ namespace GameFuseCSharp.Tests.Runtime
             _service = new SystemAdminTestSuiteService();
 
             // Initialize the service with values from config
-            _service.Initialize(_testToken, _testName);
+            _service.Initialize("https://gamefuse.co/api/v3", _testToken);
+            _service.SetServiceKeyName(_testName);
         }
 
         [Test]
