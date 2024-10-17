@@ -50,54 +50,6 @@ namespace GameFuseCSharp.Tests
             Assert.AreEqual(expectedJson, createUserResponseJson);
         }
 
-
-        [Test]
-        public void CreateStoreItemRequest_SerializesCorrectly()
-        {
-            // Arrange
-            CreateStoreItemRequest createStoreItemRequest = new CreateStoreItemRequest
-            {
-                game_id = 10,
-                name = "Sword",
-                description = "A powerful sword",
-                category = "Weapons",
-                cost = 100
-            };
-
-            // Act
-            string createStoreItemRequestJson = JsonUtility.ToJson(createStoreItemRequest);
-
-            // Expected JSON output
-            string expectedJson = "{\"game_id\":10,\"name\":\"Sword\",\"description\":\"A powerful sword\",\"category\":\"Weapons\",\"cost\":100}";
-
-            // Assert
-            Assert.AreEqual(expectedJson, createStoreItemRequestJson);
-        }
-
-        [Test]
-        public void CreateStoreItemResponse_SerializesCorrectly()
-        {
-            // Arrange
-            CreateStoreItemResponse createStoreItemResponse = new CreateStoreItemResponse
-            {
-                id = 1,
-                game_id = 10,
-                name = "Sword",
-                description = "A powerful sword",
-                category = "Weapons",
-                cost = 100
-            };
-
-            // Act
-            string createStoreItemResponseJson = JsonUtility.ToJson(createStoreItemResponse);
-
-            // Expected JSON output
-            string expectedJson = "{\"id\":1,\"game_id\":10,\"name\":\"Sword\",\"description\":\"A powerful sword\",\"category\":\"Weapons\",\"cost\":100}";
-
-            // Assert
-            Assert.AreEqual(expectedJson, createStoreItemResponseJson);
-        }
-
         [Test]
         public void CreateGameResponse_SerializesCorrectly()
         {

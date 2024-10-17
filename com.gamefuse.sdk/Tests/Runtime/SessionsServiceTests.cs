@@ -3,18 +3,22 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
 using System.IO;
+using GameFuseCSharp;
 
 namespace GameFuseCSharp.Tests.Runtime
 {
     [TestFixture]
-    public class UserServiceTests
+    public class SessionsServiceTests
     {
         private ISystemAdminTestSuiteService _adminService;
         private IUserService _userService;
+        private ISessionsService _sessionsService;
         private string _adminToken;
         private string _adminName;
         private int _testGameId;
         private string _testGameToken;
+        private string _testUserEmail;
+        private string _testUserPassword;
 
         [Serializable]
         private class TestConfig
@@ -50,65 +54,70 @@ namespace GameFuseCSharp.Tests.Runtime
             Debug.Log($"Admin Name: {_adminName}, Admin Token: {_adminToken.Substring(0, 5)}...");
         }
 
-        private async Task SetUpAsync()
+        [SetUp]
+        public void SetUp()
         {
-            _adminService = new SystemAdminTestSuiteService("https://gamefuse.co/api/v3", _adminToken,_adminName);
-           
-
-            Debug.Log("Creating test game...");
-            var gameResponse = await _adminService.CreateGameAsync();
-            _testGameId = gameResponse.id;
-            _testGameToken = gameResponse.token;
-            Debug.Log($"Test game created. ID: {_testGameId}, Token: {_testGameToken}");
-
+            _adminService = new SystemAdminTestSuiteService("https://gamefuse.co/api/v3", _adminToken, _adminName);
             _userService = new UserService("https://gamefuse.co/api/v3");
+            _sessionsService = new SessionsService("https://gamefuse.co/api/v3");
         }
 
-        private async Task TearDownAsync()
+        [TearDown]
+        public void TearDown()
         {
-            if (_testGameId != 0)
-            {
-                Debug.Log($"Cleaning up test game with ID: {_testGameId}");
-                await _adminService.CleanUpTestAsync(_testGameId);
-            }
+            // Clean up will be done in the test method
         }
 
         [Test]
-        public async Task SignUpAsync_ReturnsValidResponse()
+        public async Task SignInAsync_ReturnsValidResponse()
         {
             try
             {
-                await SetUpAsync();
+                // Create a test game
+                Debug.Log("Creating test game...");
+                var gameResponse = await _adminService.CreateGameAsync();
+                _testGameId = gameResponse.id;
+                _testGameToken = gameResponse.token;
+                Debug.Log($"Test game created. ID: {_testGameId}, Token: {_testGameToken}");
 
+                // Sign up a test user
                 string userName = $"testuser{UnityEngine.Random.Range(1, 1001)}";
-                string userEmail = $"testuser{UnityEngine.Random.Range(1, 1001)}@example.com";
-                string password = "testpassword123";
+                _testUserEmail = $"testuser{UnityEngine.Random.Range(1, 1001)}@example.com";
+                _testUserPassword = "testpassword123";
 
-                Debug.Log($"Attempting to sign up user: {userName}, Email: {userEmail}");
+                Debug.Log($"Signing up test user: {userName}, Email: {_testUserEmail}");
 
-                SignUpRequest request = new SignUpRequest
+                SignUpRequest signUpRequest = new SignUpRequest
                 {
-                    email = userEmail,
-                    password = password,
-                    password_confirmation = password,
+                    email = _testUserEmail,
+                    password = _testUserPassword,
+                    password_confirmation = _testUserPassword,
                     username = userName,
                     game_id = _testGameId,
                     game_token = _testGameToken
                 };
 
-                Debug.Log($"SignUp Request: GameId: {request.game_id}, GameToken: {request.game_token}");
+                await _userService.SignUpAsync(signUpRequest);
 
-                SignUpResponse response = await _userService.SignUpAsync(request);
+                // Test sign in
+                Debug.Log($"Attempting to sign in user: {_testUserEmail}");
 
-                string responseJsonString = JsonUtility.ToJson(response, true);
-                Debug.Log(responseJsonString);
+                SignInRequest signInRequest = new SignInRequest
+                {
+                    email = _testUserEmail,
+                    password = _testUserPassword,
+                    game_id = _testGameId,
+                    game_token = _testGameToken
+                };
 
-                Assert.IsNotNull(response, "SignUp response is null");
-                Assert.AreEqual(userName, response.username, "Username mismatch");
-                Assert.AreEqual(userEmail, response.display_email, "Email mismatch");
-                Assert.Greater(response.id, 0, "User ID is not greater than 0");
+                SignInResponse signInResponse = await _sessionsService.SignInAsync(signInRequest);
 
-                Debug.Log($"User successfully signed up. User ID: {response.id}");
+                Assert.IsNotNull(signInResponse, "SignIn response is null");
+                Assert.AreEqual(_testUserEmail, signInResponse.display_email, "Email mismatch");
+                Assert.IsNotEmpty(signInResponse.authentication_token, "Authentication token is empty");
+                Assert.Greater(signInResponse.id, 0, "User ID is not greater than 0");
+
+                Debug.Log($"User successfully signed in. User ID: {signInResponse.id}");
             }
             catch (ApiException ex)
             {
@@ -123,7 +132,12 @@ namespace GameFuseCSharp.Tests.Runtime
             }
             finally
             {
-                await TearDownAsync();
+                // Clean up
+                if (_testGameId != 0)
+                {
+                    Debug.Log($"Cleaning up test game with ID: {_testGameId}");
+                    await _adminService.CleanUpTestAsync(_testGameId);
+                }
             }
         }
     }

@@ -4,9 +4,9 @@ using UnityEngine.Networking;
 
 namespace GameFuseCSharp
 {
-    public class UserService : AbstractService, IUserService
+    public class SessionsService : AbstractService, ISessionsService
     {
-        public UserService(string baseUrl)
+        public SessionsService(string baseUrl)
         {
             _baseUrl = baseUrl;
         }
@@ -16,17 +16,19 @@ namespace GameFuseCSharp
             webRequest.SetRequestHeader("Content-Type", "application/json");
         }
 
-        public async Task<SignUpResponse> SignUpAsync(SignUpRequest request)
+        public async Task<SignInResponse> SignInAsync(SignInRequest request)
         {
-            string url = $"{_baseUrl}/users";
+            string url = $"{_baseUrl}/sessions";
             string jsonBody = JsonUtility.ToJson(request);
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
             {
                 try
                 {
-                    return await SendRequestAsync<SignUpResponse>(webRequest);
+                    SignInResponse response = await SendRequestAsync<SignInResponse>(webRequest);
+                    _token = response.authentication_token;
+                    return response;
                 }
-                catch (ApiException ex)
+                catch (ApiException)
                 {
                     throw;
                 }

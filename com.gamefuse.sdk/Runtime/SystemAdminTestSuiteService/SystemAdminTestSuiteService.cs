@@ -52,24 +52,6 @@ namespace GameFuseCSharp
             }
         }
 
-        public async Task<CreateStoreItemResponse> CreateStoreItemAsync(int gameId, string name, string description, string category, int cost)
-        {
-            string url = $"{_baseUrl}/create_store_item";
-            CreateStoreItemRequest createStoreItemRequest = new CreateStoreItemRequest
-            {
-                game_id = gameId,
-                name = name,
-                description = description,
-                category = category,
-                cost = cost
-            };
-            string createStoreItemJson = JsonUtility.ToJson(createStoreItemRequest);
-            using(UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, createStoreItemJson))
-            {
-                return await SendRequestAsync<CreateStoreItemResponse>(webRequest);
-            }
-        }
-
         public async Task<CleanUpResponse> CleanUpTestAsync(int gameId)
         {
             string url = $"{_baseUrl}/clean_up_test";
