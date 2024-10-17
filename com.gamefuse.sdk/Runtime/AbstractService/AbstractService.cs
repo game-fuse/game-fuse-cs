@@ -5,7 +5,7 @@ using System;
 
 namespace GameFuseCSharp
 {
-    public abstract class AbstractService : IServiceInitializable
+    public abstract class AbstractService
     {
         protected string _baseUrl;
         protected string _token;
@@ -17,12 +17,6 @@ namespace GameFuseCSharp
             GET,
             POST,
             PUT
-        }
-
-        public virtual void Initialize(string baseUrl, string token)
-        {
-            _baseUrl = baseUrl;
-            _token = token;
         }
 
         protected UnityWebRequest CreateRequest(string url, HttpVerbs method, string jsonBody)

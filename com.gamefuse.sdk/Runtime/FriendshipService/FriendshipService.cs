@@ -6,8 +6,12 @@ namespace GameFuseCSharp
 {
     public class FriendshipService : AbstractService, IFriendshipService
     {
+        public FriendshipService(string baseUrl, string token)
+        {
+            _baseUrl = baseUrl;
+            _token = token;
+        }
 
-       
         public async Task<FriendRequestResponse> SendFriendRequestAsync(string username)
         {
             string url = $"{_baseUrl}/friendships";

@@ -72,9 +72,7 @@ namespace GameFuseCSharp.Tests.Runtime
         public async Task SetUpAsync()
         {
             // Initialize the admin service
-            _adminService = new SystemAdminTestSuiteService();
-            _adminService.Initialize("https://gamefuse.co/api/v3", _adminToken);
-            _adminService.SetServiceKeyName(_serviceKeyName);
+            _adminService = new SystemAdminTestSuiteService("https://gamefuse.co/api/v3", _adminToken, _serviceKeyName);
 
             // Create a new game
             var gameResponse = await _adminService.CreateGameAsync();
@@ -99,8 +97,8 @@ namespace GameFuseCSharp.Tests.Runtime
            
 
             // Initialize FriendshipService instance
-            _friendshipService = new FriendshipService();
-            _friendshipService.Initialize("https://gamefuse.co/api/v3", _gameToken);
+            _friendshipService = new FriendshipService("https://gamefuse.co/api/v3", _gameToken);
+           
         }
 
 

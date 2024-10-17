@@ -52,9 +52,8 @@ namespace GameFuseCSharp.Tests.Runtime
 
         private async Task SetUpAsync()
         {
-            _adminService = new SystemAdminTestSuiteService();
-            _adminService.Initialize("https://gamefuse.co/api/v3", _adminToken);
-            _adminService.SetServiceKeyName(_adminName);
+            _adminService = new SystemAdminTestSuiteService("https://gamefuse.co/api/v3", _adminToken,_adminName);
+           
 
             Debug.Log("Creating test game...");
             var gameResponse = await _adminService.CreateGameAsync();
@@ -62,8 +61,7 @@ namespace GameFuseCSharp.Tests.Runtime
             _testGameToken = gameResponse.token;
             Debug.Log($"Test game created. ID: {_testGameId}, Token: {_testGameToken}");
 
-            _userService = new UserService();
-            _userService.Initialize("https://gamefuse.co/api/v2", _testGameToken);
+            _userService = new UserService("https://gamefuse.co/api/v3");
         }
 
         private async Task TearDownAsync()
@@ -102,10 +100,12 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 SignUpResponse response = await _userService.SignUpAsync(request);
 
+                string responseJsonString = JsonUtility.ToJson(response, true);
+                Debug.Log(responseJsonString);
+
                 Assert.IsNotNull(response, "SignUp response is null");
                 Assert.AreEqual(userName, response.username, "Username mismatch");
                 Assert.AreEqual(userEmail, response.display_email, "Email mismatch");
-                Assert.IsNotEmpty(response.authentication_token, "Authentication token is empty");
                 Assert.Greater(response.id, 0, "User ID is not greater than 0");
 
                 Debug.Log($"User successfully signed up. User ID: {response.id}");

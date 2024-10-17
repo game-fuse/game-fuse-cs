@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 namespace GameFuseCSharp
 {
-    public interface IUserService: IServiceInitializable
+    public interface IUserService
     {
         Task<SignUpResponse> SignUpAsync(SignUpRequest request);
     }

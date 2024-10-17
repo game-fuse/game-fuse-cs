@@ -10,8 +10,8 @@ namespace GameFuseCSharp.Tests.Runtime
     public class SystemAdminTestSuiteServiceTests
     {
         private ISystemAdminTestSuiteService _service;
-        private string _testToken;
-        private string _testName;
+        private string _adminToken;
+        private string _adminName;
 
         [Serializable]
         private class TestConfig
@@ -29,14 +29,14 @@ namespace GameFuseCSharp.Tests.Runtime
             {
                 string json = File.ReadAllText(configPath);
                 TestConfig config = JsonUtility.FromJson<TestConfig>(json);
-                _testToken = config.adminToken;
-                _testName = config.adminName;
+                _adminToken = config.adminToken;
+                _adminName = config.adminName;
             }
             else
             {
                 Debug.LogWarning($"Test configuration file not found at {configPath}. Using default values.");
-                _testToken = "default_token";
-                _testName = "default_name";
+                _adminToken = "default_token";
+                _adminName = "default_name";
             }
         }
 
@@ -47,11 +47,9 @@ namespace GameFuseCSharp.Tests.Runtime
             //_service = new MockSystemAdminTestSuiteService();
 
             // To use the real service, comment out the line above and uncomment the line below
-            _service = new SystemAdminTestSuiteService();
+            _service = new SystemAdminTestSuiteService("https://gamefuse.co/api/v3", _adminToken, _adminName);
 
-            // Initialize the service with values from config
-            _service.Initialize("https://gamefuse.co/api/v3", _testToken);
-            _service.SetServiceKeyName(_testName);
+            
         }
 
         [Test]

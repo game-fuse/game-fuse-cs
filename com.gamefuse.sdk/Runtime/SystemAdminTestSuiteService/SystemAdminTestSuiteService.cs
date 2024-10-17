@@ -13,14 +13,10 @@ namespace GameFuseCSharp
         private string _serviceKeyToken;
         private string _serviceKeyName;
 
-        public override void Initialize(string baseUrl, string token)
+        public SystemAdminTestSuiteService(string baseUrl, string token, string serviceKeyName)
         {
             _baseUrl = $"{baseUrl}/test_suite";
             _serviceKeyToken = token;
-        }
-
-        public void SetServiceKeyName(string serviceKeyName)
-        {
             _serviceKeyName = serviceKeyName;
         }
 

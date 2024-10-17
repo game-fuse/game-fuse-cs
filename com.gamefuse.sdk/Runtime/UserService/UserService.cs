@@ -8,6 +8,11 @@ namespace GameFuseCSharp
     public class UserService : AbstractService, IUserService
     {
 
+        public UserService(string baseUrl)
+        {
+            _baseUrl = baseUrl;
+        }
+
         protected override void SetRequestHeaders(UnityWebRequest webRequest)
         {
             webRequest.SetRequestHeader("Content-Type", "application/json");
