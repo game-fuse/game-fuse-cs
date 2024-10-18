@@ -3,8 +3,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
 using System.IO;
-using UnityEngine.TestTools;
-using System.Collections;
+using GameFuseCSharp;
 
 namespace GameFuseCSharp.Tests.Runtime
 {
@@ -12,23 +11,22 @@ namespace GameFuseCSharp.Tests.Runtime
     public class FriendshipServiceTests
     {
         private ISystemAdminTestSuiteService _adminService;
-        private FriendshipService _friendshipService;
+        private IUserService _userService;
+        private ISessionsService _sessionsService;
+        private IFriendshipService _friendshipService1;
+        private IFriendshipService _friendshipService2;
         private string _adminToken;
-        private string _serviceKeyName;
-
-        private int _gameId;
-        private CreateUserResponse _user1;
-        private CreateUserResponse _user2;
-
-        private string _gameToken;
-
-        private GameFuse gameFuse;
+        private string _adminName;
+        private int _testGameId;
+        private string _testGameToken;
+        private SignInResponse _user1;
+        private SignInResponse _user2;
 
         [Serializable]
         private class TestConfig
         {
-            public string testToken;
-            public string testName;
+            public string adminToken;
+            public string adminName;
         }
 
         [OneTimeSetUp]
@@ -40,90 +38,232 @@ namespace GameFuseCSharp.Tests.Runtime
             {
                 string json = File.ReadAllText(configPath);
                 TestConfig config = JsonUtility.FromJson<TestConfig>(json);
-                _adminToken = config.testToken;
-                _serviceKeyName = config.testName;
+                _adminToken = config.adminToken;
+                _adminName = config.adminName;
             }
             else
             {
-                Debug.LogWarning($"Test configuration file not found at {configPath}. Using default values.");
-                _adminToken = "default_token";
-                _serviceKeyName = "default_service_key";
+                Debug.LogError($"Test configuration file not found at {configPath}. Please ensure the file exists and contains valid admin credentials.");
+                Assert.Fail("Test configuration file not found.");
             }
+
+            if (string.IsNullOrEmpty(_adminToken) || string.IsNullOrEmpty(_adminName))
+            {
+                Debug.LogError("Admin token or name is null or empty. Please check your testConfig.json file.");
+                Assert.Fail("Admin credentials are invalid.");
+            }
+
+            Debug.Log($"Admin Name: {_adminName}, Admin Token: {_adminToken.Substring(0, 5)}...");
         }
 
-        [UnitySetUp]
-        public IEnumerator UnitySetUp()
+        private async Task SetUpAsync()
         {
-            // Initialization code...
-            yield return null; // Wait for Start() methods to execute
-            gameFuse = GameObject.FindAnyObjectByType<GameFuse>();
-            if(gameFuse != null)
-            {
-                Debug.Log("Found the game fuse object!");
-            }
-            else
-            {
-                Debug.Log("GameFuse not found!");
-            }
-        }
+            _adminService = new SystemAdminTestSuiteService("https://gamefuse.co/api/v3", _adminToken, _adminName);
+            _userService = new UserService("https://gamefuse.co/api/v3");
+            _sessionsService = new SessionsService("https://gamefuse.co/api/v3");
 
-
-
-        public async Task SetUpAsync()
-        {
-            // Initialize the admin service
-            _adminService = new SystemAdminTestSuiteService("https://gamefuse.co/api/v3", _adminToken, _serviceKeyName);
-
-            // Create a new game
+            // Create a test game
+            Debug.Log("Creating test game...");
             var gameResponse = await _adminService.CreateGameAsync();
-            Assert.IsNotNull(gameResponse, "Failed to create a game.");
-            _gameId = gameResponse.id;
-            _gameToken = gameResponse.token;
-            //GameFuse.SetUpGame(_gameId.ToString(), _gameToken);
+            _testGameId = gameResponse.id;
+            _testGameToken = gameResponse.token;
+            Debug.Log($"Test game created. ID: {_testGameId}, Token: {_testGameToken}");
 
-            // Create two users
-            string user1Name = $"user1_{Guid.NewGuid()}";
-            string user1Email = $"user1_{Guid.NewGuid()}@email.com";
-            _user1 = await _adminService.CreateUserAsync(_gameId, user1Name, user1Email);
-            Assert.IsNotNull(_user1, "Failed to create user1.");
-            //GameFuse.SignUp(user1Email, "password123", "password123", user1Name);
+            // Sign up and sign in two test users
+            _user1 = await CreateAndSignInUser("testuser1");
+            _user2 = await CreateAndSignInUser("testuser2");
 
-            string user2Name = $"user2_{Guid.NewGuid()}";
-            string user2Email = $"user2_{Guid.NewGuid()}@email.com";
-            _user2 = await _adminService.CreateUserAsync(_gameId, user2Name, user2Email);
-            Assert.IsNotNull(_user2, "Failed to create user2.");
-            //GameFuse.SignUp(user2Email, "password123", "password123", user2Name);
-
-           
-
-            // Initialize FriendshipService instance
-            _friendshipService = new FriendshipService("https://gamefuse.co/api/v3", _gameToken);
-           
+            // Initialize FriendshipServices for both users
+            _friendshipService1 = new FriendshipService("https://gamefuse.co/api/v3", _user1.authentication_token);
+            _friendshipService2 = new FriendshipService("https://gamefuse.co/api/v3", _user2.authentication_token);
         }
 
-
-        public async Task TearDownAsync()
+        private async Task TearDownAsync()
         {
-            if (_gameId != 0)
+            if (_testGameId != 0)
             {
-                var cleanupResponse = await _adminService.CleanUpTestAsync(_gameId);
-                Assert.AreEqual("everything should have been destroyed!", cleanupResponse.message, "Failed to clean up the game.");
+                Debug.Log($"Cleaning up test game with ID: {_testGameId}");
+                await _adminService.CleanUpTestAsync(_testGameId);
             }
         }
 
-        [Test, Order(1)]
-        public async Task SendFriendRequest_ShouldSucceed()
+        private async Task<SignInResponse> CreateAndSignInUser(string username)
         {
-            await SetUpAsync();
+            string userEmail = $"{username}_{UnityEngine.Random.Range(1, 1001)}@example.com";
+            string password = "testpassword123";
 
-            // User1 sends a friend request to User2
-            var sendRequestResponse = await _friendshipService.SendFriendRequestAsync(_user2.username);
-            Assert.IsNotNull(sendRequestResponse, "SendFriendRequestAsync returned null.");
-            Assert.AreEqual("Friend request sent to friend_username", sendRequestResponse.message, "Unexpected response message.");
-            Assert.Greater(sendRequestResponse.friendship_id, 0, "Invalid friendshipId returned.");
+            SignUpRequest signUpRequest = new SignUpRequest
+            {
+                email = userEmail,
+                password = password,
+                password_confirmation = password,
+                username = username,
+                game_id = _testGameId,
+                game_token = _testGameToken
+            };
 
-            await TearDownAsync();
+            await _userService.SignUpAsync(signUpRequest);
+
+            SignInRequest signInRequest = new SignInRequest
+            {
+                email = userEmail,
+                password = password,
+                game_id = _testGameId,
+                game_token = _testGameToken
+            };
+
+            return await _sessionsService.SignInAsync(signInRequest);
         }
 
+        [Test]
+        public async Task SendFriendRequest_AcceptFriendRequest_SuccessfullyCreatesAndAcceptsFriendship()
+        {
+            try
+            {
+                await SetUpAsync();
+
+                // User1 sends a friend request to User2
+                var sendRequestResponse = await _friendshipService1.SendFriendRequestAsync(_user2.username);
+                Assert.IsNotNull(sendRequestResponse);
+                Assert.IsTrue(sendRequestResponse.friendship_id > 0);
+
+                // User2 accepts the friend request
+                var acceptRequestResponse = await _friendshipService2.UpdateFriendRequestStatusAsync(sendRequestResponse.friendship_id, "accepted");
+                Assert.IsNotNull(acceptRequestResponse);
+                Assert.AreEqual("you have successfully accepted this friend request", acceptRequestResponse.message);
+
+                // Verify friendship data for both users
+                var user1FriendshipData = await _friendshipService1.GetFriendshipDataAsync();
+                var user2FriendshipData = await _friendshipService2.GetFriendshipDataAsync();
+
+                Assert.IsTrue(user1FriendshipData.friends.Length > 0);
+                Assert.IsTrue(user2FriendshipData.friends.Length > 0);
+                Assert.AreEqual(_user2.username, user1FriendshipData.friends[0].username);
+                Assert.AreEqual(_user1.username, user2FriendshipData.friends[0].username);
+            }
+            catch (ApiException ex)
+            {
+                Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
+                Debug.LogError($"Response Body: {ex.ResponseBody}");
+                Assert.Fail($"API Exception: {ex.Message}");
+            }
+            finally
+            {
+                await TearDownAsync();
+            }
+        }
+
+        [Test]
+        public async Task SendFriendRequest_DeclineFriendRequest_SuccessfullyCreatesAndDeclinesFriendship()
+        {
+            try
+            {
+                await SetUpAsync();
+
+                // User1 sends a friend request to User2
+                var sendRequestResponse = await _friendshipService1.SendFriendRequestAsync(_user2.username);
+                Assert.IsNotNull(sendRequestResponse);
+                Assert.IsTrue(sendRequestResponse.friendship_id > 0);
+
+                // User2 declines the friend request
+                var declineRequestResponse = await _friendshipService2.UpdateFriendRequestStatusAsync(sendRequestResponse.friendship_id, "declined");
+                Assert.IsNotNull(declineRequestResponse);
+                Assert.AreEqual("you have successfully declined this friend request", declineRequestResponse.message);
+
+                // Verify friendship data for both users
+                var user1FriendshipData = await _friendshipService1.GetFriendshipDataAsync();
+                var user2FriendshipData = await _friendshipService2.GetFriendshipDataAsync();
+
+                Assert.IsTrue(user1FriendshipData.friends.Length == 0);
+                Assert.IsTrue(user2FriendshipData.friends.Length == 0);
+            }
+            catch (ApiException ex)
+            {
+                Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
+                Debug.LogError($"Response Body: {ex.ResponseBody}");
+                Assert.Fail($"API Exception: {ex.Message}");
+            }
+            finally
+            {
+                await TearDownAsync();
+            }
+        }
+
+        [Test]
+        public async Task SendFriendRequest_CancelFriendRequest_SuccessfullyCancelsRequest()
+        {
+            try
+            {
+                await SetUpAsync();
+
+                // User1 sends a friend request to User2
+                var sendRequestResponse = await _friendshipService1.SendFriendRequestAsync(_user2.username);
+                Assert.IsNotNull(sendRequestResponse);
+                Assert.IsTrue(sendRequestResponse.friendship_id > 0);
+
+                // User1 cancels the friend request
+                var cancelRequestResponse = await _friendshipService1.CancelFriendRequestAsync(sendRequestResponse.friendship_id);
+                Assert.IsNotNull(cancelRequestResponse);
+                Assert.AreEqual("friend request destroyed successfully", cancelRequestResponse.message);
+
+                // Verify friendship data for both users
+                var user1FriendshipData = await _friendshipService1.GetFriendshipDataAsync();
+                var user2FriendshipData = await _friendshipService2.GetFriendshipDataAsync();
+
+                Assert.IsTrue(user1FriendshipData.outgoing_friend_requests.Length == 0);
+                Assert.IsTrue(user2FriendshipData.incoming_friend_requests.Length == 0);
+            }
+            catch (ApiException ex)
+            {
+                Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
+                Debug.LogError($"Response Body: {ex.ResponseBody}");
+                Assert.Fail($"API Exception: {ex.Message}");
+            }
+            finally
+            {
+                await TearDownAsync();
+            }
+        }
+
+        [Test]
+        public async Task AcceptFriendRequest_Unfriend_SuccessfullyRemovesFriendship()
+        {
+            try
+            {
+                await SetUpAsync();
+
+                // User1 sends a friend request to User2
+                var sendRequestResponse = await _friendshipService1.SendFriendRequestAsync(_user2.username);
+                Assert.IsNotNull(sendRequestResponse);
+                Assert.IsTrue(sendRequestResponse.friendship_id > 0);
+
+                // User2 accepts the friend request
+                var acceptRequestResponse = await _friendshipService2.UpdateFriendRequestStatusAsync(sendRequestResponse.friendship_id, "accepted");
+                Assert.IsNotNull(acceptRequestResponse);
+                Assert.AreEqual("you have successfully accepted this friend request", acceptRequestResponse.message);
+
+                // User1 unfriends User2
+                var unfriendResponse = await _friendshipService1.UnfriendPlayerAsync(_user2.id);
+                Assert.IsNotNull(unfriendResponse);
+                Assert.AreEqual("user has been unfriended successfully", unfriendResponse.message);
+
+                // Verify friendship data for both users
+                var user1FriendshipData = await _friendshipService1.GetFriendshipDataAsync();
+                var user2FriendshipData = await _friendshipService2.GetFriendshipDataAsync();
+
+                Assert.IsTrue(user1FriendshipData.friends.Length == 0);
+                Assert.IsTrue(user2FriendshipData.friends.Length == 0);
+            }
+            catch (ApiException ex)
+            {
+                Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
+                Debug.LogError($"Response Body: {ex.ResponseBody}");
+                Assert.Fail($"API Exception: {ex.Message}");
+            }
+            finally
+            {
+                await TearDownAsync();
+            }
+        }
     }
 }
