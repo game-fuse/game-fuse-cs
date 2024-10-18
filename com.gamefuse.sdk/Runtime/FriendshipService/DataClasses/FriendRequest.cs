@@ -1,11 +1,9 @@
-using System;
-
 namespace GameFuseCSharp
 {
-    [Serializable]
+    [System.Serializable]
     public class FriendRequest : UserInfo
     {
-        public int friendshipId;
-        public string requestedAt;
+        public int friendship_id;
+        public string requested_at;
     }
 }

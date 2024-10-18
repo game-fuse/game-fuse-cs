@@ -120,7 +120,7 @@ namespace GameFuseCSharp.Tests.Runtime
             var sendRequestResponse = await _friendshipService.SendFriendRequestAsync(_user2.username);
             Assert.IsNotNull(sendRequestResponse, "SendFriendRequestAsync returned null.");
             Assert.AreEqual("Friend request sent to friend_username", sendRequestResponse.message, "Unexpected response message.");
-            Assert.Greater(sendRequestResponse.friendshipId, 0, "Invalid friendshipId returned.");
+            Assert.Greater(sendRequestResponse.friendship_id, 0, "Invalid friendshipId returned.");
 
             await TearDownAsync();
         }

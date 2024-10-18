@@ -1,12 +1,10 @@
-using System;
-
 namespace GameFuseCSharp
 {
-    [Serializable]
+    [System.Serializable]
     public class FriendshipDataResponse
     {
         public UserInfo[] friends;
-        public FriendRequest[] outgoingFriendRequests;
-        public FriendRequest[] incomingFriendRequests;
+        public FriendRequest[] outgoing_friend_requests;
+        public FriendRequest[] incoming_friend_requests;
     }
 }
