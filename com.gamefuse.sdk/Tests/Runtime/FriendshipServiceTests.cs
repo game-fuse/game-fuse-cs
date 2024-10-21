@@ -242,17 +242,23 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.IsNotNull(acceptRequestResponse);
                 Assert.AreEqual("you have successfully accepted this friend request", acceptRequestResponse.message);
 
-                // User1 unfriends User2
-                var unfriendResponse = await _friendshipService1.UnfriendPlayerAsync(_user2.id);
+                // User1 fetches their friendship data to get User2's ID
+                var user1FriendshipData = await _friendshipService1.GetFriendshipDataAsync();
+                Assert.IsTrue(user1FriendshipData.friends.Length > 0, "User1 should have User2 as a friend");
+                var user2AsAFriend = user1FriendshipData.friends[0];
+                Assert.AreEqual(_user2.username, user2AsAFriend.username, "The friend should be User2");
+
+                // User1 unfriends User2 using the fetched friend ID
+                var unfriendResponse = await _friendshipService1.UnfriendPlayerAsync(user2AsAFriend.id);
                 Assert.IsNotNull(unfriendResponse);
                 Assert.AreEqual("user has been unfriended successfully", unfriendResponse.message);
 
-                // Verify friendship data for both users
-                var user1FriendshipData = await _friendshipService1.GetFriendshipDataAsync();
+                // Verify friendship data for both users after unfriending
+                user1FriendshipData = await _friendshipService1.GetFriendshipDataAsync();
                 var user2FriendshipData = await _friendshipService2.GetFriendshipDataAsync();
 
-                Assert.IsTrue(user1FriendshipData.friends.Length == 0);
-                Assert.IsTrue(user2FriendshipData.friends.Length == 0);
+                Assert.IsTrue(user1FriendshipData.friends.Length == 0, "User1 should have no friends after unfriending");
+                Assert.IsTrue(user2FriendshipData.friends.Length == 0, "User2 should have no friends after being unfriended");
             }
             catch (ApiException ex)
             {
