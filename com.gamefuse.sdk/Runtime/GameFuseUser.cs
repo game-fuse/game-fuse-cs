@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using Boomlagoon.JSON;
 using UnityEngine.Networking;
+using System.Threading.Tasks;
 
 namespace GameFuseCSharp
 {
@@ -892,7 +893,7 @@ namespace GameFuseCSharp
             catch(ApiException ex)
             {
                 if (callback != null)
-                    callback("Friend request failed.", true);
+                    callback($"Friend request failed. \n {ex.Message}", true);
                 Debug.LogError(ex.Message);
             }
         }
@@ -910,10 +911,74 @@ namespace GameFuseCSharp
             catch (ApiException ex)
             {
                 if (callback != null)
-                    callback("Get friendship data failed.", true);
+                    callback($"Get friendship data failed. \n {ex.Message}", true);
                 Debug.LogError(ex.Message);
             }
         }
+
+        public async void AcceptFriendRequest(int friendshipId, Action<string, bool> callback = null)
+        {
+            try
+            {
+                FriendshipStatusResponse friendshipStatusResponse = await UpdateFriendRequest(friendshipId, "accepted");
+                if (callback != null)
+                    callback("Friend request accepted", false);
+            }
+            catch (ApiException ex)
+            {
+                if (callback != null)
+                    callback($"Accept friend request failed. \n {ex.Message}", true);
+                Debug.LogError(ex.Message);
+            }
+        }
+
+        public async void DeclineFriendRequest(int friendshipId, Action<string, bool> callback = null)
+        {
+            try
+            {
+                FriendshipStatusResponse friendshipStatusResponse = await UpdateFriendRequest(friendshipId, "declined");
+                if (callback != null)
+                    callback("Friend request declined", false);
+            }
+            catch (ApiException ex)
+            {
+                if (callback != null)
+                    callback($"Decline friend request failed. \n {ex.Message}", true);
+                Debug.LogError(ex.Message);
+            }
+        }
+
+        public async void CancelFriendRequest(int friedshipId, Action<string, bool> callback = null)
+        {
+            try
+            {
+                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
+                await friendshipService.CancelFriendRequestAsync(friedshipId);
+                if (callback != null)
+                    callback("Friend request canceled", false);
+            }
+            catch (ApiException ex)
+            {
+                if (callback != null)
+                    callback($"Cancel friend request failed. \n {ex.Message}", true);
+                Debug.LogError(ex.Message);
+            }
+        }
+
+        private async Task<FriendshipStatusResponse> UpdateFriendRequest(int friendshipId, string status)
+        {
+            try
+            {
+                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
+                return await friendshipService.UpdateFriendRequestStatusAsync(friendshipId, status);
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+        }
+
+
 
         #endregion Friends
 
