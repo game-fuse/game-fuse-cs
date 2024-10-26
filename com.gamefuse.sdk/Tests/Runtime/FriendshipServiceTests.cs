@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
 using System.IO;
-using GameFuseCSharp;
 
 namespace GameFuseCSharp.Tests.Runtime
 {
