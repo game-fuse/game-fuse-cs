@@ -356,30 +356,16 @@ namespace GameFuseCSharp
 
                 Log("GameFuse Sign Up Success: " + email);
                 var data = request.downloadHandler.text;
-                /*
-                {
-                    "id": 7752,
-                    "username": "dave568",
-                    "email": "_appid_725_dave568@dave.com",
-                    "display_email": "dave568@dave.com",
-                    "credits": 0,
-                    "score": 0,
-                    "is_new_user": true
-                }
-​
-                */
-
-
                 JSONObject json = JSONObject.Parse(data);
                 GameFuseUser.CurrentUser.SetSignedInInternal();
                 GameFuseUser.CurrentUser.SetScoreInternal(Convert.ToInt32(json.GetNumber("score")));
                 GameFuseUser.CurrentUser.SetCreditsInternal(Convert.ToInt32(json.GetNumber("credits")));
                 GameFuseUser.CurrentUser.SetUsernameInternal(json.GetString("username"));
-                GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse(json.GetString("last_login"))); //Not in V3
-                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal(Convert.ToInt32(json.GetNumber("number_of_logins"))); //Not in V3
-                GameFuseUser.CurrentUser.SetAuthenticationTokenInternal(json.GetString("authentication_token")); //Not in V3
+                GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse(json.GetString("last_login")));
+                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal(Convert.ToInt32(json.GetNumber("number_of_logins"))); 
+                GameFuseUser.CurrentUser.SetAuthenticationTokenInternal(json.GetString("authentication_token"));
                 GameFuseUser.CurrentUser.SetIDInternal(Convert.ToInt32(json.GetNumber("id")));
-                GameFuseUser.CurrentUser.DownloadAttributes(true, callback); // Chain next request - download users attributes  //Doesn't work in V3 because authentication-token is not returned
+                GameFuseUser.CurrentUser.DownloadAttributes(true, callback); // Chain next request - download users attributes  
                 GameFuseUtilities.HandleCallback(request, "User Signed Up Successfully", callback);
 
             }
