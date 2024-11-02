@@ -98,14 +98,14 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 Debug.Log($"SignUp Request: GameId: {request.game_id}, GameToken: {request.game_token}");
 
-                SignUpResponse response = await _userService.SignUpAsync(request);
+                SignInResponse response = await _userService.SignUpAsync(request);
 
                 string responseJsonString = JsonUtility.ToJson(response, true);
                 Debug.Log(responseJsonString);
 
                 Assert.IsNotNull(response, "SignUp response is null");
                 Assert.AreEqual(userName, response.username, "Username mismatch");
-                Assert.AreEqual(userEmail, response.display_email, "Email mismatch");
+                Assert.AreEqual(userEmail, response.email, "Email mismatch");
                 Assert.Greater(response.id, 0, "User ID is not greater than 0");
 
                 Debug.Log($"User successfully signed up. User ID: {response.id}");

@@ -112,7 +112,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 SignInResponse signInResponse = await _sessionsService.SignInAsync(signInRequest);
 
                 Assert.IsNotNull(signInResponse, "SignIn response is null");
-                Assert.AreEqual(_testUserEmail, signInResponse.display_email, "Email mismatch");
+                Assert.AreEqual(_testUserEmail, signInResponse.email, "Email mismatch");
                 Assert.IsNotEmpty(signInResponse.authentication_token, "Authentication token is empty");
                 Assert.Greater(signInResponse.id, 0, "User ID is not greater than 0");
 

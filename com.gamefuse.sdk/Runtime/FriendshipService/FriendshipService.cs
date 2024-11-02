@@ -54,13 +54,33 @@ namespace GameFuseCSharp
             }
         }
 
-        public async Task<FriendshipDataResponse> GetFriendshipDataAsync()
+        public async Task<FriendsResponse> GetFriendsAsync()
         {
-            string url = $"{_baseUrl}/friendships";
+            string url = $"{_baseUrl}/friends";
 
-            using (UnityWebRequest webRequest = CreateRequest(url,HttpVerbs.GET))
+            using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.GET))
             {
-                return await SendRequestAsync<FriendshipDataResponse>(webRequest);
+                return await SendRequestAsync<FriendsResponse>(webRequest);
+            }
+        }
+
+        public async Task<FriendRequestsResponse> GetIncomingFriendRequestsAsync()
+        {
+            string url = $"{_baseUrl}/incoming_friend_requests";
+
+            using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.GET))
+            {
+                return await SendRequestAsync<FriendRequestsResponse>(webRequest);
+            }
+        }
+
+        public async Task<FriendRequestsResponse> GetOutgoingFriendRequestsAsync()
+        {
+            string url = $"{_baseUrl}/outgoing_friend_requests";
+
+            using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.GET))
+            {
+                return await SendRequestAsync<FriendRequestsResponse>(webRequest);
             }
         }
     }

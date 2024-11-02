@@ -127,13 +127,13 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.IsTrue(sendRequestResponse.friendship_id > 0);
 
                 // User2 accepts the friend request
-                var acceptRequestResponse = await _friendshipService2.UpdateFriendRequestStatusAsync(sendRequestResponse.friendship_id, "accepted");
+                var acceptRequestResponse = await _friendshipService2.UpdateFriendRequestStatusAsync(sendRequestResponse.friendship_id, FriendRequestStatus.accepted.ToString());
                 Assert.IsNotNull(acceptRequestResponse);
                 Assert.AreEqual("you have successfully accepted this friend request", acceptRequestResponse.message);
 
                 // Verify friendship data for both users
-                var user1FriendshipData = await _friendshipService1.GetFriendshipDataAsync();
-                var user2FriendshipData = await _friendshipService2.GetFriendshipDataAsync();
+                var user1FriendshipData = await _friendshipService1.GetFriendsAsync();
+                var user2FriendshipData = await _friendshipService2.GetFriendsAsync();
 
                 Assert.IsTrue(user1FriendshipData.friends.Length > 0);
                 Assert.IsTrue(user2FriendshipData.friends.Length > 0);
@@ -165,13 +165,13 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.IsTrue(sendRequestResponse.friendship_id > 0);
 
                 // User2 declines the friend request
-                var declineRequestResponse = await _friendshipService2.UpdateFriendRequestStatusAsync(sendRequestResponse.friendship_id, "declined");
+                var declineRequestResponse = await _friendshipService2.UpdateFriendRequestStatusAsync(sendRequestResponse.friendship_id, FriendRequestStatus.declined.ToString());
                 Assert.IsNotNull(declineRequestResponse);
                 Assert.AreEqual("you have successfully declined this friend request", declineRequestResponse.message);
 
                 // Verify friendship data for both users
-                var user1FriendshipData = await _friendshipService1.GetFriendshipDataAsync();
-                var user2FriendshipData = await _friendshipService2.GetFriendshipDataAsync();
+                var user1FriendshipData = await _friendshipService1.GetFriendsAsync();
+                var user2FriendshipData = await _friendshipService2.GetFriendsAsync();
 
                 Assert.IsTrue(user1FriendshipData.friends.Length == 0);
                 Assert.IsTrue(user2FriendshipData.friends.Length == 0);
@@ -206,11 +206,18 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.AreEqual("friend request destroyed successfully", cancelRequestResponse.message);
 
                 // Verify friendship data for both users
-                var user1FriendshipData = await _friendshipService1.GetFriendshipDataAsync();
-                var user2FriendshipData = await _friendshipService2.GetFriendshipDataAsync();
-
-                Assert.IsTrue(user1FriendshipData.outgoing_friend_requests.Length == 0);
-                Assert.IsTrue(user2FriendshipData.incoming_friend_requests.Length == 0);
+                var user1FriendshipData = await _friendshipService1.GetOutgoingFriendRequestsAsync();
+                var user2FriendshipData = await _friendshipService2.GetIncomingFriendRequestsAsync();
+                if(user1FriendshipData != null)
+                {
+                    Debug.Log("user 1 not null");
+                    if(user1FriendshipData.friend_requests == null)
+                    {
+                        Debug.Log("frien requests array is null");
+                    }
+                }
+                Assert.IsTrue(user1FriendshipData.friend_requests.Length == 0);
+                Assert.IsTrue(user2FriendshipData.friend_requests.Length == 0);
             }
             catch (ApiException ex)
             {
@@ -237,12 +244,12 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.IsTrue(sendRequestResponse.friendship_id > 0);
 
                 // User2 accepts the friend request
-                var acceptRequestResponse = await _friendshipService2.UpdateFriendRequestStatusAsync(sendRequestResponse.friendship_id, "accepted");
+                var acceptRequestResponse = await _friendshipService2.UpdateFriendRequestStatusAsync(sendRequestResponse.friendship_id, FriendRequestStatus.accepted.ToString());
                 Assert.IsNotNull(acceptRequestResponse);
                 Assert.AreEqual("you have successfully accepted this friend request", acceptRequestResponse.message);
 
                 // User1 fetches their friendship data to get User2's ID
-                var user1FriendshipData = await _friendshipService1.GetFriendshipDataAsync();
+                var user1FriendshipData = await _friendshipService1.GetFriendsAsync();
                 Assert.IsTrue(user1FriendshipData.friends.Length > 0, "User1 should have User2 as a friend");
                 var user2AsAFriend = user1FriendshipData.friends[0];
                 Assert.AreEqual(_user2.username, user2AsAFriend.username, "The friend should be User2");
@@ -253,8 +260,8 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.AreEqual("user has been unfriended successfully", unfriendResponse.message);
 
                 // Verify friendship data for both users after unfriending
-                user1FriendshipData = await _friendshipService1.GetFriendshipDataAsync();
-                var user2FriendshipData = await _friendshipService2.GetFriendshipDataAsync();
+                user1FriendshipData = await _friendshipService1.GetFriendsAsync();
+                var user2FriendshipData = await _friendshipService2.GetFriendsAsync();
 
                 Assert.IsTrue(user1FriendshipData.friends.Length == 0, "User1 should have no friends after unfriending");
                 Assert.IsTrue(user2FriendshipData.friends.Length == 0, "User2 should have no friends after being unfriended");

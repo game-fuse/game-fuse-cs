@@ -16,7 +16,7 @@ namespace GameFuseCSharp
             webRequest.SetRequestHeader("Content-Type", "application/json");
         }
 
-        public async Task<SignUpResponse> SignUpAsync(SignUpRequest request)
+        public async Task<SignInResponse> SignUpAsync(SignUpRequest request)
         {
             string url = $"{_baseUrl}/users";
             string jsonBody = JsonUtility.ToJson(request);
@@ -24,7 +24,7 @@ namespace GameFuseCSharp
             {
                 try
                 {
-                    return await SendRequestAsync<SignUpResponse>(webRequest);
+                    return await SendRequestAsync<SignInResponse>(webRequest);
                 }
                 catch (ApiException ex)
                 {

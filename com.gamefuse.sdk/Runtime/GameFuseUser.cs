@@ -24,9 +24,6 @@ namespace GameFuseCSharp
         private Dictionary<string, string> attributes = new Dictionary<string, string>();
         private Dictionary<string, string> dirtyAttributes = new Dictionary<string, string>();
         private List<GameFuseStoreItem> purchasedStoreItems = new List<GameFuseStoreItem>();
-        private FriendshipDataResponse _friendshipData;
-        
-
         #endregion
 
 
@@ -96,33 +93,6 @@ namespace GameFuseCSharp
         public int GetCredits()
         {
             return credits;
-        }
-
-        public UserInfo[] GetFriends()
-        {
-            if (_friendshipData != null)
-            {
-                return _friendshipData.friends;
-            }
-            return null;
-        }
-
-        public FriendRequest[] GetIncomingFriendRequests()
-        {
-            if(_friendshipData != null)
-            {
-                return _friendshipData.incoming_friend_requests;
-            }
-            return null;
-        }
-
-        public FriendRequest[] GetOutgoingFriendRequests()
-        {
-            if (_friendshipData != null)
-            {
-                return _friendshipData.outgoing_friend_requests;
-            }
-            return null;
         }
 
         internal int GetID()
@@ -881,96 +851,25 @@ namespace GameFuseCSharp
 
         #region Friends
 
-        public async void SendFriendRequest(string otherUserName, Action<string, bool> callback = null)
+        public async Task<FriendRequestResponse> SendFriendRequestAsync(string otherUserName)
         {
             try
             {
                 IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                FriendRequestResponse friendRequestResponse = await friendshipService.SendFriendRequestAsync(otherUserName);
-                if(callback != null)
-                    callback("Friend request sent.", false);
+                return await friendshipService.SendFriendRequestAsync(otherUserName);
+                
             }
-            catch(ApiException ex)
+            catch (ApiException)
             {
-                if (callback != null)
-                    callback($"Friend request failed. \n {ex.Message}", true);
-                Debug.LogError(ex.Message);
+                throw;
             }
         }
-
-        public async void GetFriendshipData(Action<string, bool> callback = null)
+        public async Task<FriendshipStatusResponse> CancelFriendRequestAsync(int friedshipId)
         {
             try
             {
                 IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                _friendshipData = await friendshipService.GetFriendshipDataAsync();
-                if (callback != null)
-                    callback("Retrieved friendship data.", false);
-
-            }
-            catch (ApiException ex)
-            {
-                if (callback != null)
-                    callback($"Get friendship data failed. \n {ex.Message}", true);
-                Debug.LogError(ex.Message);
-            }
-        }
-
-        public async void AcceptFriendRequest(int friendshipId, Action<string, bool> callback = null)
-        {
-            try
-            {
-                FriendshipStatusResponse friendshipStatusResponse = await UpdateFriendRequest(friendshipId, "accepted");
-                if (callback != null)
-                    callback("Friend request accepted", false);
-            }
-            catch (ApiException ex)
-            {
-                if (callback != null)
-                    callback($"Accept friend request failed. \n {ex.Message}", true);
-                Debug.LogError(ex.Message);
-            }
-        }
-
-        public async void DeclineFriendRequest(int friendshipId, Action<string, bool> callback = null)
-        {
-            try
-            {
-                FriendshipStatusResponse friendshipStatusResponse = await UpdateFriendRequest(friendshipId, "declined");
-                if (callback != null)
-                    callback("Friend request declined", false);
-            }
-            catch (ApiException ex)
-            {
-                if (callback != null)
-                    callback($"Decline friend request failed. \n {ex.Message}", true);
-                Debug.LogError(ex.Message);
-            }
-        }
-
-        public async void CancelFriendRequest(int friedshipId, Action<string, bool> callback = null)
-        {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                await friendshipService.CancelFriendRequestAsync(friedshipId);
-                if (callback != null)
-                    callback("Friend request canceled", false);
-            }
-            catch (ApiException ex)
-            {
-                if (callback != null)
-                    callback($"Cancel friend request failed. \n {ex.Message}", true);
-                Debug.LogError(ex.Message);
-            }
-        }
-
-        private async Task<FriendshipStatusResponse> UpdateFriendRequest(int friendshipId, string status)
-        {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                return await friendshipService.UpdateFriendRequestStatusAsync(friendshipId, status);
+                return await friendshipService.CancelFriendRequestAsync(friedshipId);
             }
             catch (ApiException)
             {
@@ -978,10 +877,75 @@ namespace GameFuseCSharp
             }
         }
 
+        public async Task<FriendshipStatusResponse> AcceptFriendRequestAsync(int friendshipId)
+        {
+            try
+            {
+                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
+                return await friendshipService.UpdateFriendRequestStatusAsync(friendshipId, FriendRequestStatus.accepted.ToString());
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+        }
 
+        public async Task<FriendshipStatusResponse> DeclineFriendRequestAsync(int friendshipId)
+        {
+            try
+            {
+                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
+                return await friendshipService.UpdateFriendRequestStatusAsync(friendshipId, FriendRequestStatus.declined.ToString());
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+        }
+
+        public async Task<UserInfo[]> GetFriendsAsync()
+        {
+            try
+            {
+                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
+                FriendsResponse friendsResponse = await friendshipService.GetFriendsAsync();
+                return friendsResponse.friends;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<FriendRequest[]> GetIncomingFriendRequestsAsync()
+        {
+            try
+            {
+                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
+                FriendRequestsResponse friendRequestsResponse = await friendshipService.GetIncomingFriendRequestsAsync();
+                return friendRequestsResponse.friend_requests;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<FriendRequest[]> GetOutgoingFriendRequests()
+        {
+            try
+            {
+                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
+                FriendRequestsResponse friendRequestsResponse = await friendshipService.GetOutgoingFriendRequestsAsync();
+                return friendRequestsResponse.friend_requests;
+            }
+            catch
+            {
+                throw;
+            }
+        }
 
         #endregion Friends
-
     }
 
 

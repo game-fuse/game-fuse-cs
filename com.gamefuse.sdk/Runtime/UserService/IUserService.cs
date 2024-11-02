@@ -3,6 +3,6 @@ namespace GameFuseCSharp
 {
     public interface IUserService
     {
-        Task<SignUpResponse> SignUpAsync(SignUpRequest request);
+        Task<SignInResponse> SignUpAsync(SignUpRequest request);
     }
 }
