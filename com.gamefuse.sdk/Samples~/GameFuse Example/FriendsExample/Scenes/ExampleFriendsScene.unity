@@ -3357,9 +3357,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00426e5b5c043b6418838c3eac4624c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameTitle: GAMEFUSEDEMO
-  _gameId: 725
-  _gameToken: 3cedd5c2-e810-4eeb-8d19-0d4efa6fbb0a
+  _gameTitle: 
+  _gameId: 
+  _gameToken: 
   _gameTitleInput: {fileID: 1261288704}
   _gameIdInput: {fileID: 1925325575}
   _gameTokenInput: {fileID: 413075338}
