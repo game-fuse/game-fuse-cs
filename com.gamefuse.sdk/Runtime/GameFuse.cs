@@ -82,7 +82,7 @@ namespace GameFuseCSharp
 
 
         #region instance setters
-        internal static void SetVerboseLogging(bool _verboseLogging)
+        public static void SetVerboseLogging(bool _verboseLogging)
         {
             Instance.verboseLogging = _verboseLogging;
         }
