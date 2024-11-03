@@ -922,8 +922,8 @@ namespace GameFuseCSharp
             try
             {
                 IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                FriendRequestsResponse friendRequestsResponse = await friendshipService.GetIncomingFriendRequestsAsync();
-                return friendRequestsResponse.friend_requests;
+                IncomingFriendRequestsResponse friendRequestsResponse = await friendshipService.GetIncomingFriendRequestsAsync();
+                return friendRequestsResponse.incoming_friend_requests;
             }
             catch
             {
@@ -936,10 +936,23 @@ namespace GameFuseCSharp
             try
             {
                 IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                FriendRequestsResponse friendRequestsResponse = await friendshipService.GetOutgoingFriendRequestsAsync();
-                return friendRequestsResponse.friend_requests;
+                OutgoingFriendRequestsResponse friendRequestsResponse = await friendshipService.GetOutgoingFriendRequestsAsync();
+                return friendRequestsResponse.outgoing_friend_requests;
             }
             catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<FriendshipStatusResponse> UnFriend(int userId)
+        {
+            try
+            {
+                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
+                return await friendshipService.UnfriendPlayerAsync(userId);
+            }
+            catch (ApiException)
             {
                 throw;
             }

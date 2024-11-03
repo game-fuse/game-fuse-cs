@@ -206,18 +206,11 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.AreEqual("friend request destroyed successfully", cancelRequestResponse.message);
 
                 // Verify friendship data for both users
-                var user1FriendshipData = await _friendshipService1.GetOutgoingFriendRequestsAsync();
-                var user2FriendshipData = await _friendshipService2.GetIncomingFriendRequestsAsync();
-                if(user1FriendshipData != null)
-                {
-                    Debug.Log("user 1 not null");
-                    if(user1FriendshipData.friend_requests == null)
-                    {
-                        Debug.Log("frien requests array is null");
-                    }
-                }
-                Assert.IsTrue(user1FriendshipData.friend_requests.Length == 0);
-                Assert.IsTrue(user2FriendshipData.friend_requests.Length == 0);
+                var outgoingFriendRequestsResponse = await _friendshipService1.GetOutgoingFriendRequestsAsync();
+                var incomingFriendRequestsResponse = await _friendshipService2.GetIncomingFriendRequestsAsync();
+               
+                Assert.IsTrue(outgoingFriendRequestsResponse.outgoing_friend_requests.Length == 0);
+                Assert.IsTrue(incomingFriendRequestsResponse.incoming_friend_requests.Length == 0);
             }
             catch (ApiException ex)
             {
