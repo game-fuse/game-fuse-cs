@@ -23,7 +23,7 @@ public class GameFuseExample : MonoBehaviour {
 
         if (string.IsNullOrEmpty(gameToken) || string.IsNullOrEmpty(gameID))
         {
-            Debug.LogWarning("Add ID and Token: Please add your token and ID. If you do not have one, you can create a free account from cloudlogin.dev");
+            Debug.LogWarning("Add ID and Token: Please add your token and ID. If you do not have one, you can create a free account from gamefuse.co");
             throw new System.Exception("Token and ID Invalid");
         }
         else
