@@ -127,7 +127,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.IsTrue(sendRequestResponse.friendship_id > 0);
 
                 // User2 accepts the friend request
-                var acceptRequestResponse = await _friendshipService2.UpdateFriendRequestStatusAsync(sendRequestResponse.friendship_id, FriendRequestStatus.accepted.ToString());
+                var acceptRequestResponse = await _friendshipService2.AcceptFriendRequestAsync(sendRequestResponse.friendship_id);
                 Assert.IsNotNull(acceptRequestResponse);
                 Assert.AreEqual("you have successfully accepted this friend request", acceptRequestResponse.message);
 
@@ -165,7 +165,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.IsTrue(sendRequestResponse.friendship_id > 0);
 
                 // User2 declines the friend request
-                var declineRequestResponse = await _friendshipService2.UpdateFriendRequestStatusAsync(sendRequestResponse.friendship_id, FriendRequestStatus.declined.ToString());
+                var declineRequestResponse = await _friendshipService2.DeclineFriendRequestAsync(sendRequestResponse.friendship_id);
                 Assert.IsNotNull(declineRequestResponse);
                 Assert.AreEqual("you have successfully declined this friend request", declineRequestResponse.message);
 
@@ -237,7 +237,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.IsTrue(sendRequestResponse.friendship_id > 0);
 
                 // User2 accepts the friend request
-                var acceptRequestResponse = await _friendshipService2.UpdateFriendRequestStatusAsync(sendRequestResponse.friendship_id, FriendRequestStatus.accepted.ToString());
+                var acceptRequestResponse = await _friendshipService2.AcceptFriendRequestAsync(sendRequestResponse.friendship_id);
                 Assert.IsNotNull(acceptRequestResponse);
                 Assert.AreEqual("you have successfully accepted this friend request", acceptRequestResponse.message);
 

@@ -23,7 +23,31 @@ namespace GameFuseCSharp
             }
         }
 
-        public async Task<FriendshipStatusResponse> UpdateFriendRequestStatusAsync(int friendshipId, string status)
+        public async Task<FriendshipStatusResponse> AcceptFriendRequestAsync(int friendshipId)
+        {
+            try
+            {
+                return await UpdateFriendRequestStatusAsync(friendshipId, FriendRequestStatus.accepted.ToString());
+            }
+            catch(ApiException)
+            {
+                throw;
+            }
+        }
+
+        public async Task<FriendshipStatusResponse> DeclineFriendRequestAsync(int friendshipId)
+        {
+            try
+            {
+                return await UpdateFriendRequestStatusAsync(friendshipId, FriendRequestStatus.declined.ToString());
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+        }
+
+        private async Task<FriendshipStatusResponse> UpdateFriendRequestStatusAsync(int friendshipId, string status)
         {
             string url = $"{_baseUrl}/friendships/{friendshipId}";
             string jsonBody = JsonUtility.ToJson(new FriendshipStatusData { status = status });

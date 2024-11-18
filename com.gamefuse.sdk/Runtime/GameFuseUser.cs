@@ -882,7 +882,7 @@ namespace GameFuseCSharp
             try
             {
                 IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                return await friendshipService.UpdateFriendRequestStatusAsync(friendshipId, FriendRequestStatus.accepted.ToString());
+                return await friendshipService.AcceptFriendRequestAsync(friendshipId);
             }
             catch (ApiException)
             {
@@ -895,7 +895,7 @@ namespace GameFuseCSharp
             try
             {
                 IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                return await friendshipService.UpdateFriendRequestStatusAsync(friendshipId, FriendRequestStatus.declined.ToString());
+                return await friendshipService.DeclineFriendRequestAsync(friendshipId);
             }
             catch (ApiException)
             {
