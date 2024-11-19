@@ -27,9 +27,9 @@ public class SendFriendRequestUI : MonoBehaviour
             _resultInput.text = $"friend request {friendRequestResponse.friendship_id}, sent to {_userNameInput.text}";
 
         }
-        catch
+        catch (ApiException ex)
         {
-            //UI Does something to indicate the exception
+            Debug.Log($"SendFriendRequestUI GameFuse API Exception:\n Status Code: {ex.StatusCode}, \n Message: {ex.Message}");
         }
     }
 }
