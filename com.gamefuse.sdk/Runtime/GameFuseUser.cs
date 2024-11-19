@@ -945,7 +945,7 @@ namespace GameFuseCSharp
             }
         }
 
-        public async Task<FriendshipStatusResponse> UnFriend(int userId)
+        public async Task<FriendshipStatusResponse> UnFriendAsync(int userId)
         {
             try
             {

@@ -30,7 +30,7 @@ public class FriendUI : MonoBehaviour
     {
         try
         {
-            FriendshipStatusResponse friendshipStatusResponse = await GameFuseUser.CurrentUser.UnFriend(_userInfo.id);
+            FriendshipStatusResponse friendshipStatusResponse = await GameFuseUser.CurrentUser.UnFriendAsync(_userInfo.id);
             UpdateUIStatus("Removed");
         }
         catch (ApiException ex)
