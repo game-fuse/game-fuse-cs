@@ -1,0 +1,80 @@
+using System;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using UnityEngine;
+using System.IO;
+
+namespace GameFuseCSharp.Tests.Runtime
+{
+    [TestFixture]
+    public class SystemAdminTestSuiteServiceTests
+    {
+        private ISystemAdminTestSuiteService _service;
+        private string _adminToken;
+        private string _adminName;
+
+        [Serializable]
+        private class TestConfig
+        {
+            public string adminToken;
+            public string adminName;
+        }
+
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
+        {
+            // Read configuration from JSON file
+            string configPath = Path.Combine(Application.dataPath, "TestConfiguration", "testConfig.json");
+            if (File.Exists(configPath))
+            {
+                string json = File.ReadAllText(configPath);
+                TestConfig config = JsonUtility.FromJson<TestConfig>(json);
+                _adminToken = config.adminToken;
+                _adminName = config.adminName;
+            }
+            else
+            {
+                Debug.LogWarning($"Test configuration file not found at {configPath}. Using default values.");
+                _adminToken = "default_token";
+                _adminName = "default_name";
+            }
+        }
+
+        [SetUp]
+        public void Setup()
+        {
+            // Use the mock service by default
+            //_service = new MockSystemAdminTestSuiteService();
+
+            // To use the real service, comment out the line above and uncomment the line below
+            _service = new SystemAdminTestSuiteService("https://gamefuse.co/api/v3", _adminToken, _adminName);
+
+            
+        }
+
+        [Test]
+        public async Task CreateGameAsync_ReturnsValidResponse()
+        {
+            var response = await _service.CreateGameAsync();
+            Assert.IsNotNull(response);
+            // Clean up
+            var cleanupResponse = await _service.CleanUpTestAsync(response.id);
+            Assert.AreEqual("everything should have been destroyed!", cleanupResponse.message);            
+        }
+
+        [Test]
+        public async Task CreateUserAsync_ReturnsValidResponse()
+        {
+            CreateGameResponse gameResponse = await _service.CreateGameAsync();
+            string userName = $"dave{UnityEngine.Random.Range(1, 1001)}";
+            string userEmail = $"dave{UnityEngine.Random.Range(1, 1001)}@email.com";
+            CreateUserResponse userResponse = await _service.CreateUserAsync(gameResponse.id, userName, userEmail);
+            Assert.NotNull(userResponse);
+            Assert.AreEqual(userEmail, userResponse.display_email);
+            //Clean up
+            CleanUpResponse cleanupResponse = await _service.CleanUpTestAsync(gameResponse.id);
+            Assert.AreEqual("everything should have been destroyed!", cleanupResponse.message);
+        }
+
+    }
+}

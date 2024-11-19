@@ -6,14 +6,14 @@ using UnityEngine;
 
 namespace GameFuseCSharp
 {
-    /// <summary>Class <c>GameFuseStoreItem</c> models a store item added 
+    /// <summary>
+    /// Class <c>GameFuseStoreItem</c> models a store item added 
     /// through the GameFuse web portal
     /// they can be retrieved and 'purchased' by GameFuseUsers through
-    /// the API SDK, but not created.</summary>
-    ///
-    public class GameFuseStoreItem : MonoBehaviour
+    /// the API SDK, but not created.
+    /// </summary>
+    public class GameFuseStoreItem
     {
-
         #region instance vars
         private string name;
         private string category;
@@ -24,31 +24,12 @@ namespace GameFuseCSharp
         #endregion
 
         #region instance getters
-        public string GetName()
-        {
-            return name;
-        }
-        public string GetCategory()
-        {
-            return category;
-        }
-        public string GetDescription()
-        {
-            return description;
-        }
-        public int GetCost()
-        {
-            return cost;
-        }
-        public int GetId()
-        {
-            return id;
-        }
-        public string GetIconUrl()
-        {
-            return icon_url;
-        }
-
+        public string GetName() => name;
+        public string GetCategory() => category;
+        public string GetDescription() => description;
+        public int GetCost() => cost;
+        public int GetId() => id;
+        public string GetIconUrl() => icon_url;
         #endregion
 
         #region constructor
@@ -62,11 +43,7 @@ namespace GameFuseCSharp
             this.id = id;
             this.icon_url = icon_url;
         }
-
         #endregion
     }
-
-
-
 }
 

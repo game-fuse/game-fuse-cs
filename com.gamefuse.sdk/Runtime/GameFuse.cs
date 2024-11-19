@@ -46,8 +46,8 @@ namespace GameFuseCSharp
         #endregion
 
         #region globals
-        private static string baseURL = "https://gamefuse.co/api/v2";
-        // private static string baseURL = "http://localhost/api/v2";
+        private static string baseURL = "https://gamefuse.co/api/v3";
+        //private static string baseURL = "http://localhost/api/v2";
 
         public static string GetBaseURL()
         {
@@ -82,7 +82,7 @@ namespace GameFuseCSharp
 
 
         #region instance setters
-        internal static void SetVerboseLogging(bool _verboseLogging)
+        public static void SetVerboseLogging(bool _verboseLogging)
         {
             Instance.verboseLogging = _verboseLogging;
         }
@@ -362,10 +362,11 @@ namespace GameFuseCSharp
                 GameFuseUser.CurrentUser.SetCreditsInternal(Convert.ToInt32(json.GetNumber("credits")));
                 GameFuseUser.CurrentUser.SetUsernameInternal(json.GetString("username"));
                 GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse(json.GetString("last_login")));
-                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal(Convert.ToInt32(json.GetNumber("number_of_logins")));
+                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal(Convert.ToInt32(json.GetNumber("number_of_logins"))); 
                 GameFuseUser.CurrentUser.SetAuthenticationTokenInternal(json.GetString("authentication_token"));
                 GameFuseUser.CurrentUser.SetIDInternal(Convert.ToInt32(json.GetNumber("id")));
-                GameFuseUser.CurrentUser.DownloadAttributes(true, callback); // Chain next request - download users attributes
+                GameFuseUser.CurrentUser.DownloadAttributes(true, callback); // Chain next request - download users attributes  
+                GameFuseUtilities.HandleCallback(request, "User Signed Up Successfully", callback);
 
             }
             else

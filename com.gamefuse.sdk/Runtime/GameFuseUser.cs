@@ -5,10 +5,11 @@ using System.Text;
 using UnityEngine;
 using Boomlagoon.JSON;
 using UnityEngine.Networking;
+using System.Threading.Tasks;
 
 namespace GameFuseCSharp
 {
-    public class GameFuseUser : MonoBehaviour
+    public partial class GameFuseUser : MonoBehaviour
     {
 
         #region instance vars
@@ -23,7 +24,6 @@ namespace GameFuseCSharp
         private Dictionary<string, string> attributes = new Dictionary<string, string>();
         private Dictionary<string, string> dirtyAttributes = new Dictionary<string, string>();
         private List<GameFuseStoreItem> purchasedStoreItems = new List<GameFuseStoreItem>();
-
         #endregion
 
 
@@ -94,10 +94,12 @@ namespace GameFuseCSharp
         {
             return credits;
         }
+
         internal int GetID()
         {
             return id;
         }
+
         #endregion
 
 
@@ -301,7 +303,7 @@ namespace GameFuseCSharp
             var parameters = "?authentication_token=" + GetAuthenticationToken();
 
 
-            var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + this.id + "/game_user_attributes"+ parameters);
+            var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + this.id + "/game_user_attributes" + parameters);
             request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
@@ -320,14 +322,15 @@ namespace GameFuseCSharp
                     attributes.Add(attribute.Obj.GetString("key"), attribute.Obj.GetString("value"));
                 }
                 DownloadStoreItems(chainedFromLogin, callback);
-            } else 
+            }
+            else
                 GameFuseUtilities.HandleCallback(request, chainedFromLogin ? "Users has been signed in successfully" : "Users attributes have been downloaded", callback);
             request.Dispose();
 
 
         }
 
-        public Dictionary<string,string> GetAttributes()
+        public Dictionary<string, string> GetAttributes()
         {
             return attributes;
         }
@@ -339,14 +342,16 @@ namespace GameFuseCSharp
 
         public string GetAttributeValue(string key)
         {
-            if (attributes.ContainsKey(key)){
+            if (attributes.ContainsKey(key))
+            {
                 return attributes[key];
             }
             else
                 return "";
         }
 
-        public void SetAttributeLocal(string key, string  val){
+        public void SetAttributeLocal(string key, string val)
+        {
             if (attributes.ContainsKey(key))
             {
                 attributes.Remove(key);
@@ -356,7 +361,7 @@ namespace GameFuseCSharp
                 dirtyAttributes.Remove(key);
             }
             attributes.Add(key, val);
-            dirtyAttributes.Add(key,val);
+            dirtyAttributes.Add(key, val);
         }
 
         public void SyncLocalAttributes(Action<string, bool> callback = null)
@@ -364,18 +369,19 @@ namespace GameFuseCSharp
             SetAttributes(attributes, callback, true);
         }
 
-        public Dictionary<string,string> GetDirtyAttributes(){
+        public Dictionary<string, string> GetDirtyAttributes()
+        {
             return dirtyAttributes;
         }
 
         public void SetAttribute(string key, string value, Action<string, bool> callback = null)
         {
-            StartCoroutine(SetAttributeRoutine(key,value, callback));
+            StartCoroutine(SetAttributeRoutine(key, value, callback));
         }
 
         private IEnumerator SetAttributeRoutine(string key, string value, Action<string, bool> callback = null)
         {
-            GameFuse.Log("GameFuseUser Set Attributes: "+key);
+            GameFuse.Log("GameFuseUser Set Attributes: " + key);
 
             if (GameFuse.GetGameId() == null)
                 throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
@@ -438,7 +444,7 @@ namespace GameFuseCSharp
 
         private IEnumerator SetAttributesRoutine(string jsonData, Dictionary<string, string> newAttributes, Action<string, bool> callback = null, bool isFromSync = false)
         {
-            GameFuse.Log("GameFuseUser Set Attributes: "+jsonData);
+            GameFuse.Log("GameFuseUser Set Attributes: " + jsonData);
 
             if (GameFuse.GetGameId() == null)
                 throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
@@ -446,7 +452,7 @@ namespace GameFuseCSharp
 
             byte[] postData = Encoding.UTF8.GetBytes(jsonData);
             var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/add_game_user_attribute", "POST");
-            request.SetRequestHeader("Content-Type", "application/json"); 
+            request.SetRequestHeader("Content-Type", "application/json");
             request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
             request.uploadHandler = new UploadHandlerRaw(postData);
             request.downloadHandler = new DownloadHandlerBuffer();
@@ -467,15 +473,16 @@ namespace GameFuseCSharp
                         attributes.Remove(new_attribute.Key);
                     }
                     attributes.Add(new_attribute.Key, new_attribute.Value);
-                }                
-                
+                }
+
                 foreach (var attribute in attributes)
                 {
                     print(attribute.Key + "," + attribute.Value);
                 }
 
-                if (isFromSync){
-                    dirtyAttributes = new Dictionary<string, string>(); 
+                if (isFromSync)
+                {
+                    dirtyAttributes = new Dictionary<string, string>();
                 }
             }
 
@@ -501,7 +508,7 @@ namespace GameFuseCSharp
 
         public void RemoveAttribute(string key, Action<string, bool> callback = null)
         {
-            StartCoroutine(RemoveAttributeRoutine(key,callback));
+            StartCoroutine(RemoveAttributeRoutine(key, callback));
         }
 
         private IEnumerator RemoveAttributeRoutine(string key, Action<string, bool> callback = null)
@@ -529,7 +536,7 @@ namespace GameFuseCSharp
                 attributes.Clear();
                 foreach (var attribute in game_user_attributes)
                 {
-                    print("adding: "+attribute.Obj.GetString("key"));
+                    print("adding: " + attribute.Obj.GetString("key"));
                     attributes.Add(attribute.Obj.GetString("key"), attribute.Obj.GetString("value"));
                 }
             }
@@ -667,12 +674,12 @@ namespace GameFuseCSharp
 
         private IEnumerator RemoveStoreItemRoutine(int storeItemID, bool reimburseUser, Action<string, bool> callback = null)
         {
-            GameFuse.Log("GameFuseUser Remove Store Item: "+ storeItemID);
+            GameFuse.Log("GameFuseUser Remove Store Item: " + storeItemID);
 
             if (GameFuse.GetGameId() == null)
                 throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
-            var parameters = "?authentication_token=" + GetAuthenticationToken() + "&store_item_id=" + storeItemID+ "&reimburse=" + reimburseUser.ToString();
+            var parameters = "?authentication_token=" + GetAuthenticationToken() + "&store_item_id=" + storeItemID + "&reimburse=" + reimburseUser.ToString();
             var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/remove_game_user_store_item" + parameters);
             request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
@@ -724,7 +731,7 @@ namespace GameFuseCSharp
 
         private IEnumerator AddLeaderboardEntryRoutine(string leaderboardName, int score, Dictionary<string, string> extraAttributes, Action<string, bool> callback = null)
         {
-            GameFuse.Log("GameFuseUser Adding Leaderboard Entry: " + leaderboardName + ": "+score.ToString());
+            GameFuse.Log("GameFuseUser Adding Leaderboard Entry: " + leaderboardName + ": " + score.ToString());
 
             if (GameFuse.GetGameId() == null)
                 throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
@@ -732,10 +739,10 @@ namespace GameFuseCSharp
             List<string> extraAttributesList = new List<string>();
             foreach (KeyValuePair<string, string> entry in extraAttributes)
             {
-                extraAttributesList.Add("\""+entry.Key.ToString() + "\": " + entry.Value.ToString());
+                extraAttributesList.Add("\"" + entry.Key.ToString() + "\": " + entry.Value.ToString());
             }
-            
-            string extraAttributesJson = "{" + String.Join(", ", extraAttributesList.ToArray())+ "}";
+
+            string extraAttributesJson = "{" + String.Join(", ", extraAttributesList.ToArray()) + "}";
             WWWForm form = new WWWForm();
             form.AddField("authentication_token", GetAuthenticationToken());
             form.AddField("leaderboard_name", leaderboardName);
@@ -749,7 +756,7 @@ namespace GameFuseCSharp
 
             if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                GameFuse.Log("GameFuseUser Add Leaderboard Entry: " + leaderboardName+ ": "+score);
+                GameFuse.Log("GameFuseUser Add Leaderboard Entry: " + leaderboardName + ": " + score);
 
                 var data = request.downloadHandler.text;
             }
@@ -800,12 +807,12 @@ namespace GameFuseCSharp
 
         private IEnumerator GetLeaderboardRoutine(int limit, bool onePerUser, Action<string, bool> callback = null)
         {
-            GameFuse.Log("GameFuseUser Get Leaderboard: " +limit.ToString());
+            GameFuse.Log("GameFuseUser Get Leaderboard: " + limit.ToString());
 
             if (GameFuse.GetGameId() == null)
                 throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
-            var parameters = "?authentication_token=" + GetAuthenticationToken() + "&limit=" + limit.ToString()+ "&one_per_user="+ onePerUser.ToString();
+            var parameters = "?authentication_token=" + GetAuthenticationToken() + "&limit=" + limit.ToString() + "&one_per_user=" + onePerUser.ToString();
             var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/leaderboard_entries" + parameters);
             request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
@@ -841,11 +848,5 @@ namespace GameFuseCSharp
         }
 
         #endregion Leaderboard 
-
-
-
     }
-
-
-
 }
