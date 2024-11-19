@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GameFuseCSharp
 {
-    public class GameFuseUser : MonoBehaviour
+    public partial class GameFuseUser : MonoBehaviour
     {
 
         #region instance vars
@@ -848,119 +848,5 @@ namespace GameFuseCSharp
         }
 
         #endregion Leaderboard 
-
-        #region Friends
-
-        public async Task<FriendRequestResponse> SendFriendRequestAsync(string otherUserName)
-        {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                return await friendshipService.SendFriendRequestAsync(otherUserName);
-                
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
-        }
-        public async Task<FriendshipStatusResponse> CancelFriendRequestAsync(int friedshipId)
-        {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                return await friendshipService.CancelFriendRequestAsync(friedshipId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
-        }
-
-        public async Task<FriendshipStatusResponse> AcceptFriendRequestAsync(int friendshipId)
-        {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                return await friendshipService.AcceptFriendRequestAsync(friendshipId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
-        }
-
-        public async Task<FriendshipStatusResponse> DeclineFriendRequestAsync(int friendshipId)
-        {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                return await friendshipService.DeclineFriendRequestAsync(friendshipId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
-        }
-
-        public async Task<UserInfo[]> GetFriendsAsync()
-        {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                FriendsResponse friendsResponse = await friendshipService.GetFriendsAsync();
-                return friendsResponse.friends;
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        public async Task<FriendRequest[]> GetIncomingFriendRequestsAsync()
-        {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                IncomingFriendRequestsResponse friendRequestsResponse = await friendshipService.GetIncomingFriendRequestsAsync();
-                return friendRequestsResponse.incoming_friend_requests;
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        public async Task<FriendRequest[]> GetOutgoingFriendRequestsAsync()
-        {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                OutgoingFriendRequestsResponse friendRequestsResponse = await friendshipService.GetOutgoingFriendRequestsAsync();
-                return friendRequestsResponse.outgoing_friend_requests;
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        public async Task<FriendshipStatusResponse> UnFriendAsync(int userId)
-        {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                return await friendshipService.UnfriendPlayerAsync(userId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
-        }
-
-        #endregion Friends
     }
-
-
-
 }
