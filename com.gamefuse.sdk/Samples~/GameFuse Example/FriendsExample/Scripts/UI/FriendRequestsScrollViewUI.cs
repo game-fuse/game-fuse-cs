@@ -72,7 +72,7 @@ public class FriendRequestsScrollViewUI : MonoBehaviour
     {
         try
         {
-            FriendRequest[] outgoingFriendRequests = await GameFuseUser.CurrentUser.GetOutgoingFriendRequests();
+            FriendRequest[] outgoingFriendRequests = await GameFuseUser.CurrentUser.GetOutgoingFriendRequestsAsync();
             ClearRequests();
             foreach (var friendRequest in outgoingFriendRequests)
             {

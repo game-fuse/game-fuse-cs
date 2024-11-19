@@ -931,7 +931,7 @@ namespace GameFuseCSharp
             }
         }
 
-        public async Task<FriendRequest[]> GetOutgoingFriendRequests()
+        public async Task<FriendRequest[]> GetOutgoingFriendRequestsAsync()
         {
             try
             {
