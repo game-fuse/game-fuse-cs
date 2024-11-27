@@ -449,14 +449,17 @@ namespace GameFuseCSharp
             if (GameFuse.GetGameId() == null)
                 throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
-
             byte[] postData = Encoding.UTF8.GetBytes(jsonData);
-            var request = UnityWebRequest.PostWwwForm(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/add_game_user_attribute", "POST");
+            var url = $"{GameFuse.GetBaseURL()}/users/{CurrentUser.id}/add_game_user_attribute";
+            var request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
+            {
+                uploadHandler = new UploadHandlerRaw(postData),
+                downloadHandler = new DownloadHandlerBuffer()
+            };
+
             request.SetRequestHeader("Content-Type", "application/json");
             request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
-            request.uploadHandler = new UploadHandlerRaw(postData);
-            request.downloadHandler = new DownloadHandlerBuffer();
-
+            
             yield return request.SendWebRequest();
 
             if (GameFuseUtilities.RequestIsSuccessful(request))
