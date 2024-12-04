@@ -137,8 +137,8 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 Assert.IsTrue(user1FriendshipData.friends.Length > 0);
                 Assert.IsTrue(user2FriendshipData.friends.Length > 0);
-                Assert.AreEqual(_user2.username, user1FriendshipData.friends[0].username);
-                Assert.AreEqual(_user1.username, user2FriendshipData.friends[0].username);
+                Assert.AreEqual(_user2.username, user1FriendshipData.friends[0].Username);
+                Assert.AreEqual(_user1.username, user2FriendshipData.friends[0].Username);
             }
             catch (ApiException ex)
             {
@@ -245,10 +245,10 @@ namespace GameFuseCSharp.Tests.Runtime
                 var user1FriendshipData = await _friendshipService1.GetFriendsAsync();
                 Assert.IsTrue(user1FriendshipData.friends.Length > 0, "User1 should have User2 as a friend");
                 var user2AsAFriend = user1FriendshipData.friends[0];
-                Assert.AreEqual(_user2.username, user2AsAFriend.username, "The friend should be User2");
+                Assert.AreEqual(_user2.username, user2AsAFriend.Username, "The friend should be User2");
 
                 // User1 unfriends User2 using the fetched friend ID
-                var unfriendResponse = await _friendshipService1.UnfriendPlayerAsync(user2AsAFriend.id);
+                var unfriendResponse = await _friendshipService1.UnfriendPlayerAsync(user2AsAFriend.Id);
                 Assert.IsNotNull(unfriendResponse);
                 Assert.AreEqual("user has been unfriended successfully", unfriendResponse.message);
 
