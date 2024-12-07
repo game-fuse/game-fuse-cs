@@ -1,9 +1,13 @@
 
+using System;
+using Newtonsoft.Json;
+
 namespace GameFuseCSharp
 {
-    [System.Serializable]
+    [Serializable]
     public class FriendsResponse
     {
-        public UserInfo[] friends;
+        [JsonProperty("friends")]
+        public UserInfo[] Friends { get; set; } = Array.Empty<UserInfo>();
     }
 }

@@ -15,7 +15,7 @@ namespace GameFuseCSharp
         public async Task<FriendRequestResponse> SendFriendRequestAsync(string username)
         {
             string url = $"{_baseUrl}/friendships";
-            string jsonBody = JsonUtility.ToJson(new FriendRequestData { username = username });
+            string jsonBody = JsonUtility.ToJson(new FriendRequestData { Username = username });
 
             using (UnityWebRequest webRequest = CreateRequest(url,HttpVerbs.POST,jsonBody))
             {
@@ -50,7 +50,7 @@ namespace GameFuseCSharp
         private async Task<FriendshipStatusResponse> UpdateFriendRequestStatusAsync(int friendshipId, string status)
         {
             string url = $"{_baseUrl}/friendships/{friendshipId}";
-            string jsonBody = JsonUtility.ToJson(new FriendshipStatusData { status = status });
+            string jsonBody = JsonUtility.ToJson(new FriendshipStatusData { Status = status });
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.PUT, jsonBody))
             {
