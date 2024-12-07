@@ -1,9 +1,15 @@
+using System;
+using Newtonsoft.Json;
+
 namespace GameFuseCSharp
 {
-    [System.Serializable]
+    [Serializable]
     public class FriendRequest : UserInfo
     {
-        public int friendship_id;
-        public string requested_at;
+        [JsonProperty("friendship_id")]
+        public int FriendshipId { get; set; }
+
+        [JsonProperty("requested_at")]
+        public string RequestedAt { get; set; }
     }
 }
