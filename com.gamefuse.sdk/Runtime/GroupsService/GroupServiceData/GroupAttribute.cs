@@ -1,13 +1,24 @@
+using System;
+using Newtonsoft.Json;
 
 namespace GameFuseCSharp
 {
-    [System.Serializable]
+    [Serializable]
     public class GroupAttribute
     {
-        public int id;
-        public string key;
-        public string value;
-        public int creator_id;
-        public bool can_edit;
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("key")]
+        public string Key { get; set; }
+
+        [JsonProperty("value")]
+        public string Value { get; set; }
+
+        [JsonProperty("creator_id")]
+        public int CreatorId { get; set; }
+
+        [JsonProperty("can_edit")]
+        public bool CanEdit { get; set; }
     }
 }

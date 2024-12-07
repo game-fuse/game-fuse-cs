@@ -1,9 +1,15 @@
+using System;
+using Newtonsoft.Json;
+
 namespace GameFuseCSharp
 {
-    [System.Serializable]
+    [Serializable]
     public class GroupConnectionRequest
-    {            
-        public int group_id;
-        public int user_id;
+    {
+        [JsonProperty("group_id", Required = Required.Always)]
+        public int GroupId { get; set; }
+
+        [JsonProperty("user_id", Required = Required.Always)]
+        public int UserId { get; set; }
     }
 }

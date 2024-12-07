@@ -1,12 +1,21 @@
+using System;
+using Newtonsoft.Json;
 
 namespace GameFuseCSharp
 {
-    [System.Serializable]
+    [Serializable]
     public class GroupConnectionResponse
     {
-        public int id;
-        public string status;
-        public int inviter_id;
-        public UserInfo user;
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("status")]
+        public string Status { get; set; }
+
+        [JsonProperty("inviter_id")]
+        public int InviterId { get; set; }
+
+        [JsonProperty("user")]
+        public UserInfo User { get; set; }
     }
 }

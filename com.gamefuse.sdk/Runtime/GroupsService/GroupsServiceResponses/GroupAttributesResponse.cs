@@ -1,9 +1,12 @@
+using System;
+using Newtonsoft.Json;
 
 namespace GameFuseCSharp
 {
-    [System.Serializable]
+    [Serializable]
     public class GroupAttributesResponse
     {
-        public GroupAttribute[] attributes;
+        [JsonProperty("attributes")]
+        public GroupAttribute[] Attributes { get; set; } = Array.Empty<GroupAttribute>();
     }
 }

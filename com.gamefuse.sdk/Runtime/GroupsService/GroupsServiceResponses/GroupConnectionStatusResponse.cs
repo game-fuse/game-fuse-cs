@@ -1,9 +1,18 @@
+using System;
+using Newtonsoft.Json;
+
 namespace GameFuseCSharp
 {
-    [System.Serializable]
+    [Serializable]
     public class GroupConnectionStatusResponse
     {
-        public int id;
-        public string status;
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("status")]
+        public string Status { get; set; }
+
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
+        public string Message { get; set; }
     }
 }

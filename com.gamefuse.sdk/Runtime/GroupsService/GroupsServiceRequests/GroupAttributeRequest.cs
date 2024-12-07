@@ -1,10 +1,18 @@
+using System;
+using Newtonsoft.Json;
+
 namespace GameFuseCSharp
 {
-    [System.Serializable]
+    [Serializable]
     public class GroupAttributeRequest
     {
-        public string key;
-        public string value;
-        public bool? only_can_edit_by_creator;
+        [JsonProperty("key", Required = Required.Always)]
+        public string Key { get; set; }
+
+        [JsonProperty("value", Required = Required.Always)]
+        public string Value { get; set; }
+
+        [JsonProperty("only_can_edit_by_creator", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? OnlyCanEditByCreator { get; set; }
     }
 }
