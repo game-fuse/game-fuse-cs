@@ -11,8 +11,5 @@ namespace GameFuseCSharp
 
         [JsonProperty("status")]
         public string Status { get; set; }
-
-        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
-        public string Message { get; set; }
     }
 }

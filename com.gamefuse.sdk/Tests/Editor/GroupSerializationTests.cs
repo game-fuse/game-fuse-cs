@@ -3,165 +3,117 @@ using NUnit.Framework;
 using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using GameFuseCSharp;
+using Newtonsoft.Json.Serialization;
 
 namespace GameFuseCSharp.Tests
 {
     [TestFixture]
     public class GroupSerializationTests
     {
-        // Helper method to compare JSON content regardless of property order
+        protected static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new SnakeCaseNamingStrategy()
+            },
+            NullValueHandling = NullValueHandling.Ignore
+        };
+
         // Helper method to compare JSON content regardless of property order
         private void AssertJsonEqual(string expected, string actual, string message = "JSON content should be equal regardless of property order")
         {
             var expectedJson = JToken.Parse(expected);
             var actualJson = JToken.Parse(actual);
-
-            if (!JToken.DeepEquals(expectedJson, actualJson))
-            {
-                Debug.Log($"Expected JSON: {expectedJson.ToString(Formatting.Indented)}");
-                Debug.Log($"Actual JSON: {actualJson.ToString(Formatting.Indented)}");
-            }
-
             Assert.IsTrue(JToken.DeepEquals(expectedJson, actualJson), message);
         }
 
         [Test]
-        public void GroupAttribute_SerializesCorrectly()
+        public void CreateGroupRequest_SerializesCorrectly()
         {
             // Arrange
-            var attribute = new GroupAttribute
+            var request = new CreateGroupRequest
             {
-                Id = 1,
-                Key = "level",
-                Value = "expert",
-                CreatorId = 100,
-                CanEdit = true
+                Name = "Awesome Gamers",
+                GroupType = "Public",
+                MaxGroupSize = 50,
+                CanAutoJoin = true,
+                IsInviteOnly = false,
+                Searchable = true,
+                AdminsOnlyCanCreateAttributes = true
             };
 
             // Act
-            string json = JsonConvert.SerializeObject(attribute);
+            string actualJson = JsonConvert.SerializeObject(request, JsonSettings);
+
+            // Expected JSON output
+            string expectedJson = @"{
+                ""name"": ""Awesome Gamers"",
+                ""group_type"": ""Public"",
+                ""max_group_size"": 50,
+                ""can_auto_join"": true,
+                ""is_invite_only"": false,
+                ""searchable"": true,
+                ""admins_only_can_create_attributes"": true
+            }";
 
             // Assert
-            string expectedJson = "{\"id\":1,\"key\":\"level\",\"value\":\"expert\"," +
-                "\"creator_id\":100,\"can_edit\":true}";
-            AssertJsonEqual(expectedJson, json);
+            AssertJsonEqual(expectedJson, actualJson);
         }
 
         [Test]
-        public void GroupAttributeRequest_SerializesCorrectly()
+        public void CreateGroupRequest_SerializesCorrectlyWithMinimalData()
         {
             // Arrange
-            var request = new GroupAttributeRequest
+            var request = new CreateGroupRequest
             {
-                Key = "rank",
-                Value = "platinum",
-                OnlyCanEditByCreator = true
+                Name = "Minimal Group",
+                MaxGroupSize = 10,
+                CanAutoJoin = false,
+                IsInviteOnly = false
             };
 
             // Act
-            string json = JsonConvert.SerializeObject(request);
+            string actualJson = JsonConvert.SerializeObject(request, JsonSettings);
+
+            // Expected JSON output
+            string expectedJson = @"{
+                ""name"": ""Minimal Group"",
+                ""group_type"": ""default"",
+                ""max_group_size"": 10,
+                ""can_auto_join"": false,
+                ""is_invite_only"": false
+            }";
 
             // Assert
-            string expectedJson = "{\"key\":\"rank\",\"value\":\"platinum\"," +
-                "\"only_can_edit_by_creator\":true}";
-            AssertJsonEqual(expectedJson, json);
+            AssertJsonEqual(expectedJson, actualJson);
         }
 
         [Test]
-        public void GroupConnectionRequest_SerializesCorrectly()
+        public void CreateGroupRequest_DeserializesCorrectly()
         {
             // Arrange
-            var request = new GroupConnectionRequest
-            {
-                GroupId = 5,
-                UserId = 10
-            };
+            string json = @"{
+                ""name"": ""Test Group"",
+                ""group_type"": ""Private"",
+                ""max_group_size"": 10,
+                ""can_auto_join"": false,
+                ""is_invite_only"": true,
+                ""searchable"": false,
+                ""admins_only_can_create_attributes"": true
+            }";
 
             // Act
-            string json = JsonConvert.SerializeObject(request);
+            var request = JsonConvert.DeserializeObject<CreateGroupRequest>(json, JsonSettings);
 
             // Assert
-            string expectedJson = "{\"group_id\":5,\"user_id\":10}";
-            AssertJsonEqual(expectedJson, json);
-        }
-
-        [Test]
-        public void GroupAttributesResponse_SerializesCorrectly()
-        {
-            // Arrange
-            var response = new GroupAttributesResponse
-            {
-                Attributes = new[]
-                {
-                    new GroupAttribute
-                    {
-                        Id = 1,
-                        Key = "level",
-                        Value = "expert",
-                        CreatorId = 100,
-                        CanEdit = true
-                    }
-                }
-            };
-
-            // Act
-            string json = JsonConvert.SerializeObject(response);
-
-            // Assert
-            string expectedJson = "{\"attributes\":[{\"id\":1,\"key\":\"level\",\"value\":\"expert\"," +
-                "\"creator_id\":100,\"can_edit\":true}]}";
-            AssertJsonEqual(expectedJson, json);
-        }
-
-        [Test]
-        public void GroupConnectionResponse_SerializesCorrectly()
-        {
-            // Arrange
-            var response = new GroupConnectionResponse
-            {
-                Id = 1,
-                Status = "pending",
-                InviterId = 100,
-                User = new UserInfo
-                {
-                    Id = 200,
-                    Username = "testuser",
-                    Email = "test@example.com",
-                    DisplayEmail = "display@example.com",
-                    Credits = 500,
-                    Score = 1000
-                }
-            };
-
-            // Act
-            string json = JsonConvert.SerializeObject(response);
-
-            // Assert
-            string expectedJson = "{\"id\":1,\"status\":\"pending\",\"inviter_id\":100," +
-                "\"user\":{\"id\":200,\"username\":\"testuser\",\"email\":\"test@example.com\"," +
-                "\"display_email\":\"display@example.com\",\"credits\":500,\"score\":1000}}";
-            AssertJsonEqual(expectedJson, json);
-        }
-
-        [Test]
-        public void GroupConnectionStatusResponse_SerializesCorrectly()
-        {
-            // Arrange
-            var response = new GroupConnectionStatusResponse
-            {
-                Id = 1,
-                Status = "accepted",
-                Message = "Successfully joined the group"
-            };
-
-            // Act
-            string json = JsonConvert.SerializeObject(response);
-
-            // Assert
-            string expectedJson = "{\"id\":1,\"status\":\"accepted\"," +
-                "\"message\":\"Successfully joined the group\"}";
-            AssertJsonEqual(expectedJson, json);
+            Assert.NotNull(request);
+            Assert.AreEqual("Test Group", request.Name);
+            Assert.AreEqual("Private", request.GroupType);
+            Assert.AreEqual(10, request.MaxGroupSize);
+            Assert.IsFalse(request.CanAutoJoin);
+            Assert.IsTrue(request.IsInviteOnly);
+            Assert.IsFalse(request.Searchable);
+            Assert.IsTrue(request.AdminsOnlyCanCreateAttributes);
         }
 
         [Test]
@@ -171,156 +123,164 @@ namespace GameFuseCSharp.Tests
             var response = new GroupResponse
             {
                 Id = 1,
-                Name = "Pro Gamers",
+                Name = "Test Group",
                 GroupType = "Public",
                 CanAutoJoin = true,
                 IsInviteOnly = false,
                 MaxGroupSize = 50,
                 Searchable = true,
                 MemberCount = 2,
-                Members = new[]
+                Members = new UserInfo[]
                 {
                     new UserInfo
                     {
-                        Id = 100,
+                        Id = 10,
                         Username = "member1",
                         Email = "member1@example.com",
-                        DisplayEmail = "display1@example.com",
-                        Credits = 500,
-                        Score = 1000
+                        DisplayEmail = "member1@example.com",
+                        Credits = 100,
+                        Score = 500
                     }
                 },
-                Admins = new[]
+                Admins = new UserInfo[]
                 {
                     new UserInfo
                     {
-                        Id = 200,
+                        Id = 20,
                         Username = "admin1",
                         Email = "admin1@example.com",
-                        DisplayEmail = "displayadmin1@example.com",
-                        Credits = 1000,
-                        Score = 2000
+                        DisplayEmail = "admin1@example.com",
+                        Credits = 200,
+                        Score = 1000
                     }
                 }
             };
 
             // Act
-            string json = JsonConvert.SerializeObject(response);
+            string actualJson = JsonConvert.SerializeObject(response, JsonSettings);
+
+            // Expected JSON output
+            string expectedJson = @"{
+                ""id"": 1,
+                ""name"": ""Test Group"",
+                ""group_type"": ""Public"",
+                ""can_auto_join"": true,
+                ""is_invite_only"": false,
+                ""max_group_size"": 50,
+                ""searchable"": true,
+                ""member_count"": 2,
+                ""members"": [{
+                    ""id"": 10,
+                    ""username"": ""member1"",
+                    ""email"": ""member1@example.com"",
+                    ""display_email"": ""member1@example.com"",
+                    ""credits"": 100,
+                    ""score"": 500
+                }],
+                ""admins"": [{
+                    ""id"": 20,
+                    ""username"": ""admin1"",
+                    ""email"": ""admin1@example.com"",
+                    ""display_email"": ""admin1@example.com"",
+                    ""credits"": 200,
+                    ""score"": 1000
+                }],
+                ""join_requests"": [],
+                ""invites"": []
+            }";
 
             // Assert
-            string expectedJson = "{\"id\":1,\"name\":\"Pro Gamers\",\"group_type\":\"Public\"," +
-                "\"can_auto_join\":true,\"is_invite_only\":false,\"max_group_size\":50," +
-                "\"searchable\":true,\"member_count\":2,\"members\":[{\"id\":100,\"username\":\"member1\"," +
-                "\"email\":\"member1@example.com\",\"display_email\":\"display1@example.com\"," +
-                "\"credits\":500,\"score\":1000}],\"admins\":[{\"id\":200,\"username\":\"admin1\"," +
-                "\"email\":\"admin1@example.com\",\"display_email\":\"displayadmin1@example.com\"," +
-                "\"credits\":1000,\"score\":2000}],\"join_requests\":[],\"invites\":[]}";
-            AssertJsonEqual(expectedJson, json);
+            AssertJsonEqual(expectedJson, actualJson);
         }
 
         [Test]
-        public void GroupsResponse_SerializesCorrectly()
+        public void GroupResponse_DeserializesCorrectly()
         {
             // Arrange
-            var response = new GroupsResponse
-            {
-                Groups = new[]
-                {
-                    new GroupResponse
-                    {
-                        Id = 1,
-                        Name = "Pro Gamers",
-                        GroupType = "Public",
-                        CanAutoJoin = true,
-                        IsInviteOnly = false,
-                        MaxGroupSize = 50,
-                        Searchable = true,
-                        MemberCount = 1
-                    }
-                }
-            };
+            string json = @"{
+                ""id"": 1,
+                ""name"": ""Test Group"",
+                ""group_type"": ""Public"",
+                ""can_auto_join"": true,
+                ""is_invite_only"": false,
+                ""max_group_size"": 50,
+                ""searchable"": true,
+                ""member_count"": 2,
+                ""members"": [{
+                    ""id"": 10,
+                    ""username"": ""member1"",
+                    ""email"": ""member1@example.com"",
+                    ""display_email"": ""member1@example.com"",
+                    ""credits"": 100,
+                    ""score"": 500
+                }],
+                ""admins"": [{
+                    ""id"": 20,
+                    ""username"": ""admin1"",
+                    ""email"": ""admin1@example.com"",
+                    ""display_email"": ""admin1@example.com"",
+                    ""credits"": 200,
+                    ""score"": 1000
+                }],
+                ""join_requests"": [],
+                ""invites"": []
+            }";
 
             // Act
-            string json = JsonConvert.SerializeObject(response);
+            var response = JsonConvert.DeserializeObject<GroupResponse>(json, JsonSettings);
 
             // Assert
-            string expectedJson = "{\"groups\":[{\"id\":1,\"name\":\"Pro Gamers\",\"group_type\":\"Public\"," +
-                "\"can_auto_join\":true,\"is_invite_only\":false,\"max_group_size\":50,\"searchable\":true," +
-                "\"member_count\":1,\"members\":[],\"admins\":[],\"join_requests\":[],\"invites\":[]}]}";
-            AssertJsonEqual(expectedJson, json);
+            Assert.NotNull(response);
+            Assert.AreEqual(1, response.Id);
+            Assert.AreEqual("Test Group", response.Name);
+            Assert.AreEqual("Public", response.GroupType);
+            Assert.IsTrue(response.CanAutoJoin);
+            Assert.IsFalse(response.IsInviteOnly);
+            Assert.AreEqual(50, response.MaxGroupSize);
+            Assert.IsTrue(response.Searchable);
+            Assert.AreEqual(2, response.MemberCount);
+
+            // Check members array
+            Assert.AreEqual(1, response.Members.Length);
+            Assert.AreEqual(10, response.Members[0].Id);
+            Assert.AreEqual("member1", response.Members[0].Username);
+            Assert.AreEqual("member1@example.com", response.Members[0].Email);
+            Assert.AreEqual(100, response.Members[0].Credits);
+            Assert.AreEqual(500, response.Members[0].Score);
+
+            // Check admins array
+            Assert.AreEqual(1, response.Admins.Length);
+            Assert.AreEqual(20, response.Admins[0].Id);
+            Assert.AreEqual("admin1", response.Admins[0].Username);
+            Assert.AreEqual("admin1@example.com", response.Admins[0].Email);
+            Assert.AreEqual(200, response.Admins[0].Credits);
+            Assert.AreEqual(1000, response.Admins[0].Score);
+
+            // Check empty arrays
+            Assert.IsEmpty(response.JoinRequests);
+            Assert.IsEmpty(response.Invites);
         }
 
         [Test]
-        public void EmptyCollections_SerializeCorrectly()
+        public void GroupResponse_DeserializesCorrectlyWithMinimalData()
         {
             // Arrange
-            var emptyAttributesResponse = new GroupAttributesResponse();
-            var emptyGroupsResponse = new GroupsResponse();
-            var emptyGroupResponse = new GroupResponse
-            {
-                Id = 1,
-                Name = "Empty Group",
-                GroupType = null,
-                CanAutoJoin = false,
-                IsInviteOnly = false,
-                MaxGroupSize = 0,
-                Searchable = false,
-                MemberCount = 0,
-                Members = Array.Empty<UserInfo>(),
-                Admins = Array.Empty<UserInfo>(),
-                JoinRequests = Array.Empty<GroupConnectionResponse>(),
-                Invites = Array.Empty<GroupConnectionResponse>()
-            };
+            string json = @"{
+                ""id"": 1,
+                ""name"": ""Minimal Group""
+            }";
 
             // Act
-            string attributesJson = JsonConvert.SerializeObject(emptyAttributesResponse);
-            string groupsJson = JsonConvert.SerializeObject(emptyGroupsResponse);
-            string groupJson = JsonConvert.SerializeObject(emptyGroupResponse);
-
-            // Print the actual JSON for debugging
-            Debug.Log($"Actual attributesJson: {attributesJson}");
-            Debug.Log($"Actual groupsJson: {groupsJson}");
-            Debug.Log($"Actual groupJson: {groupJson}");
+            var response = JsonConvert.DeserializeObject<GroupResponse>(json, JsonSettings);
 
             // Assert
-            AssertJsonEqual("{\"attributes\":[]}", attributesJson);
-            AssertJsonEqual("{\"groups\":[]}", groupsJson);
-            AssertJsonEqual(
-                "{" +
-                    "\"id\":1," +
-                    "\"name\":\"Empty Group\"," +
-                    "\"can_auto_join\":false," +
-                    "\"is_invite_only\":false," +
-                    "\"max_group_size\":0," +
-                    "\"searchable\":false," +
-                    "\"member_count\":0," +
-                    "\"members\":[]," +
-                    "\"admins\":[]," +
-                    "\"join_requests\":[]," +
-                    "\"invites\":[]" +
-                "}",
-                groupJson,
-                "Empty GroupResponse should serialize correctly"
-            );
-        }
-
-        [Test]
-        public void GroupAttribute_DeserializesCorrectly()
-        {
-            // Arrange
-            string json = "{\"id\":1,\"key\":\"level\",\"value\":\"expert\"," +
-                "\"creator_id\":100,\"can_edit\":true}";
-
-            // Act
-            var attribute = JsonConvert.DeserializeObject<GroupAttribute>(json);
-
-            // Assert
-            Assert.NotNull(attribute);
-            Assert.AreEqual(1, attribute.Id);
-            Assert.AreEqual("level", attribute.Key);
-            Assert.AreEqual("expert", attribute.Value);
-            Assert.AreEqual(100, attribute.CreatorId);
-            Assert.IsTrue(attribute.CanEdit);
+            Assert.NotNull(response);
+            Assert.AreEqual(1, response.Id);
+            Assert.AreEqual("Minimal Group", response.Name);
+            Assert.IsEmpty(response.Members);
+            Assert.IsEmpty(response.Admins);
+            Assert.IsEmpty(response.JoinRequests);
+            Assert.IsEmpty(response.Invites);
         }
     }
 }

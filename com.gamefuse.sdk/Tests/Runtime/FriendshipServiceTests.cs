@@ -253,6 +253,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.AreEqual("user has been unfriended successfully", unfriendResponse.Message);
 
                 // Verify friendship data for both users after unfriending
+                Debug.Log("Print friend response");
                 user1FriendshipData = await _friendshipService1.GetFriendsAsync();
                 var user2FriendshipData = await _friendshipService2.GetFriendsAsync();
 

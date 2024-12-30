@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -16,7 +15,7 @@ namespace GameFuseCSharp
         public async Task<GroupResponse> CreateGroupAsync(CreateGroupRequest request)
         {
             string url = $"{_baseUrl}/groups";
-            string jsonBody = JsonUtility.ToJson(request);
+            string jsonBody = SerializeRequest(request);
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
             {
@@ -24,9 +23,13 @@ namespace GameFuseCSharp
             }
         }
 
-        public async Task<GroupsResponse> GetAllGroupsAsync()
+        public async Task<GroupsResponse> GetAllGroupsAsync(bool withFullData = false)
         {
             string url = $"{_baseUrl}/groups";
+            if (withFullData)
+            {
+                url += "?with_full_data=true";
+            }
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.GET))
             {
@@ -47,7 +50,7 @@ namespace GameFuseCSharp
         public async Task<GroupConnectionResponse> SendGroupConnectionRequestAsync(GroupConnectionRequest request)
         {
             string url = $"{_baseUrl}/group_connections";
-            string jsonBody = JsonUtility.ToJson(request);
+            string jsonBody = SerializeRequest(request);
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
             {
@@ -58,7 +61,8 @@ namespace GameFuseCSharp
         public async Task<GroupConnectionStatusResponse> ManageGroupConnectionRequestAsync(int connectionId, string status)
         {
             string url = $"{_baseUrl}/group_connections/{connectionId}";
-            string jsonBody = JsonUtility.ToJson(new { status });
+            var statusRequest = new GroupConnectionStatusRequest { Status = status };
+            string jsonBody = SerializeRequest(statusRequest);
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.PUT, jsonBody))
             {
@@ -76,14 +80,22 @@ namespace GameFuseCSharp
             }
         }
 
-        public async Task<GroupAttributesResponse> AddGroupAttributesAsync(int groupId, List<GroupAttributeRequest> attributes)
+        public async Task<GroupAttributesResponse> AddGroupAttributesAsync(int groupId, GroupAttributeRequest attributeRequest)
         {
             string url = $"{_baseUrl}/groups/{groupId}/add_attribute";
-            string jsonBody = JsonUtility.ToJson(new { attributes });
+            string jsonBody = SerializeRequest(attributeRequest);
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
             {
-                return await SendRequestAsync<GroupAttributesResponse>(webRequest);
+                try
+                {
+                    return await SendRequestAsync<GroupAttributesResponse>(webRequest, true);
+                }
+                catch (ApiException ex)
+                {
+                    Debug.LogError($"Failed to add attributes to group {groupId}. Status: {ex.StatusCode}, Message: {ex.Message}");
+                    throw;
+                }
             }
         }
     }

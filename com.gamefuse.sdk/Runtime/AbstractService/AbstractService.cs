@@ -40,7 +40,16 @@ namespace GameFuseCSharp
 
         protected UnityWebRequest CreateRequest(string url, HttpVerbs method)
         {
-            UnityWebRequest webRequest = new UnityWebRequest(url, method.ToString());
+            string httpMethod = method switch
+            {
+                HttpVerbs.POST => "POST",
+                HttpVerbs.GET => "GET",
+                HttpVerbs.PUT => "PUT",
+                HttpVerbs.DELETE => "DELETE",
+                _ => throw new ArgumentException($"Unsupported HTTP method: {method}")
+            };
+            
+            UnityWebRequest webRequest = new UnityWebRequest(url,httpMethod);
             SetRequestHeaders(webRequest);
             webRequest.downloadHandler = new DownloadHandlerBuffer();
             webRequest.timeout = TimeoutSeconds;
@@ -59,12 +68,14 @@ namespace GameFuseCSharp
             webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
         }
 
-        protected async Task<T> SendRequestAsync<T>(UnityWebRequest webRequest) where T : class, new()
+        protected async Task<T> SendRequestAsync<T>(UnityWebRequest webRequest, bool logRequest = false) where T : class, new()
         {
+            
             try
             {
                 using (webRequest)
                 {
+                    if (logRequest) LogRequest(webRequest);
                     var operation = webRequest.SendWebRequest();
 
                     while (!operation.isDone)
@@ -76,6 +87,7 @@ namespace GameFuseCSharp
                     {
                         case UnityWebRequest.Result.Success:
                             string jsonResponse = webRequest.downloadHandler.text;
+                            if (logRequest) Debug.Log(jsonResponse);
                             try
                             {
                                 return JsonConvert.DeserializeObject<T>(jsonResponse, JsonSettings);
@@ -134,5 +146,56 @@ namespace GameFuseCSharp
                 );
             }
         }
+
+        protected void LogRequest(UnityWebRequest request)
+        {
+            var requestInfo = new System.Text.StringBuilder();
+            requestInfo.AppendLine("UnityWebRequest Details:");
+            requestInfo.AppendLine("------------------------");
+
+            // Basic request information
+            requestInfo.AppendLine($"Method: {request.method}");
+            requestInfo.AppendLine($"URL: {request.url}");
+
+            // Headers
+            requestInfo.AppendLine("\nHeaders:");
+            var headers = request.GetRequestHeader("Content-Type");
+            if (!string.IsNullOrEmpty(headers))
+            {
+                requestInfo.AppendLine($"Content-Type: {headers}");
+            }
+
+            var authToken = request.GetRequestHeader("authentication-token");
+            if (!string.IsNullOrEmpty(authToken))
+            {
+                requestInfo.AppendLine("authentication-token: [REDACTED]");
+            }
+
+            // Request body (if exists)
+            if (request.uploadHandler != null && request.uploadHandler is UploadHandlerRaw)
+            {
+                requestInfo.AppendLine("\nRequest Body:");
+                var rawData = ((UploadHandlerRaw)request.uploadHandler).data;
+                if (rawData != null)
+                {
+                    var bodyText = System.Text.Encoding.UTF8.GetString(rawData);
+                    // Try to format JSON if the body is JSON
+                    try
+                    {
+                        var jsonObject = Newtonsoft.Json.JsonConvert.DeserializeObject(bodyText);
+                        bodyText = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObject, Newtonsoft.Json.Formatting.Indented);
+                    }
+                    catch
+                    {
+                        Debug.LogWarning("This is not valid json");
+                        // If not valid JSON, use raw body text
+                    }
+                    requestInfo.AppendLine(bodyText);
+                }
+            }
+
+            Debug.Log(requestInfo.ToString());
+        }
+
     }
 }
