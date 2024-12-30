@@ -76,14 +76,14 @@ namespace GameFuseCSharp
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.GET))
             {
-                return await SendRequestAsync<GroupAttributesResponse>(webRequest);
+                return await SendRequestAsync<GroupAttributesResponse>(webRequest, true);
             }
         }
 
-        public async Task<GroupAttributesResponse> AddGroupAttributesAsync(int groupId, GroupAttributeRequest attributeRequest)
+        public async Task<GroupAttributesResponse> AddGroupAttributesAsync(int groupId, GroupAttributesRequest attributesRequest)
         {
             string url = $"{_baseUrl}/groups/{groupId}/add_attribute";
-            string jsonBody = SerializeRequest(attributeRequest);
+            string jsonBody = SerializeRequest(attributesRequest);
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
             {

@@ -635,8 +635,12 @@ namespace GameFuseCSharp.Tests.Runtime
                     OnlyCanEditByCreator = true
                 };
 
+                var attributesRequest = new GroupAttributesRequest
+                {
+                    Attributes = new GroupAttributeRequest[] { attributeRequest }
+                };
                 // Act - Add attribute as admin
-                var attributeResponse = await _groupsService.AddGroupAttributesAsync(createdGroup.Id, attributeRequest);
+                var attributeResponse = await _groupsService.AddGroupAttributesAsync(createdGroup.Id, attributesRequest);
 
                 // Assert
                 Assert.NotNull(attributeResponse, "Attribute response should not be null");
@@ -646,8 +650,8 @@ namespace GameFuseCSharp.Tests.Runtime
                 var addedAttribute = attributeResponse.Attributes[0];
                 Assert.AreEqual("test_key", addedAttribute.Key, "Attribute key should match");
                 Assert.AreEqual("test_value", addedAttribute.Value, "Attribute value should match");
-                Assert.AreEqual(_user.id, addedAttribute.CreatorId, "Creator ID should match admin user");
-                Assert.IsTrue(addedAttribute.CanEdit, "Admin should be able to edit the attribute");
+                Assert.AreEqual(_user.id, addedAttribute.UserId, "Creator ID should match admin user");
+                Assert.IsFalse(addedAttribute.OthersCanEdit, "Admin should be able to edit the attribute");
 
                 // Verify attribute exists in group details
                 var groupAttributes = await _groupsService.GetGroupAttributesAsync(createdGroup.Id);
@@ -711,8 +715,13 @@ namespace GameFuseCSharp.Tests.Runtime
                     OnlyCanEditByCreator = true
                 };
 
+                var attributesRequest = new GroupAttributesRequest
+                {
+                    Attributes = new GroupAttributeRequest[] { attributeRequest }
+                };
+
                 // Act - Add attribute as non-admin user
-                var attributeResponse = await secondUserGroupService.AddGroupAttributesAsync(createdGroup.Id, attributeRequest);
+                var attributeResponse = await secondUserGroupService.AddGroupAttributesAsync(createdGroup.Id, attributesRequest);
 
                 // Assert
                 Assert.NotNull(attributeResponse, "Attribute response should not be null");
@@ -722,8 +731,8 @@ namespace GameFuseCSharp.Tests.Runtime
                 var addedAttribute = attributeResponse.Attributes[0];
                 Assert.AreEqual("user_key", addedAttribute.Key, "Attribute key should match");
                 Assert.AreEqual("user_value", addedAttribute.Value, "Attribute value should match");
-                Assert.AreEqual(secondUser.id, addedAttribute.CreatorId, "Creator ID should match second user");
-                Assert.IsTrue(addedAttribute.CanEdit, "Creator should be able to edit their attribute");
+                Assert.AreEqual(secondUser.id, addedAttribute.UserId, "Creator ID should match second user");
+                Assert.IsTrue(addedAttribute.OthersCanEdit, "Creator should be able to edit their attribute");
             }
             catch (ApiException ex)
             {
@@ -781,9 +790,14 @@ namespace GameFuseCSharp.Tests.Runtime
                     OnlyCanEditByCreator = true
                 };
 
+                var attributesRequest = new GroupAttributesRequest
+                {
+                    Attributes = new GroupAttributeRequest[] { attributeRequest }
+                };
+
                 // Act & Assert - Attempt to add attribute as non-admin user should throw exception
                 var ex = Assert.ThrowsAsync<ApiException>(async () =>
-                    await secondUserGroupService.AddGroupAttributesAsync(createdGroup.Id, attributeRequest)
+                    await secondUserGroupService.AddGroupAttributesAsync(createdGroup.Id, attributesRequest)
                 );
 
                 Assert.That(ex.StatusCode, Is.EqualTo(403), "Should receive a 403 Forbidden response");

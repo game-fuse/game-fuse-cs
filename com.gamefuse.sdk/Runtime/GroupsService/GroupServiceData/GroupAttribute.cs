@@ -15,10 +15,16 @@ namespace GameFuseCSharp
         [JsonProperty("value")]
         public string Value { get; set; }
 
-        [JsonProperty("creator_id")]
-        public int CreatorId { get; set; }
+        [JsonProperty("user_id")]
+        public int UserId { get; set; }  // This replaces CreatorId
 
-        [JsonProperty("can_edit")]
-        public bool CanEdit { get; set; }
+        [JsonProperty("others_can_edit")]
+        public bool OthersCanEdit { get; set; }  // This replaces CanEdit
+
+        [JsonProperty("created_at")]
+        public string CreatedAt { get; set; }
+
+        [JsonProperty("updated_at")]
+        public string UpdatedAt { get; set; }
     }
 }

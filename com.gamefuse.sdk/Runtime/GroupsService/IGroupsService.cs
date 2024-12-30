@@ -11,6 +11,6 @@ namespace GameFuseCSharp
         Task<GroupConnectionResponse> SendGroupConnectionRequestAsync(GroupConnectionRequest request);
         Task<GroupConnectionStatusResponse> ManageGroupConnectionRequestAsync(int connectionId, string status);
         Task<GroupAttributesResponse> GetGroupAttributesAsync(int groupId);
-        Task<GroupAttributesResponse> AddGroupAttributesAsync(int groupId, GroupAttributeRequest groupAttributeRequest);
+        Task<GroupAttributesResponse> AddGroupAttributesAsync(int groupId, GroupAttributesRequest groupAttributesRequest);
     }
 }
