@@ -6,6 +6,9 @@ namespace GameFuseCSharp
     [Serializable]
     public class GroupAttribute
     {
+        [JsonProperty("group_id")]
+        public int GroupId { get; set; }
+
         [JsonProperty("id")]
         public int Id { get; set; }
 

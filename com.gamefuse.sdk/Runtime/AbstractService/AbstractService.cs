@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Text;
 
 namespace GameFuseCSharp
 {
@@ -28,7 +29,8 @@ namespace GameFuseCSharp
             DELETE,
             GET,
             POST,
-            PUT
+            PUT,
+            PATCH
         }
 
         protected UnityWebRequest CreateRequest(string url, HttpVerbs method, string jsonBody)
@@ -46,6 +48,7 @@ namespace GameFuseCSharp
                 HttpVerbs.GET => "GET",
                 HttpVerbs.PUT => "PUT",
                 HttpVerbs.DELETE => "DELETE",
+                HttpVerbs.PATCH => "PATCH",
                 _ => throw new ArgumentException($"Unsupported HTTP method: {method}")
             };
             
@@ -64,7 +67,7 @@ namespace GameFuseCSharp
 
         protected void SetRequestBody(UnityWebRequest webRequest, string jsonBody)
         {
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonBody);
+            byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
             webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
         }
 
@@ -178,7 +181,7 @@ namespace GameFuseCSharp
                 var rawData = ((UploadHandlerRaw)request.uploadHandler).data;
                 if (rawData != null)
                 {
-                    var bodyText = System.Text.Encoding.UTF8.GetString(rawData);
+                    var bodyText = Encoding.UTF8.GetString(rawData);
                     // Try to format JSON if the body is JSON
                     try
                     {

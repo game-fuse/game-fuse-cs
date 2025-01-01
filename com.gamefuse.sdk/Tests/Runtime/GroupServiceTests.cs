@@ -870,23 +870,9 @@ namespace GameFuseCSharp.Tests.Runtime
                     "test_key",
                     "modified_value"
                 );
-                /*
-                // Assert
-                Assert.NotNull(modifiedAttributeResponse, "Modified attribute response should not be null");
-                Assert.NotNull(modifiedAttributeResponse.Attributes, "Modified attributes array should not be null");
-                Assert.AreEqual(1, modifiedAttributeResponse.Attributes.Length, "Should still have exactly one attribute");
 
-                var modifiedAttribute = modifiedAttributeResponse.Attributes[0];
-                Assert.AreEqual("test_key", modifiedAttribute.Key, "Attribute key should remain unchanged");
-                Assert.AreEqual("modified_value", modifiedAttribute.Value, "Attribute value should be updated");
-                Assert.AreEqual(_user.id, modifiedAttribute.UserId, "Creator ID should still match admin user");
-                Assert.IsFalse(modifiedAttribute.OthersCanEdit, "Admin should still be able to edit the attribute");
-
-                // Verify modification persists by getting attributes
-                var groupAttributes = await _groupsService.GetGroupAttributesAsync(createdGroup.Id);
-                Assert.NotNull(groupAttributes.Attributes, "Group should have attributes");
-                Assert.AreEqual(1, groupAttributes.Attributes.Length, "Group should have exactly one attribute");
-                Assert.AreEqual("modified_value", groupAttributes.Attributes[0].Value, "Modified value should persist");*/
+                Assert.AreEqual("modified_value", modifiedAttributeResponse.Value, "The value was updated");
+                
             }
             catch (ApiException ex)
             {
