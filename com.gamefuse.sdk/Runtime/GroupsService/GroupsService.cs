@@ -98,5 +98,32 @@ namespace GameFuseCSharp
                 }
             }
         }
+
+        public async Task<GroupAttributesResponse> ModifyGroupAttributeAsync(int groupId, string key, string value)
+        {
+            string url = $"{_baseUrl}/groups/{groupId}/modify_attribute";
+
+            var modifyRequest = new ModifyGroupAttributeRequest
+            {
+                Key = key,
+                Value = value
+            };
+
+            string jsonBody = SerializeRequest(modifyRequest);
+
+            using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
+            {
+                webRequest.SetRequestHeader("X-HTTP-Method-Override", "PATCH");
+                try
+                {
+                    return await SendRequestAsync<GroupAttributesResponse>(webRequest, true);
+                }
+                catch (ApiException ex)
+                {
+                    Debug.LogError($"Failed to modify attribute for group {groupId}. Status: {ex.StatusCode}, Message: {ex.Message}");
+                    throw;
+                }
+            }
+        }
     }
 }
