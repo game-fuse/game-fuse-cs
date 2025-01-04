@@ -23,14 +23,14 @@ public class FriendUI : MonoBehaviour
     public void SetUserInfo(UserInfo userInfo)
     {
         _userInfo = userInfo;
-        _userNameText.text = _userInfo.username;
+        _userNameText.text = _userInfo.Username;
     }
 
     private async void RemoveFriend()
     {
         try
         {
-            FriendshipStatusResponse friendshipStatusResponse = await GameFuseUser.CurrentUser.UnFriendAsync(_userInfo.id);
+            FriendshipStatusResponse friendshipStatusResponse = await GameFuseUser.CurrentUser.UnFriendAsync(_userInfo.Id);
             UpdateUIStatus("Removed");
         }
         catch (ApiException ex)

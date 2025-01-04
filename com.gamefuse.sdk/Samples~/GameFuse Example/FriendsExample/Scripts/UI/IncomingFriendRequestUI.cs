@@ -23,7 +23,7 @@ public class IncomingFriendRequestUI : MonoBehaviour
     public void SetFriendRequest(FriendRequest friendRequest)
     {
         _friendRequest = friendRequest;
-        _userNameText.text = _friendRequest.username;
+        _userNameText.text = _friendRequest.Username;
     }
 
     private async void AcceptFriendRequest()
