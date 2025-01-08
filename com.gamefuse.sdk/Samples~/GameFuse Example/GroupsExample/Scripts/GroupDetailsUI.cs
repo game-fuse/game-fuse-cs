@@ -3,7 +3,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using GameFuseCSharp;
-public class GroupDetails : MonoBehaviour
+public class GroupDetailsUI : MonoBehaviour
 {
     [SerializeField]
     TMP_InputField _idInput,
@@ -18,6 +18,9 @@ public class GroupDetails : MonoBehaviour
     MemberUI _memberUIPrefab;
 
     [SerializeField]
+    JoinRequestUI _joinRequestUIPrefab;
+
+    [SerializeField]
     Transform _contentTransform;
 
     [SerializeField]
@@ -27,6 +30,8 @@ public class GroupDetails : MonoBehaviour
     Button memberTabButton, adminTabButton, joinRequestTabButton, invitesTabButton;
 
     private List<MemberUI> _membersUI = new List<MemberUI>();
+
+    private List<JoinRequestUI> _joinRequestsUI = new List<JoinRequestUI>();
 
     private int _groupId;
 
@@ -39,6 +44,8 @@ public class GroupDetails : MonoBehaviour
     {
         memberTabButton.onClick.AddListener(GetGroupMembers);
         adminTabButton.onClick.AddListener(GetGroupAdmins);
+        joinRequestTabButton.onClick.AddListener(GetJoinRequests);
+        invitesTabButton.onClick.AddListener(GetGroupInvites);
     }
 
     public void OnDestroy()
@@ -78,12 +85,12 @@ public class GroupDetails : MonoBehaviour
         try
         {
             GroupResponse groupResponse = await GameFuseUser.CurrentUser.GetGroupDetailsAsync(_groupId);
-            ClearMembers();
-            foreach(var user in groupResponse.Members)
+            ClearScrollView();
+            foreach(var member in groupResponse.Members)
             {
                 MemberUI memberUI = Instantiate(_memberUIPrefab, _contentTransform);
                 memberUI.transform.SetParent(_contentTransform, false);
-                memberUI.SetUserInfo(user);
+                memberUI.SetUserInfo(member);
                 _membersUI.Add(memberUI);
             }
 
@@ -101,12 +108,12 @@ public class GroupDetails : MonoBehaviour
         try
         {
             GroupResponse groupResponse = await GameFuseUser.CurrentUser.GetGroupDetailsAsync(_groupId);
-            ClearMembers();
-            foreach (var user in groupResponse.Admins)
+            ClearScrollView();
+            foreach (var admin in groupResponse.Admins)
             {
                 MemberUI memberUI = Instantiate(_memberUIPrefab, _contentTransform);
                 memberUI.transform.SetParent(_contentTransform, false);
-                memberUI.SetUserInfo(user);
+                memberUI.SetUserInfo(admin);
                 _membersUI.Add(memberUI);
             }
 
@@ -119,11 +126,70 @@ public class GroupDetails : MonoBehaviour
         }
     }
 
+    private async void GetJoinRequests()
+    {
+        try
+        {
+            GroupResponse groupResponse = await GameFuseUser.CurrentUser.GetGroupDetailsAsync(_groupId);
+            ClearScrollView();
+            foreach (var joinRequest in groupResponse.JoinRequests)
+            {
+                JoinRequestUI joinRequestUI = Instantiate(_joinRequestUIPrefab, _contentTransform);
+                joinRequestUI.transform.SetParent(_contentTransform, false);
+                joinRequestUI.SetConnectionResponse(joinRequest);
+                _joinRequestsUI.Add(joinRequestUI);
+            }
+        }
+        catch (ApiException ex)
+        {
+            string exceptionMessage = $"Get Group Details Api Exception: \n Status Code: {ex.StatusCode} \n {ex.Message}";
+            Debug.LogError(exceptionMessage);
+            _resultInput.text = exceptionMessage;
+        }
+    }
+
+    private async void GetGroupInvites()
+    {
+        try
+        {
+            GroupResponse groupResponse = await GameFuseUser.CurrentUser.GetGroupDetailsAsync(_groupId);
+            ClearScrollView();
+            foreach (var invite in groupResponse.Invites)
+            {
+                JoinRequestUI joinRequestUI = Instantiate(_joinRequestUIPrefab, _contentTransform);
+                joinRequestUI.transform.SetParent(_contentTransform, false);
+                joinRequestUI.SetConnectionResponse(invite, true);
+                _joinRequestsUI.Add(joinRequestUI);
+            }
+        }
+        catch (ApiException ex)
+        {
+            string exceptionMessage = $"Get Group Details Api Exception: \n Status Code: {ex.StatusCode} \n {ex.Message}";
+            Debug.LogError(exceptionMessage);
+            _resultInput.text = exceptionMessage;
+        }
+    }
+
+    private void ClearScrollView()
+    {
+        ClearMembers();
+        ClearJoinRequests();
+    }
+
     private void ClearMembers()
     {
         foreach(var memberUI in _membersUI)
         {
             Destroy(memberUI.gameObject);
+        }
+        _membersUI.Clear();
+    }
+
+    private void ClearJoinRequests()
+    {
+        foreach(var joinRequestUI in _joinRequestsUI)
+        {
+            Destroy(joinRequestUI.gameObject);
         }
         _membersUI.Clear();
     }
