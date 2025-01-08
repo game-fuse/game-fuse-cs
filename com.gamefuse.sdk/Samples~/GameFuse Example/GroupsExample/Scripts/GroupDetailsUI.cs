@@ -3,6 +3,8 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using GameFuseCSharp;
+using System.Threading.Tasks;
+
 public class GroupDetailsUI : MonoBehaviour
 {
     [SerializeField]
@@ -21,17 +23,25 @@ public class GroupDetailsUI : MonoBehaviour
     JoinRequestUI _joinRequestUIPrefab;
 
     [SerializeField]
-    Transform _contentTransform;
+    AttributeUI _attributeUIPrefab;
 
     [SerializeField]
-    TMP_InputField _resultInput;
+    Transform _contentTransform, _attributeContentTransform;
 
     [SerializeField]
-    Button memberTabButton, adminTabButton, joinRequestTabButton, invitesTabButton;
+    TMP_InputField _resultInput, _inviteUserId, _attributeKey, _attributeValue;
+
+    [SerializeField]
+    TextMeshProUGUI _inviteMessage;
+
+    [SerializeField]
+    Button memberTabButton, adminTabButton, joinRequestTabButton, invitesTabButton, inviteButton, addAttributesButton;
 
     private List<MemberUI> _membersUI = new List<MemberUI>();
 
     private List<JoinRequestUI> _joinRequestsUI = new List<JoinRequestUI>();
+
+    private List<AttributeUI> _attributesUI = new List<AttributeUI>();
 
     private int _groupId;
 
@@ -46,6 +56,8 @@ public class GroupDetailsUI : MonoBehaviour
         adminTabButton.onClick.AddListener(GetGroupAdmins);
         joinRequestTabButton.onClick.AddListener(GetJoinRequests);
         invitesTabButton.onClick.AddListener(GetGroupInvites);
+        inviteButton.onClick.AddListener(InviteToGroup);
+        addAttributesButton.onClick.AddListener(AddAttribute);
     }
 
     public void OnDestroy()
@@ -58,6 +70,7 @@ public class GroupDetailsUI : MonoBehaviour
         _groupId = groupResponse.Id;
         SetGroupDetails(groupResponse);
         ActivateButtons();
+        GetAttributes();
     }
 
     private void SetGroupDetails(GroupResponse groupResponse)
@@ -77,6 +90,32 @@ public class GroupDetailsUI : MonoBehaviour
         adminTabButton.interactable = true;
         joinRequestTabButton.interactable = true;
         invitesTabButton.interactable = true;
+        inviteButton.interactable = true;
+        addAttributesButton.interactable = true;
+    }
+
+    private async void InviteToGroup()
+    {
+        try
+        {
+            GroupConnectionRequest connectionRequest = new GroupConnectionRequest
+            {
+                GroupId = _groupId,
+                UserId = int.Parse(_inviteUserId.text)
+            };
+            await GameFuseUser.CurrentUser.SendGroupConnectionRequestAsync(connectionRequest);
+            _inviteMessage.text = $"Invite sent to {_inviteUserId.text}";
+            _inviteUserId.text = string.Empty;
+            await Task.Delay(3000);
+            _inviteMessage.text = string.Empty;
+
+        }
+        catch(ApiException ex)
+        {
+            string exceptionMessage = $"Send Group Connection Api Exception: \n Status Code: {ex.StatusCode} \n {ex.Message}";
+            Debug.LogError(exceptionMessage);
+            _resultInput.text = exceptionMessage;
+        }
     }
 
     
@@ -170,6 +209,56 @@ public class GroupDetailsUI : MonoBehaviour
         }
     }
 
+    private async void AddAttribute()
+    {
+        try
+        {
+            addAttributesButton.interactable = false;
+            GroupAttributesRequest attributesRequest = new GroupAttributesRequest();
+            GroupAttributeRequest attribute = new GroupAttributeRequest
+            {
+                Key = _attributeKey.text,
+                Value = _attributeValue.text
+            };
+            attributesRequest.Attributes = new GroupAttributeRequest[] { attribute };
+            await GameFuseUser.CurrentUser.AddGroupAttributesAsync(_groupId, attributesRequest);
+            _attributeKey.text = string.Empty;
+            _attributeValue.text = string.Empty;
+            GetAttributes();
+
+        }
+        catch(ApiException ex)
+        {
+            string exceptionMessage = $"Add attribute api exception: \n Status Code: {ex.StatusCode} \n Message: {ex.Message}";
+            Debug.Log(exceptionMessage);
+            _resultInput.text = exceptionMessage;
+        }
+    }
+
+    private async void GetAttributes()
+    {
+        try
+        {
+            GroupAttributesResponse groupAttributesResponse = await GameFuseUser.CurrentUser.GetGroupAttributesAsync(_groupId);
+            ClearAttributes();
+            foreach(var groupAttribute in groupAttributesResponse.Attributes)
+            {
+                AttributeUI attributeUI = Instantiate(_attributeUIPrefab, _attributeContentTransform);
+                attributeUI.transform.SetParent(_attributeContentTransform, false);
+                attributeUI.SetAttribute(groupAttribute);
+                _attributesUI.Add(attributeUI);
+            }
+            addAttributesButton.interactable = true;
+        }
+        catch (ApiException ex)
+        {
+            string exceptionMessage = $"Get Group Details Api Exception: \n Status Code: {ex.StatusCode} \n {ex.Message}";
+            Debug.LogError(exceptionMessage);
+            _resultInput.text = exceptionMessage;
+        }
+
+    }
+
     private void ClearScrollView()
     {
         ClearMembers();
@@ -191,7 +280,16 @@ public class GroupDetailsUI : MonoBehaviour
         {
             Destroy(joinRequestUI.gameObject);
         }
-        _membersUI.Clear();
+        _joinRequestsUI.Clear();
+    }
+
+    private void ClearAttributes()
+    {
+        foreach(var attributeUI in _attributesUI)
+        {
+            Destroy(attributeUI.gameObject);
+        }
+        _attributesUI.Clear();
     }
 
 }
