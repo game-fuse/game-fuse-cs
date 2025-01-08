@@ -58,7 +58,31 @@ namespace GameFuseCSharp
             }
         }
 
-        public async Task<GroupConnectionStatusResponse> ManageGroupConnectionRequestAsync(int connectionId, string status)
+        public async Task<GroupConnectionStatusResponse> AcceptGroupConnectionRequestAsync(int connectionId)
+        {
+            try
+            {
+                return await ManageGroupConnectionRequestAsync(connectionId, JoinRequestStatus.accepted.ToString());
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+        }
+
+        public async Task<GroupConnectionStatusResponse> DeclineGroupConnectionRequestAsync(int connectionId)
+        {
+            try
+            {
+                return await ManageGroupConnectionRequestAsync(connectionId, JoinRequestStatus.declined.ToString());
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+        }
+
+        private async Task<GroupConnectionStatusResponse> ManageGroupConnectionRequestAsync(int connectionId, string status)
         {
             string url = $"{_baseUrl}/group_connections/{connectionId}";
             var statusRequest = new GroupConnectionStatusRequest { Status = status };

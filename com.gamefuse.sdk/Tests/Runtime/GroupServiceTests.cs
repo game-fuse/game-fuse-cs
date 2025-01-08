@@ -494,7 +494,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.AreEqual(secondUser.username, joinRequest.User.Username, "Username in join request should match second user");
 
                 // Accept the join request
-                var acceptResponse = await _groupsService.ManageGroupConnectionRequestAsync(joinRequest.Id, "accepted");
+                var acceptResponse = await _groupsService.AcceptGroupConnectionRequestAsync(joinRequest.Id);
                 Assert.NotNull(acceptResponse, "Accept response should not be null");
                 Assert.AreEqual(joinRequest.Id, acceptResponse.Id, "Connection ID should match the original request");
                 Assert.AreEqual("accepted", acceptResponse.Status.ToLower(), "Status should be updated to accepted");
@@ -574,7 +574,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.AreEqual("pending", joinRequest.Status.ToLower(), "Join request status should be pending");
 
                 // Decline the join request
-                var declineResponse = await _groupsService.ManageGroupConnectionRequestAsync(joinRequest.Id, "declined");
+                var declineResponse = await _groupsService.DeclineGroupConnectionRequestAsync(joinRequest.Id);
                 Assert.NotNull(declineResponse, "Decline response should not be null");
                 Assert.AreEqual(joinRequest.Id, declineResponse.Id, "Connection ID should match the original request");
                 Assert.AreEqual("declined", declineResponse.Status.ToLower(), "Status should be updated to declined");
@@ -705,7 +705,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 var connectionResponse = await secondUserGroupService.SendGroupConnectionRequestAsync(connectionRequest);
 
                 // Admin accepts the join request
-                await _groupsService.ManageGroupConnectionRequestAsync(connectionResponse.Id, "accepted");
+                await _groupsService.AcceptGroupConnectionRequestAsync(connectionResponse.Id);
 
                 // Create attribute request
                 var attributeRequest = new GroupAttributeRequest
@@ -781,7 +781,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 var connectionResponse = await secondUserGroupService.SendGroupConnectionRequestAsync(connectionRequest);
 
                 // Admin accepts the join request
-                await _groupsService.ManageGroupConnectionRequestAsync(connectionResponse.Id, "accepted");
+                await _groupsService.AcceptGroupConnectionRequestAsync(connectionResponse.Id);
 
                 // Create attribute request
                 var attributeRequest = new GroupAttributeRequest

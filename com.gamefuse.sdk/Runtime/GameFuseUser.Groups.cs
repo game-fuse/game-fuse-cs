@@ -82,18 +82,36 @@ namespace GameFuseCSharp
         }
 
         /// <summary>
-        /// Manages (accepts or declines) a group connection request.
+        /// Accepts a group connection request.
         /// </summary>
         /// <param name="connectionId">ID of the connection request to manage</param>
-        /// <param name="status">New status for the request (accepted/declined)</param>
         /// <returns>Response confirming the status update</returns>
         /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<GroupConnectionStatusResponse> ManageGroupConnectionRequestAsync(int connectionId, string status)
+        public async Task<GroupConnectionStatusResponse> AcceptGroupConnectionRequestAsync(int connectionId)
         {
             try
             {
                 IGroupsService groupsService = new GroupsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await groupsService.ManageGroupConnectionRequestAsync(connectionId, status);
+                return await groupsService.AcceptGroupConnectionRequestAsync(connectionId);
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Accepts a group connection request.
+        /// </summary>
+        /// <param name="connectionId">ID of the connection request to manage</param>
+        /// <returns>Response confirming the status update</returns>
+        /// <exception cref="ApiException">Thrown when request fails</exception>
+        public async Task<GroupConnectionStatusResponse> DeclineGroupConnectionRequestAsync(int connectionId)
+        {
+            try
+            {
+                IGroupsService groupsService = new GroupsService(GameFuse.GetBaseURL(), authenticationToken);
+                return await groupsService.DeclineGroupConnectionRequestAsync(connectionId);
             }
             catch (ApiException)
             {
