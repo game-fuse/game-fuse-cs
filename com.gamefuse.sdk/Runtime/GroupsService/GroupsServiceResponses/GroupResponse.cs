@@ -27,6 +27,9 @@ namespace GameFuseCSharp
         [JsonProperty("searchable")]
         public bool Searchable { get; set; }
 
+        [JsonProperty("admins_only_can_create_attributes")]
+        public bool AdminsOnlyCanCreateAttributes { get; set; }
+
         [JsonProperty("member_count")]
         public int MemberCount { get; set; }
 

@@ -100,7 +100,7 @@ namespace GameFuseCSharp
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.GET))
             {
-                return await SendRequestAsync<GroupAttributesResponse>(webRequest, true);
+                return await SendRequestAsync<GroupAttributesResponse>(webRequest);
             }
         }
 
@@ -113,7 +113,7 @@ namespace GameFuseCSharp
             {
                 try
                 {
-                    return await SendRequestAsync<GroupAttributesResponse>(webRequest, true);
+                    return await SendRequestAsync<GroupAttributesResponse>(webRequest);
                 }
                 catch (ApiException ex)
                 {
@@ -138,7 +138,7 @@ namespace GameFuseCSharp
             {
                 try
                 {
-                   return await SendRequestAsync<GroupAttribute>(webRequest, true);
+                   return await SendRequestAsync<GroupAttribute>(webRequest);
                 }
                 catch (ApiException ex)
                 {
