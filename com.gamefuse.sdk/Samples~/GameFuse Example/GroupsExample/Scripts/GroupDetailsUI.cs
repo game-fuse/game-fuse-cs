@@ -214,14 +214,12 @@ public class GroupDetailsUI : MonoBehaviour
         try
         {
             addAttributesButton.interactable = false;
-            GroupAttributesRequest attributesRequest = new GroupAttributesRequest();
             GroupAttributeRequest attribute = new GroupAttributeRequest
             {
                 Key = _attributeKey.text,
                 Value = _attributeValue.text
             };
-            attributesRequest.Attributes = new GroupAttributeRequest[] { attribute };
-            await GameFuseUser.CurrentUser.AddGroupAttributesAsync(_groupId, attributesRequest);
+            await GameFuseUser.CurrentUser.AddGroupAttributeAsync(_groupId, attribute);
             _attributeKey.text = string.Empty;
             _attributeValue.text = string.Empty;
             GetAttributes();

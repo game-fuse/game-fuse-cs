@@ -138,6 +138,29 @@ namespace GameFuseCSharp
             }
         }
 
+
+
+        /// <summary>
+        /// Adds new attributes to a group.
+        /// </summary>
+        /// <param name="groupId">ID of the group to add attributes to</param>
+        /// <param name="request">Attribute to add</param>
+        /// <returns>Response containing updated group attributes</returns>
+        /// <exception cref="ApiException">Thrown when request fails</exception>
+        public async Task<GroupAttributesResponse> AddGroupAttributeAsync(int groupId, GroupAttributeRequest request)
+        {
+
+            GroupAttributesRequest attributesRequest = new GroupAttributesRequest();
+            attributesRequest.Attributes = new GroupAttributeRequest[] { request };
+            try
+            {
+                return await AddGroupAttributesAsync(groupId, attributesRequest);
+            }catch(ApiException)
+            {
+                throw;
+            }
+        }
+
         /// <summary>
         /// Adds new attributes to a group.
         /// </summary>
