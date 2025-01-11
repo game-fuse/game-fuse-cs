@@ -139,9 +139,8 @@ namespace GameFuseCSharp
         }
 
 
-
         /// <summary>
-        /// Adds new attributes to a group.
+        /// Adds a single attribute to a group.
         /// </summary>
         /// <param name="groupId">ID of the group to add attributes to</param>
         /// <param name="request">Attribute to add</param>
