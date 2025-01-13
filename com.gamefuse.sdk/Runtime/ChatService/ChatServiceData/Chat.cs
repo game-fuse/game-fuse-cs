@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace GameFuseCSharp
 {
     [Serializable]
-    public class CreateChatResponse
+    public class Chat
     {
         [JsonProperty("id")]
         public int Id { get; set; }
