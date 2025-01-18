@@ -2,9 +2,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using GameFuseCSharp;
+using System;
 
 public class FriendUI : MonoBehaviour
 {
+    public static event Action<UserInfo> OnFriendPanelClicked;
+
     [SerializeField]
     TextMeshProUGUI _userNameText, _statusText;
 
@@ -13,9 +16,14 @@ public class FriendUI : MonoBehaviour
 
     private UserInfo _userInfo;
 
+    private Button _panelButton;
+
 
     void Start()
     {
+        _panelButton = GetComponent<Button>();
+        _panelButton.onClick.AddListener(HandleFriendPanelClicked);
+
         _removeButton.onClick.AddListener(RemoveFriend);
         _statusText.text = string.Empty;
     }
@@ -43,6 +51,11 @@ public class FriendUI : MonoBehaviour
     {
         Destroy(_removeButton.gameObject);
         _statusText.text = status;
+    }
+
+    private void HandleFriendPanelClicked()
+    {
+        OnFriendPanelClicked?.Invoke(_userInfo);
     }
 
 }
