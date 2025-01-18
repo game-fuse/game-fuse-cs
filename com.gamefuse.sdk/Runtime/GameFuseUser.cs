@@ -95,7 +95,7 @@ namespace GameFuseCSharp
             return credits;
         }
 
-        internal int GetID()
+        public int GetID()
         {
             return id;
         }
