@@ -45,5 +45,8 @@ namespace GameFuseCSharp
 
         [JsonProperty("rankings")]
         public RankingsObject[] Rankings { get; set; }
+
+        [JsonProperty("multiplayer")]
+        public bool Multiplayer { get; set; }
     }
 }

@@ -14,7 +14,11 @@ namespace GameFuseCSharp
 
         public async Task<GameRoundObject> CreateGameRoundAsync(int gameUserId)
         {
-            var gameRound = new GameRoundObject { GameUserId = gameUserId };
+            var gameRound = new GameRoundObject
+            {
+                GameUserId = gameUserId,
+                GameType = "default"  // Providing required game_type
+            };
             return await CreateGameRoundAsync(gameRound);
         }
 
@@ -37,7 +41,15 @@ namespace GameFuseCSharp
         public async Task<GameRoundObject> UpdateGameRoundAsync(int gameRoundId, GameRoundObject gameRound)
         {
             string url = $"{_baseUrl}/game_rounds/{gameRoundId}";
-            string jsonBody = SerializeRequest(gameRound);
+
+            // Create minimal update object with only score and place
+            var updateData = new
+            {
+                score = gameRound.Score,
+                place = gameRound.Place
+            };
+
+            string jsonBody = SerializeRequest(updateData);
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.PUT, jsonBody))
             {
