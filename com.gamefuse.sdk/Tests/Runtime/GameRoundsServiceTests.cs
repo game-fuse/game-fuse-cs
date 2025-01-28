@@ -256,18 +256,16 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.NotNull(initialRound);
 
                 // Update the round
-                var updateData = new GameRoundObject
-                {
-                    Score = 2000.0,
-                    Place = 2
-                };
+               
+                int newScore = 2000;
+                int newPlace = 2;
 
-                var updatedRound = await _gameRoundsService.UpdateGameRoundAsync(initialRound.Id, updateData);
+                var updatedRound = await _gameRoundsService.UpdateGameRoundAsync(initialRound.Id, newScore, newPlace);
 
                 Assert.NotNull(updatedRound);
                 Assert.AreEqual(initialRound.Id, updatedRound.Id);
-                Assert.AreEqual(2000.0, updatedRound.Score);
-                Assert.AreEqual(2, updatedRound.Place);
+                Assert.AreEqual(newScore, updatedRound.Score);
+                Assert.AreEqual(newPlace, updatedRound.Place);
             }
             finally
             {

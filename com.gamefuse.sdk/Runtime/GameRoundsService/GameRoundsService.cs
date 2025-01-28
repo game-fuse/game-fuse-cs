@@ -38,15 +38,14 @@ namespace GameFuseCSharp
             }
         }
 
-        public async Task<GameRoundObject> UpdateGameRoundAsync(int gameRoundId, GameRoundObject gameRound)
+        public async Task<GameRoundObject> UpdateGameRoundAsync(int gameRoundId, int score, int place)
         {
             string url = $"{_baseUrl}/game_rounds/{gameRoundId}";
 
-            // Create minimal update object with only score and place
             var updateData = new
             {
-                score = gameRound.Score,
-                place = gameRound.Place
+                score = score,
+                place = place
             };
 
             string jsonBody = SerializeRequest(updateData);
