@@ -650,7 +650,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 var addedAttribute = attributeResponse.Attributes[0];
                 Assert.AreEqual("test_key", addedAttribute.Key, "Attribute key should match");
                 Assert.AreEqual("test_value", addedAttribute.Value, "Attribute value should match");
-                Assert.AreEqual(_user.id, addedAttribute.UserId, "Creator ID should match admin user");
+                Assert.AreEqual(_user.id, addedAttribute.CreatorId, "Creator ID should match admin user");
                 Assert.IsFalse(addedAttribute.OthersCanEdit, "Admin should be able to edit the attribute");
 
                 // Verify attribute exists in group details
@@ -731,7 +731,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 var addedAttribute = attributeResponse.Attributes[0];
                 Assert.AreEqual("user_key", addedAttribute.Key, "Attribute key should match");
                 Assert.AreEqual("user_value", addedAttribute.Value, "Attribute value should match");
-                Assert.AreEqual(secondUser.id, addedAttribute.UserId, "Creator ID should match second user");
+                Assert.AreEqual(secondUser.id, addedAttribute.CreatorId, "Creator ID should match second user");
                 Assert.IsFalse(addedAttribute.OthersCanEdit, "Creator should be able to edit their attribute");
             }
             catch (ApiException ex)
