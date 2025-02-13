@@ -721,9 +721,9 @@ namespace GameFuseCSharp
 
         #region Leaderboard
 
-        public void AddLeaderboardEntry(string leaderboardName, int score, Dictionary<string, string> extraAttributes = null, Action<string, bool> callback = null)
+        public void AddLeaderboardEntry(string leaderboardName, int score, Dictionary<string, string> metadata = null, Action<string, bool> callback = null)
         {
-            StartCoroutine(AddLeaderboardEntryRoutine(leaderboardName, score, extraAttributes, callback));
+            StartCoroutine(AddLeaderboardEntryRoutine(leaderboardName, score, metadata, callback));
         }
 
         public void AddLeaderboardEntry(string leaderboardName, int score, Action<string, bool> callback = null)
@@ -732,24 +732,24 @@ namespace GameFuseCSharp
         }
 
 
-        private IEnumerator AddLeaderboardEntryRoutine(string leaderboardName, int score, Dictionary<string, string> extraAttributes, Action<string, bool> callback = null)
+        private IEnumerator AddLeaderboardEntryRoutine(string leaderboardName, int score, Dictionary<string, string> metadata, Action<string, bool> callback = null)
         {
             GameFuse.Log("GameFuseUser Adding Leaderboard Entry: " + leaderboardName + ": " + score.ToString());
 
             if (GameFuse.GetGameId() == null)
                 throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
-            List<string> extraAttributesList = new List<string>();
-            foreach (KeyValuePair<string, string> entry in extraAttributes)
+            List<string> metadataList = new List<string>();
+            foreach (KeyValuePair<string, string> entry in metadata)
             {
-                extraAttributesList.Add("\"" + entry.Key.ToString() + "\": " + entry.Value.ToString());
+                metadataList.Add("\"" + entry.Key.ToString() + "\": " + entry.Value.ToString());
             }
 
-            string extraAttributesJson = "{" + String.Join(", ", extraAttributesList.ToArray()) + "}";
+            string metadataJson = "{" + String.Join(", ", metadataList.ToArray()) + "}";
             WWWForm form = new WWWForm();
             form.AddField("authentication_token", GetAuthenticationToken());
             form.AddField("leaderboard_name", leaderboardName);
-            form.AddField("extra_attributes", extraAttributesJson);
+            form.AddField("metadata", metadataJson);
             form.AddField("score", score);
 
             var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/add_leaderboard_entry", form);
@@ -836,7 +836,7 @@ namespace GameFuseCSharp
                         storeItem.Obj.GetString("username"),
                         Convert.ToInt32(storeItem.Obj.GetNumber("score")),
                         storeItem.Obj.GetString("leaderboard_name"),
-                        storeItem.Obj.GetString("extra_attributes"),
+                        storeItem.Obj.GetString("metadata"),
                         Convert.ToInt32(storeItem.Obj.GetNumber("game_user_id")),
                         storeItem.Obj.GetString("created_at")
                         )
