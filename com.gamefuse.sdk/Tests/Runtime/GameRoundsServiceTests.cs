@@ -256,16 +256,82 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.NotNull(initialRound);
 
                 // Update the round
-               
-                int newScore = 2000;
-                int newPlace = 2;
 
-                var updatedRound = await _gameRoundsService.UpdateGameRoundAsync(initialRound.Id, newScore, newPlace);
+                initialRound.Score = 2000;
+                initialRound.Place = 2;
+
+                var updatedRound = await _gameRoundsService.UpdateGameRoundAsync(initialRound.Id, initialRound);
 
                 Assert.NotNull(updatedRound);
                 Assert.AreEqual(initialRound.Id, updatedRound.Id);
-                Assert.AreEqual(newScore, updatedRound.Score);
-                Assert.AreEqual(newPlace, updatedRound.Place);
+                Assert.AreEqual(2000, updatedRound.Score);
+                Assert.AreEqual(2, updatedRound.Place);
+            }
+            finally
+            {
+                await TearDownAsync();
+            }
+        }
+
+        [Test]
+        public async Task UpdateMultiplayerGameRound_UpdatesPlayerStats_And_Rankings()
+        {
+            try
+            {
+                await SetUpAsync();
+
+                // Create a second player
+                var secondUser = await CreateAndSignInUser("secondplayer");
+                var secondUserService = new GameRoundsService("https://gamefuse.co/api/v3", secondUser.authentication_token);
+
+                // Create initial multiplayer game round for first player
+                var firstPlayerRound = new GameRoundObject
+                {
+                    GameUserId = _user.id,
+                    StartTime = "2024-01-25T10:00:00Z",
+                    EndTime = "2024-01-25T10:30:00Z",
+                    Score = 1000.0,
+                    Place = 2,
+                    GameType = "multiplayer_battle",
+                    Metadata = new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        { "difficulty", "Hard" }
+                    },
+                    Multiplayer = true
+                    };
+
+                var firstPlayerCreatedRound = await _gameRoundsService.CreateGameRoundAsync(firstPlayerRound);
+                Assert.NotNull(firstPlayerCreatedRound, "First player's round should be created");
+                Assert.NotNull(firstPlayerCreatedRound.MultiplayerGameRoundId, "Multiplayer game round ID should be assigned");
+
+                // Add second player to the multiplayer game
+                var secondPlayerRound = new GameRoundObject
+                {
+                    GameUserId = secondUser.id,
+                    StartTime = "2024-01-25T10:00:00Z",
+                    EndTime = "2024-01-25T10:30:00Z",
+                    Score = 800.0,
+                    Place = 3,
+                    GameType = "multiplayer_battle",
+                    Metadata = new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        { "difficulty", "Hard" }
+                    },
+                    MultiplayerGameRoundId = firstPlayerCreatedRound.MultiplayerGameRoundId
+                };
+
+                var secondPlayerCreatedRound = await secondUserService.CreateGameRoundAsync(secondPlayerRound);
+                Assert.NotNull(secondPlayerCreatedRound, "Second player's round should be created");
+
+                // Update first player's score and place
+                firstPlayerCreatedRound.Score = 1500.0;
+                firstPlayerCreatedRound.Place = 1;
+
+                var updatedRound = await _gameRoundsService.UpdateGameRoundAsync(firstPlayerCreatedRound.Id, firstPlayerCreatedRound);
+                Assert.NotNull(updatedRound, "Updated round should not be null");
+                Assert.AreEqual(1500.0, updatedRound.Score, "Score should be updated");
+                Assert.AreEqual(1, updatedRound.Place, "Place should be updated");
+
             }
             finally
             {

@@ -18,10 +18,9 @@ namespace GameFuseCSharp
         /// Updates an existing game round with new score and place values.
         /// </summary>
         /// <param name="gameRoundId">The ID of the game round to update</param>
-        /// <param name="score">The new score for the game round</param>
-        /// <param name="place">The new place/ranking for the game round</param>
+        /// <param name="gameRound">The game round with updated values</param>
         /// <returns>The updated game round object</returns>
-        Task<GameRoundObject> UpdateGameRoundAsync(int gameRoundId, int score, int place);
+        Task<GameRoundObject> UpdateGameRoundAsync(int gameRoundId, GameRoundObject gameRound); 
 
         /// <summary>
         /// Retrieves a specific game round by ID.

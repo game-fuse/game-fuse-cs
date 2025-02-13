@@ -38,14 +38,23 @@ namespace GameFuseCSharp
             }
         }
 
-        public async Task<GameRoundObject> UpdateGameRoundAsync(int gameRoundId, int score, int place)
+        public async Task<GameRoundObject> UpdateGameRoundAsync(int gameRoundId, GameRoundObject gameRound)
         {
             string url = $"{_baseUrl}/game_rounds/{gameRoundId}";
 
+            // First, get the existing game round to check if it's multiplayer
+            GameRoundObject existingRound = await GetGameRoundAsync(gameRoundId);
+
+            // Create update object with all allowed fields
             var updateData = new
             {
-                score = score,
-                place = place
+                // Don't include game_type if this is a multiplayer game
+                game_type = existingRound.MultiplayerGameRoundId.HasValue ? null : gameRound.GameType,
+                place = gameRound.Place,
+                score = gameRound.Score,
+                start_time = gameRound.StartTime,
+                end_time = gameRound.EndTime,
+                metadata = gameRound.Metadata
             };
 
             string jsonBody = SerializeRequest(updateData);

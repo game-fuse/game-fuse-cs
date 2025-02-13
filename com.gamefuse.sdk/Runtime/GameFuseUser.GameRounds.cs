@@ -46,16 +46,15 @@ namespace GameFuseCSharp
         /// Updates an existing game round owned by the current user.
         /// </summary>
         /// <param name="gameRoundId">ID of the game round to update.</param>
-        /// <param name="score">The new score for the game round</param>
-        /// <param name="place">The new place/ranking for the game round</param>
+        /// <param name="gameRound">game round with updated values</param>
         /// <returns>Response containing the updated game round.</returns>
         /// <exception cref="ApiException">Thrown when request fails or user doesn't own the game round.</exception>
-        public async Task<GameRoundObject> UpdateGameRoundAsync(int gameRoundId, int score, int place)
+        public async Task<GameRoundObject> UpdateGameRoundAsync(int gameRoundId, GameRoundObject gameRound)
         {
             try
             {
                 IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await gameRoundsService.UpdateGameRoundAsync(gameRoundId, score, place);
+                return await gameRoundsService.UpdateGameRoundAsync(gameRoundId, gameRound);
             }
             catch (ApiException)
             {
