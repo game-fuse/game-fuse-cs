@@ -28,6 +28,7 @@ namespace GameFuseCSharp
                 }
                 catch (ApiException ex)
                 {
+                    Debug.Log($"UserSerive SignUpAsync ApiException: \n Status Code: {ex.StatusCode} \n Message: {ex.Message}");
                     throw;
                 }
             }

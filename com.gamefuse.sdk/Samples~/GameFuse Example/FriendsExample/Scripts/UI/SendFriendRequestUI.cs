@@ -24,7 +24,7 @@ public class SendFriendRequestUI : MonoBehaviour
         try
         {
             FriendRequestResponse friendRequestResponse  = await GameFuseUser.CurrentUser.SendFriendRequestAsync(_userNameInput.text);
-            _resultInput.text = $"friend request {friendRequestResponse.friendship_id}, sent to {_userNameInput.text}";
+            _resultInput.text = $"friend request {friendRequestResponse.FriendshipId}, sent to {_userNameInput.text}";
 
         }
         catch (ApiException ex)

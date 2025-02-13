@@ -1,8 +1,12 @@
+using System;
+using Newtonsoft.Json;
+
 namespace GameFuseCSharp
 {
-    [System.Serializable]
+    [Serializable]
     public class IncomingFriendRequestsResponse
     {
-        public FriendRequest[] incoming_friend_requests = new FriendRequest[0];
+        [JsonProperty("incoming_friend_requests")]
+        public FriendRequest[] IncomingFriendRequests { get; set; } = Array.Empty<FriendRequest>();
     }
 }

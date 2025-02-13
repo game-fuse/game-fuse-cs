@@ -1,13 +1,27 @@
+using System;
+using Newtonsoft.Json;
+
 namespace GameFuseCSharp
 {
-    [System.Serializable]
+    [Serializable]
     public class UserInfo
     {
-        public int id;
-        public string username;
-        public string email;
-        public string display_email;
-        public int credits;
-        public int score;
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("username")]
+        public string Username { get; set; }
+
+        [JsonProperty("email")]
+        public string Email { get; set; }
+
+        [JsonProperty("display_email")]
+        public string DisplayEmail { get; set; }
+
+        [JsonProperty("credits")]
+        public int Credits { get; set; }
+
+        [JsonProperty("score")]
+        public int Score { get; set; }
     }
 }

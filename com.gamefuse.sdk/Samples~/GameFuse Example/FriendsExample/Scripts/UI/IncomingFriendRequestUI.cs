@@ -23,14 +23,14 @@ public class IncomingFriendRequestUI : MonoBehaviour
     public void SetFriendRequest(FriendRequest friendRequest)
     {
         _friendRequest = friendRequest;
-        _userNameText.text = _friendRequest.username;
+        _userNameText.text = _friendRequest.Username;
     }
 
     private async void AcceptFriendRequest()
     {
         try
         {
-            FriendshipStatusResponse friendshipStatusResponse = await GameFuseUser.CurrentUser.AcceptFriendRequestAsync(_friendRequest.friendship_id);
+            FriendshipStatusResponse friendshipStatusResponse = await GameFuseUser.CurrentUser.AcceptFriendRequestAsync(_friendRequest.FriendshipId);
             UpdateUIStatus("Accepted");
         }
         catch(ApiException ex)
@@ -43,7 +43,7 @@ public class IncomingFriendRequestUI : MonoBehaviour
     {
         try
         {
-            FriendshipStatusResponse friendshipStatusResponse = await GameFuseUser.CurrentUser.DeclineFriendRequestAsync(_friendRequest.friendship_id);
+            FriendshipStatusResponse friendshipStatusResponse = await GameFuseUser.CurrentUser.DeclineFriendRequestAsync(_friendRequest.FriendshipId);
             UpdateUIStatus("Declined");
         }
         catch(ApiException ex)

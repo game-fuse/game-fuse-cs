@@ -93,7 +93,7 @@ namespace GameFuseCSharp
             {
                 IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
                 FriendsResponse friendsResponse = await friendshipService.GetFriendsAsync();
-                return friendsResponse.friends;
+                return friendsResponse.Friends;
             }
             catch
             {
@@ -112,7 +112,7 @@ namespace GameFuseCSharp
             {
                 IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
                 IncomingFriendRequestsResponse friendRequestsResponse = await friendshipService.GetIncomingFriendRequestsAsync();
-                return friendRequestsResponse.incoming_friend_requests;
+                return friendRequestsResponse.IncomingFriendRequests;
             }
             catch
             {
@@ -131,7 +131,7 @@ namespace GameFuseCSharp
             {
                 IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
                 OutgoingFriendRequestsResponse friendRequestsResponse = await friendshipService.GetOutgoingFriendRequestsAsync();
-                return friendRequestsResponse.outgoing_friend_requests;
+                return friendRequestsResponse.OutgoingFriendRequests;
             }
             catch
             {

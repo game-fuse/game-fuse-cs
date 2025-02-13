@@ -5,8 +5,9 @@ using System;
 namespace GameFuseCSharp.Tests
 {
     [TestFixture]
-    public class JsonSerializationTests : MonoBehaviour
+    public class JsonSerializationTests
     {
+        private int x;
         [Test]
         public void CreateUserRequest_SerializesCorrectly()
         {

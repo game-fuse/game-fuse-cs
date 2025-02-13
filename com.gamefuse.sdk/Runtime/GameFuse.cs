@@ -21,7 +21,7 @@ namespace GameFuseCSharp
         #region instance vars
         private string id;
         private string token;
-        private string name;
+        private string _name;
         private string description;
         private bool verboseLogging = false;
         private List<GameFuseStoreItem> store = new List<GameFuseStoreItem>();
@@ -63,7 +63,7 @@ namespace GameFuseCSharp
         }
         public static string GetGameName()
         {
-            return Instance.name;
+            return Instance._name;
         }
         public static string GetGameDescription()
         {
@@ -123,7 +123,7 @@ namespace GameFuseCSharp
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
                 Instance.id = json.GetNumber("id").ToString();
-                Instance.name = json.GetString("name");
+                Instance._name = json.GetString("name");
                 Instance.description = json.GetString("description");
                 Instance.token = json.GetString("token");
 
@@ -172,7 +172,7 @@ namespace GameFuseCSharp
                 var data = request.downloadHandler.text;
                 JSONObject json = JSONObject.Parse(data);
                 Instance.id = json.GetNumber("id").ToString();
-                Instance.name = json.GetString("name");
+                Instance._name = json.GetString("name");
                 Instance.description = json.GetString("description");
                 Instance.token = json.GetString("token");
 

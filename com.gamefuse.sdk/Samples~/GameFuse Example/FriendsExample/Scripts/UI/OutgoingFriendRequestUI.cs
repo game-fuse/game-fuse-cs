@@ -22,7 +22,7 @@ public class OutgoingFriendRequestUI : MonoBehaviour
     public void SetFriendRequest(FriendRequest friendRequest)
     {
         _friendRequest = friendRequest;
-        _userNameText.text = _friendRequest.username;
+        _userNameText.text = _friendRequest.Username;
     }
 
 
@@ -30,7 +30,7 @@ public class OutgoingFriendRequestUI : MonoBehaviour
     {
         try
         {
-            FriendshipStatusResponse friendshipStatusResponse = await GameFuseUser.CurrentUser.CancelFriendRequestAsync(_friendRequest.friendship_id);
+            FriendshipStatusResponse friendshipStatusResponse = await GameFuseUser.CurrentUser.CancelFriendRequestAsync(_friendRequest.FriendshipId);
             UpdateUIStatus("Canceled");
         }
         catch(ApiException ex)
