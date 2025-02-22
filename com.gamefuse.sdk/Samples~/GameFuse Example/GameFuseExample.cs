@@ -222,7 +222,7 @@ public class GameFuseExample : MonoBehaviour {
             foreach( GameFuseLeaderboardEntry entry in GameFuse.Instance.leaderboardEntries)
             {
                 print(entry.GetUsername() + ": " + entry.GetScore().ToString() + ": " + entry.GetLeaderboardName() );
-                foreach (KeyValuePair<string,string> kvPair in entry.GetExtraAttributes())
+                foreach (KeyValuePair<string,string> kvPair in entry.GetMetadata())
                 {
                     print(kvPair.Key + ": " + kvPair.Value);
                 }
@@ -245,7 +245,7 @@ public class GameFuseExample : MonoBehaviour {
             foreach (GameFuseLeaderboardEntry entry in GameFuse.Instance.leaderboardEntries)
             {
                 print(entry.GetUsername() + ": " + entry.GetScore().ToString() + ": " + entry.GetLeaderboardName());
-                foreach (KeyValuePair<string, string> kvPair in entry.GetExtraAttributes())
+                foreach (KeyValuePair<string, string> kvPair in entry.GetMetadata())
                 {
                     print(kvPair.Key + ": " + kvPair.Value);
                 }

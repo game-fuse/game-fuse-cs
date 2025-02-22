@@ -750,6 +750,7 @@ namespace GameFuseCSharp.Tests.Runtime
         public async Task AddGroupAttribute_AsNonAdmin_FailsWhenNotAllowed()
         {
             LogAssert.Expect(LogType.Error, new System.Text.RegularExpressions.Regex(".*401 Unauthorized.*"));
+
             try
             {
                 await SetUpAsync();
