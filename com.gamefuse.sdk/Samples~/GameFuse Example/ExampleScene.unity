@@ -21647,6 +21647,7 @@ GameObject:
   - component: {fileID: 1148758275}
   - component: {fileID: 1148758277}
   - component: {fileID: 1148758276}
+  - component: {fileID: 1148758278}
   m_Layer: 5
   m_Name: GameRounds
   m_TagString: Untagged
@@ -21715,6 +21716,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1148758274}
   m_CullTransparentMesh: 1
+--- !u!114 &1148758278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1148758274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce744c1f9a0cefb4a8f7da4760c337c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gameRoundPrefab: {fileID: 916179215151914738, guid: 717293a67ef12ab4e815e5f6af273fe7, type: 3}
+  _refreshButton: {fileID: 507315964}
+  _contentTransform: {fileID: 1539654522}
+  _resultInput: {fileID: 1511713608}
 --- !u!1 &1157373976
 GameObject:
   m_ObjectHideFlags: 0
