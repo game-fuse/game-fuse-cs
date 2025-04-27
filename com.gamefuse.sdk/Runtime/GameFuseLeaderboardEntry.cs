@@ -22,7 +22,7 @@ namespace GameFuseCSharp
         private int score;
         private string username;
         private int game_user_id;
-        private string extra_attributes;
+        private string metadata;
         private DateTime timestamp;
 
         #endregion
@@ -40,9 +40,9 @@ namespace GameFuseCSharp
         {
             return leaderboard_name;
         }
-        public Dictionary<string,string> GetExtraAttributes()
+        public Dictionary<string,string> GetMetadata()
         {
-            var dictionary = extra_attributes.Replace("\\", "").Replace("{", "").Replace("}", "").Replace(", ", ",").Replace(": ", ":")
+            var dictionary = metadata.Replace("\\", "").Replace("{", "").Replace("}", "").Replace(", ", ",").Replace(": ", ":")
             .Split(',')
             .Select(part => part.Split(':'))
             .Where(part => part.Length == 2)
@@ -67,7 +67,7 @@ namespace GameFuseCSharp
             this.username = username;
             this.score = score;
             this.leaderboard_name = leaderboard_name;
-            this.extra_attributes = extra_attributes;
+            this.metadata = extra_attributes;
             this.game_user_id = game_user_id;
             this.timestamp = DateTime.ParseExact(created_at, "yyyy-MM-ddTHH:mm:ss.fffZ", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal);
         }
