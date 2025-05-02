@@ -632,7 +632,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 {
                     Key = "test_key",
                     Value = "test_value",
-                    OnlyCanEditByCreator = true
+                    OthersCanEdit = true
                 };
 
                 var attributesRequest = new GroupAttributesRequest
@@ -712,7 +712,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 {
                     Key = "user_key",
                     Value = "user_value",
-                    OnlyCanEditByCreator = true,
+                    OthersCanEdit = true,
                 };
 
                 var attributesRequest = new GroupAttributesRequest
@@ -789,7 +789,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 {
                     Key = "restricted_key",
                     Value = "restricted_value",
-                    OnlyCanEditByCreator = true
+                    OthersCanEdit = true
                 };
 
                 var attributesRequest = new GroupAttributesRequest
@@ -850,7 +850,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 {
                     Key = "test_key",
                     Value = "initial_value",
-                    OnlyCanEditByCreator = true
+                    OthersCanEdit = true
                 };
 
                 var attributesRequest = new GroupAttributesRequest
