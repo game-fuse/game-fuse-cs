@@ -23,5 +23,8 @@ namespace GameFuseCSharp
 
         [JsonProperty("score")]
         public int Score { get; set; }
+        
+        [JsonProperty("is_new_user")]
+        public bool IsNewUser { get; set; }
     }
 }

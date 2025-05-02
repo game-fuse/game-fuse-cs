@@ -230,12 +230,13 @@ namespace GameFuseCSharp.Tests.Runtime
                 // Verify multiplayer rounds using GetUserGameRoundsAsync
                 var userRounds = await _gameRoundsService.GetUserGameRoundsAsync(_user.id);
                 var foundMultiplayerRound = userRounds.GameRounds.FirstOrDefault(r => r.Id == createdMultiplayerRound.Id);
-
-                Assert.NotNull(foundMultiplayerRound, "Should find the multiplayer round");
-                Assert.NotNull(foundMultiplayerRound.Rankings, "Rankings should not be null");
-                Assert.AreEqual(2, foundMultiplayerRound.Rankings.Length, "Should have 2 rankings");
-                Assert.That(foundMultiplayerRound.Rankings.Any(r => r.User.Id == _user.id), "Should contain first player");
-                Assert.That(foundMultiplayerRound.Rankings.Any(r => r.User.Id == secondUser.id), "Should contain second player");
+               
+                var returnedMultiplayerRound = await _gameRoundsService.GetGameRoundAsync(createdMultiplayerRound.Id);
+                Assert.NotNull(returnedMultiplayerRound, "Should find the multiplayer round");
+                Assert.NotNull(returnedMultiplayerRound.Rankings, "Rankings should not be null");
+                Assert.AreEqual(2, returnedMultiplayerRound.Rankings.Length, "Should have 2 rankings");
+                Assert.That(returnedMultiplayerRound.Rankings.Any(r => r.User.Id == _user.id), "Should contain first player");
+                Assert.That(returnedMultiplayerRound.Rankings.Any(r => r.User.Id == secondUser.id), "Should contain second player");
             }
             finally
             {
