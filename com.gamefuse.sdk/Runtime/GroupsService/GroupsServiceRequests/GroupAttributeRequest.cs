@@ -12,7 +12,7 @@ namespace GameFuseCSharp
         [JsonProperty("value", Required = Required.Always)]
         public string Value { get; set; }
 
-        [JsonProperty("only_can_edit_by_creator", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? OnlyCanEditByCreator { get; set; }
+        [JsonProperty("others_can_edit", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? OthersCanEdit { get; set; }
     }
 }
