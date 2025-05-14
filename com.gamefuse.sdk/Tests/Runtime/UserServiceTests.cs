@@ -88,15 +88,15 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 SignUpRequest request = new SignUpRequest
                 {
-                    email = userEmail,
-                    password = password,
-                    password_confirmation = password,
-                    username = userName,
-                    game_id = _testGameId,
-                    game_token = _testGameToken
+                    Email = userEmail,
+                    Password = password,
+                    PasswordConfirmation = password,
+                    Username = userName,
+                    GameId = _testGameId,
+                    GameToken = _testGameToken
                 };
 
-                Debug.Log($"SignUp Request: GameId: {request.game_id}, GameToken: {request.game_token}");
+                Debug.Log($"SignUp Request: GameId: {request.GameId}, GameToken: {request.GameToken}");
 
                 SignInResponse response = await _userService.SignUpAsync(request);
 
@@ -104,11 +104,11 @@ namespace GameFuseCSharp.Tests.Runtime
                 Debug.Log(responseJsonString);
 
                 Assert.IsNotNull(response, "SignUp response is null");
-                Assert.AreEqual(userName, response.username, "Username mismatch");
-                Assert.AreEqual(userEmail, response.email, "Email mismatch");
-                Assert.Greater(response.id, 0, "User ID is not greater than 0");
+                Assert.AreEqual(userName, response.Username, "Username mismatch");
+                Assert.AreEqual(userEmail, response.Email, "Email mismatch");
+                Assert.Greater(response.Id, 0, "User ID is not greater than 0");
 
-                Debug.Log($"User successfully signed up. User ID: {response.id}");
+                Debug.Log($"User successfully signed up. User ID: {response.Id}");
             }
             catch (ApiException ex)
             {

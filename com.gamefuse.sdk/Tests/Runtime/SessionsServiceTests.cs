@@ -103,20 +103,20 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 SignInRequest signInRequest = new SignInRequest
                 {
-                    email = _testUserEmail,
-                    password = _testUserPassword,
-                    game_id = _testGameId,
-                    game_token = _testGameToken
+                    Email = _testUserEmail,
+                    Password = _testUserPassword,
+                    GameId = _testGameId,
+                    GameToken = _testGameToken
                 };
 
                 SignInResponse signInResponse = await _sessionsService.SignInAsync(signInRequest);
 
                 Assert.IsNotNull(signInResponse, "SignIn response is null");
-                Assert.AreEqual(_testUserEmail, signInResponse.email, "Email mismatch");
-                Assert.IsNotEmpty(signInResponse.authentication_token, "Authentication token is empty");
-                Assert.Greater(signInResponse.id, 0, "User ID is not greater than 0");
+                Assert.AreEqual(_testUserEmail, signInResponse.Email, "Email mismatch");
+                Assert.IsNotEmpty(signInResponse.AuthenticationToken, "Authentication token is empty");
+                Assert.Greater(signInResponse.Id, 0, "User ID is not greater than 0");
 
-                Debug.Log($"User successfully signed in. User ID: {signInResponse.id}");
+                Debug.Log($"User successfully signed in. User ID: {signInResponse.Id}");
             }
             catch (ApiException ex)
             {
