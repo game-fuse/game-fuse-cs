@@ -64,8 +64,8 @@ namespace GameFuseCSharp.Tests.Runtime
             // Create a test game
             Debug.Log("Creating test game...");
             var gameResponse = await _adminService.CreateGameAsync();
-            _testGameId = gameResponse.id;
-            _testGameToken = gameResponse.token;
+            _testGameId = gameResponse.Id;
+            _testGameToken = gameResponse.Token;
             Debug.Log($"Test game created. ID: {_testGameId}, Token: {_testGameToken}");
 
             // Sign up and sign in two test users
@@ -93,22 +93,22 @@ namespace GameFuseCSharp.Tests.Runtime
 
             SignUpRequest signUpRequest = new SignUpRequest
             {
-                email = userEmail,
-                password = password,
-                password_confirmation = password,
-                username = username,
-                game_id = _testGameId,
-                game_token = _testGameToken
+                Email = userEmail,
+                Password = password,
+                PasswordConfirmation = password,
+                Username = username,
+                GameId = _testGameId,
+                GameToken = _testGameToken
             };
 
             await _userService.SignUpAsync(signUpRequest);
 
             SignInRequest signInRequest = new SignInRequest
             {
-                email = userEmail,
-                password = password,
-                game_id = _testGameId,
-                game_token = _testGameToken
+                Email = userEmail,
+                Password = password,
+                GameId = _testGameId,
+                GameToken = _testGameToken
             };
 
             return await _sessionsService.SignInAsync(signInRequest);
@@ -245,7 +245,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 var user1FriendshipData = await _friendshipService1.GetFriendsAsync();
                 Assert.IsTrue(user1FriendshipData.Friends.Length > 0, "User1 should have User2 as a friend");
                 var user2AsAFriend = user1FriendshipData.Friends[0];
-                Assert.AreEqual(_user2.username, user2AsAFriend.Username, "The friend should be User2");
+                Assert.AreEqual(_user2.Username, user2AsAFriend.Username, "The friend should be User2");
 
                 // User1 unfriends User2 using the fetched friend ID
                 var unfriendResponse = await _friendshipService1.UnfriendPlayerAsync(user2AsAFriend.Id);

@@ -75,8 +75,8 @@ namespace GameFuseCSharp.Tests.Runtime
                 // Create a test game
                 Debug.Log("Creating test game...");
                 var gameResponse = await _adminService.CreateGameAsync();
-                _testGameId = gameResponse.id;
-                _testGameToken = gameResponse.token;
+                _testGameId = gameResponse.Id;
+                _testGameToken = gameResponse.Token;
                 Debug.Log($"Test game created. ID: {_testGameId}, Token: {_testGameToken}");
 
                 // Sign up a test user
@@ -88,12 +88,12 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 SignUpRequest signUpRequest = new SignUpRequest
                 {
-                    email = _testUserEmail,
-                    password = _testUserPassword,
-                    password_confirmation = _testUserPassword,
-                    username = userName,
-                    game_id = _testGameId,
-                    game_token = _testGameToken
+                    Email = _testUserEmail,
+                    Password = _testUserPassword,
+                    PasswordConfirmation = _testUserPassword,
+                    Username = userName,
+                    GameId = _testGameId,
+                    GameToken = _testGameToken
                 };
 
                 await _userService.SignUpAsync(signUpRequest);

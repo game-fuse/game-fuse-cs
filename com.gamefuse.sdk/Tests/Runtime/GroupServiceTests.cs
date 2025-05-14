@@ -188,8 +188,8 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.NotNull(response.Admins, "Admins array should not be null");
                 Assert.AreEqual(1, response.Members.Length, "Should have one member");
                 Assert.AreEqual(1, response.Admins.Length, "Should have one admin");
-                Assert.AreEqual(_user.id, response.Members[0].Id, "Creator should be a member");
-                Assert.AreEqual(_user.id, response.Admins[0].Id, "Creator should be an admin");
+                Assert.AreEqual(_user.Id, response.Members[0].Id, "Creator should be a member");
+                Assert.AreEqual(_user.Id, response.Admins[0].Id, "Creator should be an admin");
             }
             catch (ApiException ex)
             {
@@ -229,18 +229,18 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.Greater(response.Admins.Length, 0, "Group should have at least one admin");
 
                 // Verify the creator is an admin
-                var creatorAdmin = response.Admins.FirstOrDefault(admin => admin.Id == _user.id);
+                var creatorAdmin = response.Admins.FirstOrDefault(admin => admin.Id == _user.Id);
                 Assert.NotNull(creatorAdmin, "Creator should be in the admins list");
-                Assert.AreEqual(_user.username, creatorAdmin.Username, "Admin username should match creator's username");
-                Assert.AreEqual(_user.email, creatorAdmin.Email, "Admin email should match creator's email");
+                Assert.AreEqual(_user.Username, creatorAdmin.Username, "Admin username should match creator's username");
+                Assert.AreEqual(_user.Email, creatorAdmin.Email, "Admin email should match creator's email");
 
                 // Verify admin is also a member
-                var creatorMember = response.Members.FirstOrDefault(member => member.Id == _user.id);
+                var creatorMember = response.Members.FirstOrDefault(member => member.Id == _user.Id);
                 Assert.NotNull(creatorMember, "Creator should also be in the members list");
 
                 // Additional verification that creator is the only admin initially
                 Assert.AreEqual(1, response.Admins.Length, "Initially there should be exactly one admin");
-                Assert.AreEqual(_user.id, response.Admins[0].Id, "The sole admin should be the creator");
+                Assert.AreEqual(_user.Id, response.Admins[0].Id, "The sole admin should be the creator");
             }
             catch (ApiException ex)
             {
@@ -465,13 +465,13 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.NotNull(secondUser, "Second user should be created successfully");
 
                 // Create a new GroupsService instance with second user's token
-                var secondUserGroupService = new GroupsService("https://gamefuse.co/api/v3", secondUser.authentication_token);
+                var secondUserGroupService = new GroupsService("https://gamefuse.co/api/v3", secondUser.AuthenticationToken);
 
                 // Create the connection request
                 var connectionRequest = new GroupConnectionRequest
                 {
                     GroupId = createdGroup.Id,
-                    UserId = secondUser.id
+                    UserId = secondUser.Id
                 };
 
                 // Act - Send the group connection request
@@ -481,17 +481,17 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.NotNull(connectionResponse, "Connection response should not be null");
                 Assert.Greater(connectionResponse.Id, 0, "Connection ID should be greater than 0");
                 Assert.AreEqual("pending", connectionResponse.Status.ToLower(), "Initial connection status should be pending");
-                Assert.AreEqual(secondUser.id, connectionResponse.User.Id, "User ID in response should match requesting user");
+                Assert.AreEqual(secondUser.Id, connectionResponse.User.Id, "User ID in response should match requesting user");
 
                 // Verify the connection appears in the group's join requests
                 var updatedGroup = await _groupsService.GetGroupDetailsAsync(createdGroup.Id);
                 Assert.NotNull(updatedGroup.JoinRequests, "Group should have join requests array");
                 Assert.Greater(updatedGroup.JoinRequests.Length, 0, "Group should have at least one join request");
 
-                var joinRequest = updatedGroup.JoinRequests.FirstOrDefault(jr => jr.User.Id == secondUser.id);
+                var joinRequest = updatedGroup.JoinRequests.FirstOrDefault(jr => jr.User.Id == secondUser.Id);
                 Assert.NotNull(joinRequest, "Join request from second user should exist");
                 Assert.AreEqual("pending", joinRequest.Status.ToLower(), "Join request status should be pending");
-                Assert.AreEqual(secondUser.username, joinRequest.User.Username, "Username in join request should match second user");
+                Assert.AreEqual(secondUser.Username, joinRequest.User.Username, "Username in join request should match second user");
 
                 // Accept the join request
                 var acceptResponse = await _groupsService.AcceptGroupConnectionRequestAsync(joinRequest.Id);
@@ -504,9 +504,9 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.NotNull(groupAfterAcceptance.Members, "Group should have members array");
                 Assert.AreEqual(2, groupAfterAcceptance.Members.Length, "Group should now have two members");
 
-                var newMember = groupAfterAcceptance.Members.FirstOrDefault(m => m.Id == secondUser.id);
+                var newMember = groupAfterAcceptance.Members.FirstOrDefault(m => m.Id == secondUser.Id);
                 Assert.NotNull(newMember, "Second user should now be a member");
-                Assert.AreEqual(secondUser.username, newMember.Username, "Username should match second user");
+                Assert.AreEqual(secondUser.Username, newMember.Username, "Username should match second user");
 
                 // Verify join request is no longer in pending requests
                 Assert.IsEmpty(groupAfterAcceptance.JoinRequests, "Join requests should be empty after acceptance");
@@ -550,13 +550,13 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.NotNull(secondUser, "Second user should be created successfully");
 
                 // Create a new GroupsService instance with second user's token
-                var secondUserGroupService = new GroupsService("https://gamefuse.co/api/v3", secondUser.authentication_token);
+                var secondUserGroupService = new GroupsService("https://gamefuse.co/api/v3", secondUser.AuthenticationToken);
 
                 // Create the connection request
                 var connectionRequest = new GroupConnectionRequest
                 {
                     GroupId = createdGroup.Id,
-                    UserId = secondUser.id
+                    UserId = secondUser.Id
                 };
 
                 // Act - Send the group connection request
@@ -569,7 +569,7 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 // Verify the request appears in pending join requests
                 var groupWithPendingRequest = await _groupsService.GetGroupDetailsAsync(createdGroup.Id);
-                var joinRequest = groupWithPendingRequest.JoinRequests.FirstOrDefault(jr => jr.User.Id == secondUser.id);
+                var joinRequest = groupWithPendingRequest.JoinRequests.FirstOrDefault(jr => jr.User.Id == secondUser.Id);
                 Assert.NotNull(joinRequest, "Join request from second user should exist");
                 Assert.AreEqual("pending", joinRequest.Status.ToLower(), "Join request status should be pending");
 
@@ -584,15 +584,15 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.NotNull(groupAfterDecline.Members, "Group should have members array");
                 Assert.AreEqual(1, groupAfterDecline.Members.Length, "Group should still have only one member (the creator)");
 
-                var declinedUser = groupAfterDecline.Members.FirstOrDefault(m => m.Id == secondUser.id);
+                var declinedUser = groupAfterDecline.Members.FirstOrDefault(m => m.Id == secondUser.Id);
                 Assert.IsNull(declinedUser, "Declined user should not be a member");
 
                 // Verify join request is no longer in pending requests
                 Assert.IsEmpty(groupAfterDecline.JoinRequests, "Join requests should be empty after decline");
 
                 // Verify the only member is still the original creator
-                Assert.AreEqual(_user.id, groupAfterDecline.Members[0].Id, "Only member should be the group creator");
-                Assert.AreEqual(_user.username, groupAfterDecline.Members[0].Username, "Only member should be the group creator");
+                Assert.AreEqual(_user.Id, groupAfterDecline.Members[0].Id, "Only member should be the group creator");
+                Assert.AreEqual(_user.Username, groupAfterDecline.Members[0].Username, "Only member should be the group creator");
             }
             catch (ApiException ex)
             {
@@ -650,7 +650,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 var addedAttribute = attributeResponse.Attributes[0];
                 Assert.AreEqual("test_key", addedAttribute.Key, "Attribute key should match");
                 Assert.AreEqual("test_value", addedAttribute.Value, "Attribute value should match");
-                Assert.AreEqual(_user.id, addedAttribute.CreatorId, "Creator ID should match admin user");
+                Assert.AreEqual(_user.Id, addedAttribute.CreatorId, "Creator ID should match admin user");
                 Assert.IsFalse(addedAttribute.OthersCanEdit, "Admin should be able to edit the attribute");
 
                 // Verify attribute exists in group details
@@ -694,13 +694,13 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 // Create and sign in a second user
                 var secondUser = await CreateAndSignInUser("attributetestuser");
-                var secondUserGroupService = new GroupsService("https://gamefuse.co/api/v3", secondUser.authentication_token);
+                var secondUserGroupService = new GroupsService("https://gamefuse.co/api/v3", secondUser.AuthenticationToken);
 
                 // Send join request as second user
                 var connectionRequest = new GroupConnectionRequest
                 {
                     GroupId = createdGroup.Id,
-                    UserId = secondUser.id
+                    UserId = secondUser.Id
                 };
                 var connectionResponse = await secondUserGroupService.SendGroupConnectionRequestAsync(connectionRequest);
 
@@ -731,7 +731,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 var addedAttribute = attributeResponse.Attributes[0];
                 Assert.AreEqual("user_key", addedAttribute.Key, "Attribute key should match");
                 Assert.AreEqual("user_value", addedAttribute.Value, "Attribute value should match");
-                Assert.AreEqual(secondUser.id, addedAttribute.CreatorId, "Creator ID should match second user");
+                Assert.AreEqual(secondUser.Id, addedAttribute.CreatorId, "Creator ID should match second user");
                 Assert.IsFalse(addedAttribute.OthersCanEdit, "Creator should be able to edit their attribute");
             }
             catch (ApiException ex)
@@ -771,13 +771,13 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 // Create and sign in a second user
                 var secondUser = await CreateAndSignInUser("restricteduser");
-                var secondUserGroupService = new GroupsService("https://gamefuse.co/api/v3", secondUser.authentication_token);
+                var secondUserGroupService = new GroupsService("https://gamefuse.co/api/v3", secondUser.AuthenticationToken);
 
                 // Send join request as second user
                 var connectionRequest = new GroupConnectionRequest
                 {
                     GroupId = createdGroup.Id,
-                    UserId = secondUser.id
+                    UserId = secondUser.Id
                 };
                 var connectionResponse = await secondUserGroupService.SendGroupConnectionRequestAsync(connectionRequest);
 
@@ -904,17 +904,17 @@ namespace GameFuseCSharp.Tests.Runtime
             Assert.NotNull(group.Members, "Members array should not be null");
             Assert.AreEqual(1, group.Members.Length, "Should have exactly one member");
             var member = group.Members[0];
-            Assert.AreEqual(creator.id, member.Id, "Member ID should match creator");
-            Assert.AreEqual(creator.username, member.Username, "Member username should match creator");
-            Assert.AreEqual(creator.email, member.Email, "Member email should match creator");
+            Assert.AreEqual(creator.Id, member.Id, "Member ID should match creator");
+            Assert.AreEqual(creator.Username, member.Username, "Member username should match creator");
+            Assert.AreEqual(creator.Email, member.Email, "Member email should match creator");
 
             // Verify Admins array
             Assert.NotNull(group.Admins, "Admins array should not be null");
             Assert.AreEqual(1, group.Admins.Length, "Should have exactly one admin");
             var admin = group.Admins[0];
-            Assert.AreEqual(creator.id, admin.Id, "Admin ID should match creator");
-            Assert.AreEqual(creator.username, admin.Username, "Admin username should match creator");
-            Assert.AreEqual(creator.email, admin.Email, "Admin email should match creator");
+            Assert.AreEqual(creator.Id, admin.Id, "Admin ID should match creator");
+            Assert.AreEqual(creator.Username, admin.Username, "Admin username should match creator");
+            Assert.AreEqual(creator.Email, admin.Email, "Admin email should match creator");
 
             // Verify Join Requests and Invites arrays exist (they should be empty for new groups)
             Assert.NotNull(group.JoinRequests, "JoinRequests array should not be null");

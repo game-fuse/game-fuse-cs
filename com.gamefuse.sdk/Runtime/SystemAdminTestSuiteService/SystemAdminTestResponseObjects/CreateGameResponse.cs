@@ -5,8 +5,8 @@ namespace GameFuseCSharp
     [Serializable]
     public class CreateGameResponse
     {
-        public int id;
-        public string name;
-        public string token;
+        public int Id;
+        public string Name;
+        public string Token;
     }
 }

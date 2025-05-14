@@ -5,6 +5,6 @@ namespace GameFuseCSharp
     [Serializable]
     public class CleanUpResponse
     {
-        public string message;
+        public string Message;
     }
 }

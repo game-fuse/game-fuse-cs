@@ -35,10 +35,10 @@ namespace GameFuseCSharp.Tests
             // Arrange
             CreateUserResponse createUserResponse = new CreateUserResponse
             {
-                id = 1,
-                username = "dave",
-                email = "server_dave@email.com",
-                display_email = "dave@email.com"
+                Id = 1,
+                Username = "dave",
+                Email = "server_dave@email.com",
+                DisplayEmail = "dave@email.com"
             };
 
             // Act
@@ -57,9 +57,9 @@ namespace GameFuseCSharp.Tests
             // Arrange
             CreateGameResponse createGameResponse = new CreateGameResponse
             {
-                id = 1,
-                name = "AdventureQuest",
-                token = "abcd1234"
+                Id = 1,
+                Name = "AdventureQuest",
+                Token = "abcd1234"
             };
 
             // Act
@@ -97,7 +97,7 @@ namespace GameFuseCSharp.Tests
             // Arrange
             CleanUpResponse cleanUpResponse = new CleanUpResponse
             {
-                message = "Game cleaned up successfully"
+                Message = "Game cleaned up successfully"
             };
 
             // Act
