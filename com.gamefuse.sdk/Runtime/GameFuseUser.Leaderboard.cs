@@ -118,7 +118,7 @@ namespace GameFuseCSharp
         {
             try
             {
-                int gameId = GameFuse.GetGameId() ?? throw new ApiException("Game ID not set", 400);
+                int gameId = GameFuse.GetGameId() ?? throw new ApiException(400, "Game ID not set", "No game ID was provided");
                 ILeaderboardService leaderboardService = new LeaderboardService(GameFuse.GetBaseURL(), authenticationToken);
                 return await leaderboardService.GetGameLeaderboardEntriesAsync(gameId, leaderboardName, limit);
             }
