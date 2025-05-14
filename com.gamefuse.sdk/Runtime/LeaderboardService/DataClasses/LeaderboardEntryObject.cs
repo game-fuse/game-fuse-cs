@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace GameFuseCSharp
 {
@@ -23,7 +24,33 @@ namespace GameFuseCSharp
         public string Username { get; set; }
         
         [JsonProperty("extra_attributes")]
-        public Dictionary<string, object> Metadata { get; set; }
+        public Dictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
+        
+        [JsonProperty("metadata")]
+        private string MetadataJson
+        {
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    try
+                    {
+                        var metadataDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(value);
+                        if (metadataDict != null)
+                        {
+                            foreach (var kvp in metadataDict)
+                            {
+                                Metadata[kvp.Key] = kvp.Value;
+                            }
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        Debug.LogWarning($"Failed to parse metadata JSON: {ex.Message}");
+                    }
+                }
+            }
+        }
         
         [JsonProperty("created_at")]
         public string CreatedAt { get; set; }

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace GameFuseCSharp
 {
@@ -35,6 +36,26 @@ namespace GameFuseCSharp
                 IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
                 gameRound.GameUserId = this.id;
                 return await gameRoundsService.CreateGameRoundAsync(gameRound);
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Creates a new multiplayer game round with the current user as creator.
+        /// </summary>
+        /// <param name="gameType">The type of game being played</param>
+        /// <param name="playerRounds">List of player game rounds to include in the multiplayer round</param>
+        /// <returns>The created multiplayer game round with rankings</returns>
+        /// <exception cref="ApiException">Thrown when request fails.</exception>
+        public async Task<MultiplayerGameRoundResponse> CreateMultiplayerGameRoundAsync(string gameType, List<GameRoundObject> playerRounds)
+        {
+            try
+            {
+                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
+                return await gameRoundsService.CreateMultiplayerGameRoundAsync(gameType, this.id, playerRounds);
             }
             catch (ApiException)
             {

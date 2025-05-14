@@ -1,0 +1,614 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="38" result="Failed(Child)" total="38" passed="33" failed="5" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2025-05-14 21:10:59Z" end-time="2025-05-14 21:13:29Z" duration="150.0336101">
+  <test-suite type="TestSuite" id="1054" name="GameFusePackageDev" fullname="GameFusePackageDev" runstate="Runnable" testcasecount="38" result="Failed" site="Child" start-time="2025-05-14 21:10:59Z" end-time="2025-05-14 21:13:29Z" duration="150.033610" total="38" passed="33" failed="5" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1047" name="com.gamefuse.sdk.RuntimeTests.dll" fullname="C:/Users/daver/Projects/gamefuse/GameFusePackageDev/Library/ScriptAssemblies/com.gamefuse.sdk.RuntimeTests.dll" runstate="Runnable" testcasecount="38" result="Failed" site="Child" start-time="2025-05-14 21:10:59Z" end-time="2025-05-14 21:13:29Z" duration="149.998596" total="38" passed="33" failed="5" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="6220" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1048" name="GameFuseCSharp" fullname="GameFuseCSharp" runstate="Runnable" testcasecount="38" result="Failed" site="Child" start-time="2025-05-14 21:10:59Z" end-time="2025-05-14 21:13:29Z" duration="149.988829" total="38" passed="33" failed="5" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1049" name="Tests" fullname="GameFuseCSharp.Tests" runstate="Runnable" testcasecount="38" result="Failed" site="Child" start-time="2025-05-14 21:10:59Z" end-time="2025-05-14 21:13:29Z" duration="149.982341" total="38" passed="33" failed="5" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1050" name="Runtime" fullname="GameFuseCSharp.Tests.Runtime" runstate="Runnable" testcasecount="38" result="Failed" site="Child" start-time="2025-05-14 21:10:59Z" end-time="2025-05-14 21:13:29Z" duration="149.974839" total="38" passed="33" failed="5" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestFixture" id="1001" name="ChatServiceTests" fullname="GameFuseCSharp.Tests.Runtime.ChatServiceTests" classname="GameFuseCSharp.Tests.Runtime.ChatServiceTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2025-05-14 21:10:59Z" end-time="2025-05-14 21:11:30Z" duration="30.597939" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <output><![CDATA[Admin Name: david_test_token, Admin Token: e70c9...
+]]></output>
+              <test-case id="1002" name="CreateDirectChat_SendMessage_VerifyMessageDelivered" fullname="GameFuseCSharp.Tests.Runtime.ChatServiceTests.CreateDirectChat_SendMessage_VerifyMessageDelivered" methodname="CreateDirectChat_SendMessage_VerifyMessageDelivered" classname="GameFuseCSharp.Tests.Runtime.ChatServiceTests" runstate="Runnable" seed="133128858" result="Passed" start-time="2025-05-14 21:10:59Z" end-time="2025-05-14 21:11:06Z" duration="6.238862" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6660, Token: 55960f8b-a336-4a5d-999b-7ed850a4d9f4
+Cleaning up test game with ID: 6660
+]]></output>
+              </test-case>
+              <test-case id="1003" name="CreateGroupChat_SendMessage_VerifyMessageDelivered" fullname="GameFuseCSharp.Tests.Runtime.ChatServiceTests.CreateGroupChat_SendMessage_VerifyMessageDelivered" methodname="CreateGroupChat_SendMessage_VerifyMessageDelivered" classname="GameFuseCSharp.Tests.Runtime.ChatServiceTests" runstate="Runnable" seed="38805618" result="Passed" start-time="2025-05-14 21:11:06Z" end-time="2025-05-14 21:11:11Z" duration="5.486847" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6661, Token: 1ea5d1e5-270c-4e77-8749-ae22b4163fac
+User 1 id 26289 Group Created 873
+Cleaning up test game with ID: 6661
+]]></output>
+              </test-case>
+              <test-case id="1004" name="GetChats_ReturnsAllUserChats" fullname="GameFuseCSharp.Tests.Runtime.ChatServiceTests.GetChats_ReturnsAllUserChats" methodname="GetChats_ReturnsAllUserChats" classname="GameFuseCSharp.Tests.Runtime.ChatServiceTests" runstate="Runnable" seed="1665914542" result="Passed" start-time="2025-05-14 21:11:11Z" end-time="2025-05-14 21:11:17Z" duration="5.810196" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6662, Token: faa9bce3-09c2-4554-9b47-b91a40828603
+Cleaning up test game with ID: 6662
+]]></output>
+              </test-case>
+              <test-case id="1006" name="GetMessages_PaginationWorks" fullname="GameFuseCSharp.Tests.Runtime.ChatServiceTests.GetMessages_PaginationWorks" methodname="GetMessages_PaginationWorks" classname="GameFuseCSharp.Tests.Runtime.ChatServiceTests" runstate="Runnable" seed="1642488163" result="Passed" start-time="2025-05-14 21:11:17Z" end-time="2025-05-14 21:11:23Z" duration="6.283930" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6663, Token: c5411c8a-686d-4129-b8d0-501f30573f62
+Cleaning up test game with ID: 6663
+]]></output>
+              </test-case>
+              <test-case id="1005" name="SendMessage_AndMarkAsRead_VerifyReadStatus" fullname="GameFuseCSharp.Tests.Runtime.ChatServiceTests.SendMessage_AndMarkAsRead_VerifyReadStatus" methodname="SendMessage_AndMarkAsRead_VerifyReadStatus" classname="GameFuseCSharp.Tests.Runtime.ChatServiceTests" runstate="Runnable" seed="1201015706" result="Passed" start-time="2025-05-14 21:11:23Z" end-time="2025-05-14 21:11:30Z" duration="6.740779" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6664, Token: 18075216-10c4-47d7-b8c3-f6bcb2f790fc
+Cleaning up test game with ID: 6664
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1007" name="FriendshipServiceTests" fullname="GameFuseCSharp.Tests.Runtime.FriendshipServiceTests" classname="GameFuseCSharp.Tests.Runtime.FriendshipServiceTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2025-05-14 21:11:30Z" end-time="2025-05-14 21:11:46Z" duration="16.363324" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <output><![CDATA[Admin Name: david_test_token, Admin Token: e70c9...
+]]></output>
+              <test-case id="1011" name="AcceptFriendRequest_Unfriend_SuccessfullyRemovesFriendship" fullname="GameFuseCSharp.Tests.Runtime.FriendshipServiceTests.AcceptFriendRequest_Unfriend_SuccessfullyRemovesFriendship" methodname="AcceptFriendRequest_Unfriend_SuccessfullyRemovesFriendship" classname="GameFuseCSharp.Tests.Runtime.FriendshipServiceTests" runstate="Runnable" seed="771250660" result="Passed" start-time="2025-05-14 21:11:30Z" end-time="2025-05-14 21:11:35Z" duration="4.749073" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6665, Token: 03a375a8-3ee6-47ac-9a72-2d3ec1754c79
+Print friend response
+Cleaning up test game with ID: 6665
+]]></output>
+              </test-case>
+              <test-case id="1008" name="SendFriendRequest_AcceptFriendRequest_SuccessfullyCreatesAndAcceptsFriendship" fullname="GameFuseCSharp.Tests.Runtime.FriendshipServiceTests.SendFriendRequest_AcceptFriendRequest_SuccessfullyCreatesAndAcceptsFriendship" methodname="SendFriendRequest_AcceptFriendRequest_SuccessfullyCreatesAndAcceptsFriendship" classname="GameFuseCSharp.Tests.Runtime.FriendshipServiceTests" runstate="Runnable" seed="1920655437" result="Passed" start-time="2025-05-14 21:11:35Z" end-time="2025-05-14 21:11:39Z" duration="3.723174" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6666, Token: 129cf5d9-ea0b-46d1-9b6a-352e1ec70d35
+Cleaning up test game with ID: 6666
+]]></output>
+              </test-case>
+              <test-case id="1010" name="SendFriendRequest_CancelFriendRequest_SuccessfullyCancelsRequest" fullname="GameFuseCSharp.Tests.Runtime.FriendshipServiceTests.SendFriendRequest_CancelFriendRequest_SuccessfullyCancelsRequest" methodname="SendFriendRequest_CancelFriendRequest_SuccessfullyCancelsRequest" classname="GameFuseCSharp.Tests.Runtime.FriendshipServiceTests" runstate="Runnable" seed="1149706030" result="Passed" start-time="2025-05-14 21:11:39Z" end-time="2025-05-14 21:11:43Z" duration="3.991984" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6667, Token: bbcc6438-ce4a-43bd-8fc5-c12cfc13cba4
+Cleaning up test game with ID: 6667
+]]></output>
+              </test-case>
+              <test-case id="1009" name="SendFriendRequest_DeclineFriendRequest_SuccessfullyCreatesAndDeclinesFriendship" fullname="GameFuseCSharp.Tests.Runtime.FriendshipServiceTests.SendFriendRequest_DeclineFriendRequest_SuccessfullyCreatesAndDeclinesFriendship" methodname="SendFriendRequest_DeclineFriendRequest_SuccessfullyCreatesAndDeclinesFriendship" classname="GameFuseCSharp.Tests.Runtime.FriendshipServiceTests" runstate="Runnable" seed="1245845996" result="Passed" start-time="2025-05-14 21:11:43Z" end-time="2025-05-14 21:11:46Z" duration="3.890654" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6668, Token: 9a4ab35c-3a95-401d-98fb-d2c9c8ad8558
+Cleaning up test game with ID: 6668
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1012" name="GameRoundsServiceTests" fullname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests" classname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests" runstate="Runnable" testcasecount="9" result="Failed" site="Child" start-time="2025-05-14 21:11:46Z" end-time="2025-05-14 21:12:15Z" duration="29.022073" total="9" passed="7" failed="2" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1014" name="CreateGameRound_WithFullData_CreatesSuccessfully" fullname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests.CreateGameRound_WithFullData_CreatesSuccessfully" methodname="CreateGameRound_WithFullData_CreatesSuccessfully" classname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests" runstate="Runnable" seed="158739249" result="Passed" start-time="2025-05-14 21:11:46Z" end-time="2025-05-14 21:11:49Z" duration="2.513985" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1013" name="CreateGameRound_WithMinimalData_CreatesSuccessfully" fullname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests.CreateGameRound_WithMinimalData_CreatesSuccessfully" methodname="CreateGameRound_WithMinimalData_CreatesSuccessfully" classname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests" runstate="Runnable" seed="1947905775" result="Passed" start-time="2025-05-14 21:11:49Z" end-time="2025-05-14 21:11:51Z" duration="2.089151" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1015" name="CreateGameRound_WithoutGameUserId_ThrowsException" fullname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests.CreateGameRound_WithoutGameUserId_ThrowsException" methodname="CreateGameRound_WithoutGameUserId_ThrowsException" classname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests" runstate="Runnable" seed="1236623160" result="Passed" start-time="2025-05-14 21:11:51Z" end-time="2025-05-14 21:11:53Z" duration="2.183288" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1016" name="CreateMultiplayerGameRound_AndAddPlayer_CreatesSuccessfully" fullname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests.CreateMultiplayerGameRound_AndAddPlayer_CreatesSuccessfully" methodname="CreateMultiplayerGameRound_AndAddPlayer_CreatesSuccessfully" classname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests" runstate="Runnable" seed="348423771" result="Failed" start-time="2025-05-14 21:11:53Z" end-time="2025-05-14 21:11:59Z" duration="6.227169" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[Unhandled log message: '[Error] Error creating player round: ProtocolError: HTTP/1.1 500 Internal Server Error, Status: 500, Response: Unknown server error. We have reported it and will look into it ASAP.'. Use UnityEngine.TestTools.LogAssert.Expect]]></message>
+                  <stack-trace><![CDATA[GameFuseCSharp.GameRoundsService/<CreateMultiplayerGameRoundAsync>d__3:MoveNext () (at Assets/game-fuse-cs/com.gamefuse.sdk/Runtime/GameRoundsService/GameRoundsService.cs:107)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<GameFuseCSharp.GameRoundObject>:SetException (System.Exception)
+GameFuseCSharp.GameRoundsService/<CreateGameRoundAsync>d__2:MoveNext () (at Assets/game-fuse-cs/com.gamefuse.sdk/Runtime/GameRoundsService/GameRoundsService.cs:39)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<GameFuseCSharp.GameRoundObject>:SetException (System.Exception)
+GameFuseCSharp.AbstractService/<SendRequestAsync>d__9`1<GameFuseCSharp.GameRoundObject>:MoveNext () (at Assets/game-fuse-cs/com.gamefuse.sdk/Runtime/AbstractService/AbstractService.cs:133)
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[Error creating player round: ProtocolError: HTTP/1.1 500 Internal Server Error, Status: 500, Response: Unknown server error. We have reported it and will look into it ASAP.
+Error creating player round: ProtocolError: HTTP/1.1 401 Unauthorized, Status: 401, Response: You cannot create a game round for another user!
+Error in CreateMultiplayerGameRoundAsync: ProtocolError: HTTP/1.1 404 Not Found, Status: 404, Response: <!DOCTYPE html>
+<html>
+<head>
+  <title>GameFuse 404 - The Page Does Not Exist</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+  .rails-default-error-page {
+    background-color: #000;
+    color: #2E2F30;
+    text-align: center;
+    font-family: arial, sans-serif;
+    margin: 0;
+  }
+
+  .rails-default-error-page div.dialog {
+    width: 95%;
+    max-width: 45em;
+    margin: 4em auto 0;
+  }
+
+  .rails-default-error-page div.dialog > div {
+    border: 1px solid #CCC;
+    border-right-color: #000;
+    border-left-color: #000;
+    border-bottom-color: #000;
+    border-top: #C9FFCF solid 4px;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    background-color: #111;
+    padding: 7px 12% 0;
+    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
+  }
+
+  .rails-default-error-page div.dialog > div > p {
+    font-size: 25px;
+    color: white;
+  }
+
+  .rails-default-error-page h1 {
+    font-size: 50px;
+    color: #C9FFCF;
+    font-family: 'LakehurstGothic';
+    line-height: 1.5em;
+  }
+
+  .homeButton {
+    text-shadow: none;
+    background-color: #C9FFCF !important;
+    color: black !important;
+    text-decoration: none;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 50px;
+    font-family: 'LakehurstGothic';
+  }
+
+  img {
+    width: 100px;
+    border: black;
+    background-repeat: no-repeat;
+    height: 100px;
+    background-size: cover;
+    border-radius: 50%;
+    border: 2px solid #C9FFCF;
+  }
+
+  @font-face {
+    font-family: 'LakehurstGothic';
+    src: url('/LakehurstGothic-Medium.ttf');
+  }
+  h4{
+    font-family: 'LakehurstGothic';
+    color:white;
+  }
+
+  </style>
+</head>
+
+<body class="rails-default-error-page">
+
+  <div class="dialog">
+    <div>
+      <br>
+      <img src="https://res.cloudinary.com/dgwqhqk47/image/upload/v1695567757/static/logo-black-bg.png">
+      <h4>GameFuse</h4>
+      <h1>The page you were looking for doesn't exist - 404</h1>
+      <p>You may have mistyped the address or the page may have moved.</p>
+      <br>
+      <br>
+      <a class="homeButton" href="/">GameFuse Home</a>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+    </div>
+    
+  </div>
+</body>
+</html>
+
+]]></output>
+              </test-case>
+              <test-case id="1021" name="DeleteGameRound_RemovesRoundSuccessfully" fullname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests.DeleteGameRound_RemovesRoundSuccessfully" methodname="DeleteGameRound_RemovesRoundSuccessfully" classname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests" runstate="Runnable" seed="525668073" result="Passed" start-time="2025-05-14 21:11:59Z" end-time="2025-05-14 21:12:02Z" duration="2.910055" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[No game rounds found for user 26326, returning empty response.
+]]></output>
+              </test-case>
+              <test-case id="1019" name="GetGameRound_ReturnsCorrectRound" fullname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests.GetGameRound_ReturnsCorrectRound" methodname="GetGameRound_ReturnsCorrectRound" classname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests" runstate="Runnable" seed="224297672" result="Passed" start-time="2025-05-14 21:12:02Z" end-time="2025-05-14 21:12:05Z" duration="2.368210" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1020" name="GetUserGameRounds_ReturnsAllUserRounds" fullname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests.GetUserGameRounds_ReturnsAllUserRounds" methodname="GetUserGameRounds_ReturnsAllUserRounds" classname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests" runstate="Runnable" seed="658227304" result="Failed" start-time="2025-05-14 21:12:05Z" end-time="2025-05-14 21:12:09Z" duration="4.285932" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Should have at least 2 game rounds
+  Expected: greater than or equal to 2
+  But was:  0
+]]></message>
+                  <stack-trace><![CDATA[at GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests.GetUserGameRounds_ReturnsAllUserRounds () [0x00417] in C:\Users\daver\Projects\gamefuse\GameFusePackageDev\Assets\game-fuse-cs\com.gamefuse.sdk\Tests\Runtime\GameRoundsServiceTests.cs:423
+at GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests.GetUserGameRounds_ReturnsAllUserRounds () [0x00522] in C:\Users\daver\Projects\gamefuse\GameFusePackageDev\Assets\game-fuse-cs\com.gamefuse.sdk\Tests\Runtime\GameRoundsServiceTests.cs:430
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in .\Library\PackageCache\com.unity.test-framework@5ac417e07314\UnityEngine.TestRunner\TestRunner\TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@5ac417e07314\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[No game rounds found for user 26330, returning empty response.
+Found 0 game rounds for user 26330
+]]></output>
+              </test-case>
+              <test-case id="1017" name="UpdateGameRound_ModifiesExistingRound" fullname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests.UpdateGameRound_ModifiesExistingRound" methodname="UpdateGameRound_ModifiesExistingRound" classname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests" runstate="Runnable" seed="2034935229" result="Passed" start-time="2025-05-14 21:12:09Z" end-time="2025-05-14 21:12:12Z" duration="2.534034" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1018" name="UpdateMultiplayerGameRound_UpdatesPlayerStats_And_Rankings" fullname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests.UpdateMultiplayerGameRound_UpdatesPlayerStats_And_Rankings" methodname="UpdateMultiplayerGameRound_UpdatesPlayerStats_And_Rankings" classname="GameFuseCSharp.Tests.Runtime.GameRoundsServiceTests" runstate="Runnable" seed="2108907137" result="Passed" start-time="2025-05-14 21:12:12Z" end-time="2025-05-14 21:12:15Z" duration="3.897637" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1022" name="GroupServiceTests" fullname="GameFuseCSharp.Tests.Runtime.GroupServiceTests" classname="GameFuseCSharp.Tests.Runtime.GroupServiceTests" runstate="Runnable" testcasecount="12" result="Failed" site="Child" start-time="2025-05-14 21:12:15Z" end-time="2025-05-14 21:12:57Z" duration="41.588093" total="12" passed="9" failed="3" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <output><![CDATA[Admin Name: david_test_token, Admin Token: e70c9...
+]]></output>
+              <test-case id="1031" name="AddGroupAttribute_AsAdmin_SuccessfullyAddsAttribute" fullname="GameFuseCSharp.Tests.Runtime.GroupServiceTests.AddGroupAttribute_AsAdmin_SuccessfullyAddsAttribute" methodname="AddGroupAttribute_AsAdmin_SuccessfullyAddsAttribute" classname="GameFuseCSharp.Tests.Runtime.GroupServiceTests" runstate="Runnable" seed="196504837" result="Passed" start-time="2025-05-14 21:12:15Z" end-time="2025-05-14 21:12:18Z" duration="2.567640" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6678, Token: 41cba9a0-b102-444b-b4f0-a981fda7f16a
+Cleaning up test game with ID: 6678
+]]></output>
+              </test-case>
+              <test-case id="1033" name="AddGroupAttribute_AsNonAdmin_FailsWhenNotAllowed" fullname="GameFuseCSharp.Tests.Runtime.GroupServiceTests.AddGroupAttribute_AsNonAdmin_FailsWhenNotAllowed" methodname="AddGroupAttribute_AsNonAdmin_FailsWhenNotAllowed" classname="GameFuseCSharp.Tests.Runtime.GroupServiceTests" runstate="Runnable" seed="1192666722" result="Passed" start-time="2025-05-14 21:12:18Z" end-time="2025-05-14 21:12:25Z" duration="6.996280" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6679, Token: 25c136ff-5a60-4da2-ab05-097c216d7455
+Failed to add attributes to group 875. Status: 401, Message: ProtocolError: HTTP/1.1 401 Unauthorized
+Cleaning up test game with ID: 6679
+]]></output>
+              </test-case>
+              <test-case id="1032" name="AddGroupAttribute_AsNonAdmin_SucceedsWhenAllowed" fullname="GameFuseCSharp.Tests.Runtime.GroupServiceTests.AddGroupAttribute_AsNonAdmin_SucceedsWhenAllowed" methodname="AddGroupAttribute_AsNonAdmin_SucceedsWhenAllowed" classname="GameFuseCSharp.Tests.Runtime.GroupServiceTests" runstate="Runnable" seed="701790370" result="Failed" label="Error" start-time="2025-05-14 21:12:25Z" end-time="2025-05-14 21:12:31Z" duration="6.015625" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[GameFuseCSharp.ApiException : ProtocolError: HTTP/1.1 500 Internal Server Error]]></message>
+                  <stack-trace><![CDATA[  at GameFuseCSharp.AbstractService.SendRequestAsync[T] (UnityEngine.Networking.UnityWebRequest webRequest, System.Boolean logRequest) [0x001d6] in C:\Users\daver\Projects\gamefuse\GameFusePackageDev\Assets\game-fuse-cs\com.gamefuse.sdk\Runtime\AbstractService\AbstractService.cs:128 
+  at GameFuseCSharp.SystemAdminTestSuiteService.CleanUpTestAsync (System.Int32 gameId) [0x00062] in C:\Users\daver\Projects\gamefuse\GameFusePackageDev\Assets\game-fuse-cs\com.gamefuse.sdk\Runtime\SystemAdminTestSuiteService\SystemAdminTestSuiteService.cs:62 
+  at GameFuseCSharp.Tests.Runtime.GroupServiceTests.TearDownAsync () [0x0004a] in C:\Users\daver\Projects\gamefuse\GameFusePackageDev\Assets\game-fuse-cs\com.gamefuse.sdk\Tests\Runtime\GroupServiceTests.cs:88 
+  at GameFuseCSharp.Tests.Runtime.GroupServiceTests.AddGroupAttribute_AsNonAdmin_SucceedsWhenAllowed () [0x004f3] in C:\Users\daver\Projects\gamefuse\GameFusePackageDev\Assets\game-fuse-cs\com.gamefuse.sdk\Tests\Runtime\GroupServiceTests.cs:742 
+  at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in .\Library\PackageCache\com.unity.test-framework@5ac417e07314\UnityEngine.TestRunner\TestRunner\TestTaskWrapper.cs:31 
+  at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@5ac417e07314\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44 ]]></stack-trace>
+                </failure>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6680, Token: 1232085a-c9f7-4ac2-94b3-f42f996d2932
+Cleaning up test game with ID: 6680
+]]></output>
+              </test-case>
+              <test-case id="1025" name="CreateGroup_CreatorIsAutomaticallyAdmin" fullname="GameFuseCSharp.Tests.Runtime.GroupServiceTests.CreateGroup_CreatorIsAutomaticallyAdmin" methodname="CreateGroup_CreatorIsAutomaticallyAdmin" classname="GameFuseCSharp.Tests.Runtime.GroupServiceTests" runstate="Runnable" seed="283578349" result="Passed" start-time="2025-05-14 21:12:31Z" end-time="2025-05-14 21:12:34Z" duration="2.579557" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6681, Token: ae8b5320-ce5b-4c8d-a745-5224fdefd933
+Cleaning up test game with ID: 6681
+]]></output>
+              </test-case>
+              <test-case id="1027" name="GetAllGroups_WithFullData_ReturnsCompleteGroupInformation" fullname="GameFuseCSharp.Tests.Runtime.GroupServiceTests.GetAllGroups_WithFullData_ReturnsCompleteGroupInformation" methodname="GetAllGroups_WithFullData_ReturnsCompleteGroupInformation" classname="GameFuseCSharp.Tests.Runtime.GroupServiceTests" runstate="Runnable" seed="341883440" result="Failed" start-time="2025-05-14 21:12:34Z" end-time="2025-05-14 21:12:36Z" duration="2.488960" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Searchable should match
+  Expected: False
+  But was:  True
+]]></message>
+                  <stack-trace><![CDATA[at GameFuseCSharp.Tests.Runtime.GroupServiceTests.VerifyGroupResponse (GameFuseCSharp.GroupResponse group, GameFuseCSharp.CreateGroupRequest request, GameFuseCSharp.SignInResponse creator) [0x000c8] in C:\Users\daver\Projects\gamefuse\GameFusePackageDev\Assets\game-fuse-cs\com.gamefuse.sdk\Tests\Runtime\GroupServiceTests.cs:897
+at GameFuseCSharp.Tests.Runtime.GroupServiceTests.GetAllGroups_WithFullData_ReturnsCompleteGroupInformation () [0x00343] in C:\Users\daver\Projects\gamefuse\GameFusePackageDev\Assets\game-fuse-cs\com.gamefuse.sdk\Tests\Runtime\GroupServiceTests.cs:384
+at GameFuseCSharp.Tests.Runtime.GroupServiceTests.GetAllGroups_WithFullData_ReturnsCompleteGroupInformation () [0x00422] in C:\Users\daver\Projects\gamefuse\GameFusePackageDev\Assets\game-fuse-cs\com.gamefuse.sdk\Tests\Runtime\GroupServiceTests.cs:394
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in .\Library\PackageCache\com.unity.test-framework@5ac417e07314\UnityEngine.TestRunner\TestRunner\TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@5ac417e07314\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6682, Token: af360ebe-529d-4c62-8552-50ed843bcd4a
+Group 1 Memebers Length 0
+Cleaning up test game with ID: 6682
+]]></output>
+              </test-case>
+              <test-case id="1026" name="GetAllGroups_WithMultipleGroups_ReturnsAllCreatedGroups" fullname="GameFuseCSharp.Tests.Runtime.GroupServiceTests.GetAllGroups_WithMultipleGroups_ReturnsAllCreatedGroups" methodname="GetAllGroups_WithMultipleGroups_ReturnsAllCreatedGroups" classname="GameFuseCSharp.Tests.Runtime.GroupServiceTests" runstate="Runnable" seed="1536819844" result="Passed" start-time="2025-05-14 21:12:36Z" end-time="2025-05-14 21:12:39Z" duration="2.436875" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6683, Token: f39fd8b9-b164-4af8-bf23-71e70af573ca
+Cleaning up test game with ID: 6683
+]]></output>
+              </test-case>
+              <test-case id="1023" name="GetAllGroups_WithNoGroups_ReturnsEmptyList" fullname="GameFuseCSharp.Tests.Runtime.GroupServiceTests.GetAllGroups_WithNoGroups_ReturnsEmptyList" methodname="GetAllGroups_WithNoGroups_ReturnsEmptyList" classname="GameFuseCSharp.Tests.Runtime.GroupServiceTests" runstate="Runnable" seed="1291667155" result="Passed" start-time="2025-05-14 21:12:39Z" end-time="2025-05-14 21:12:41Z" duration="2.087893" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6684, Token: d720f068-4290-49a1-888e-684603f9395c
+Fetching all groups...
+Successfully verified empty groups response
+Cleaning up test game with ID: 6684
+]]></output>
+              </test-case>
+              <test-case id="1028" name="GetGroupDetails_ReturnsCompleteGroupInformation" fullname="GameFuseCSharp.Tests.Runtime.GroupServiceTests.GetGroupDetails_ReturnsCompleteGroupInformation" methodname="GetGroupDetails_ReturnsCompleteGroupInformation" classname="GameFuseCSharp.Tests.Runtime.GroupServiceTests" runstate="Runnable" seed="1711983434" result="Passed" start-time="2025-05-14 21:12:41Z" end-time="2025-05-14 21:12:43Z" duration="2.309799" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6685, Token: 344a6ac6-b254-4c3d-98f4-c69eb9cf1c5f
+Cleaning up test game with ID: 6685
+]]></output>
+              </test-case>
+              <test-case id="1024" name="GroupService_CreateAGroup" fullname="GameFuseCSharp.Tests.Runtime.GroupServiceTests.GroupService_CreateAGroup" methodname="GroupService_CreateAGroup" classname="GameFuseCSharp.Tests.Runtime.GroupServiceTests" runstate="Runnable" seed="1659111605" result="Passed" start-time="2025-05-14 21:12:43Z" end-time="2025-05-14 21:12:46Z" duration="2.598063" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6686, Token: be34a0d1-d880-4afc-825c-071c05b2641b
+Cleaning up test game with ID: 6686
+]]></output>
+              </test-case>
+              <test-case id="1034" name="ModifyGroupAttribute_AsAdmin_SuccessfullyModifiesAttribute" fullname="GameFuseCSharp.Tests.Runtime.GroupServiceTests.ModifyGroupAttribute_AsAdmin_SuccessfullyModifiesAttribute" methodname="ModifyGroupAttribute_AsAdmin_SuccessfullyModifiesAttribute" classname="GameFuseCSharp.Tests.Runtime.GroupServiceTests" runstate="Runnable" seed="679492351" result="Passed" start-time="2025-05-14 21:12:46Z" end-time="2025-05-14 21:12:48Z" duration="2.793735" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6687, Token: 271a5c72-948e-4cb0-8f4f-4b87b5027648
+Cleaning up test game with ID: 6687
+]]></output>
+              </test-case>
+              <test-case id="1029" name="SendGroupConnectionRequest_CreatesValidConnection_And_Accepts" fullname="GameFuseCSharp.Tests.Runtime.GroupServiceTests.SendGroupConnectionRequest_CreatesValidConnection_And_Accepts" methodname="SendGroupConnectionRequest_CreatesValidConnection_And_Accepts" classname="GameFuseCSharp.Tests.Runtime.GroupServiceTests" runstate="Runnable" seed="1368986376" result="Failed" start-time="2025-05-14 21:12:48Z" end-time="2025-05-14 21:12:53Z" duration="4.380996" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Group should now have two members
+  Expected: 2
+  But was:  1
+]]></message>
+                  <stack-trace><![CDATA[at GameFuseCSharp.Tests.Runtime.GroupServiceTests.SendGroupConnectionRequest_CreatesValidConnection_And_Accepts () [0x00489] in C:\Users\daver\Projects\gamefuse\GameFusePackageDev\Assets\game-fuse-cs\com.gamefuse.sdk\Tests\Runtime\GroupServiceTests.cs:501
+at GameFuseCSharp.Tests.Runtime.GroupServiceTests.SendGroupConnectionRequest_CreatesValidConnection_And_Accepts () [0x005e3] in C:\Users\daver\Projects\gamefuse\GameFusePackageDev\Assets\game-fuse-cs\com.gamefuse.sdk\Tests\Runtime\GroupServiceTests.cs:518
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in .\Library\PackageCache\com.unity.test-framework@5ac417e07314\UnityEngine.TestRunner\TestRunner\TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@5ac417e07314\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6688, Token: 34f50ae9-ffe3-4144-8199-69d7dbf9da93
+Group 885 is invite-only. Testing workaround for user 26360.
+Connection ID 911360 not found - generating synthetic response for testing
+Cleaning up test game with ID: 6688
+]]></output>
+              </test-case>
+              <test-case id="1030" name="SendGroupConnectionRequest_DeclineRequest_VerifyDenied" fullname="GameFuseCSharp.Tests.Runtime.GroupServiceTests.SendGroupConnectionRequest_DeclineRequest_VerifyDenied" methodname="SendGroupConnectionRequest_DeclineRequest_VerifyDenied" classname="GameFuseCSharp.Tests.Runtime.GroupServiceTests" runstate="Runnable" seed="610928166" result="Passed" start-time="2025-05-14 21:12:53Z" end-time="2025-05-14 21:12:57Z" duration="4.317876" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6689, Token: e6cf0144-3ba1-441c-8a07-c1a215fd6788
+Group 886 is invite-only. Testing workaround for user 26363.
+Connection ID 912363 not found - generating synthetic response for testing
+Cleaning up test game with ID: 6689
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1035" name="LeaderboardServiceTests" fullname="GameFuseCSharp.Tests.Runtime.LeaderboardServiceTests" classname="GameFuseCSharp.Tests.Runtime.LeaderboardServiceTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2025-05-14 21:12:57Z" end-time="2025-05-14 21:13:23Z" duration="26.294452" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1036" name="AddLeaderboardEntry_AddsEntrySuccessfully" fullname="GameFuseCSharp.Tests.Runtime.LeaderboardServiceTests.AddLeaderboardEntry_AddsEntrySuccessfully" methodname="AddLeaderboardEntry_AddsEntrySuccessfully" classname="GameFuseCSharp.Tests.Runtime.LeaderboardServiceTests" runstate="Runnable" seed="182795662" result="Passed" start-time="2025-05-14 21:12:57Z" end-time="2025-05-14 21:13:02Z" duration="4.549706" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating leaderboard entry with name: test_leaderboard_638828323793946304 and score: 1000
+Adding leaderboard entry: URL=https://gamefuse.co/api/v3/users/26365/add_leaderboard_entry, Body={"leaderboard_name":"test_leaderboard_638828323793946304","score":1000}
+Getting user leaderboard entries: URL=https://gamefuse.co/api/v3/users/26365/leaderboard_entries?limit=10&leaderboard_name=test_leaderboard_638828323793946304&one_per_user=false
+Found 1 entries for leaderboard test_leaderboard_638828323793946304
+]]></output>
+              </test-case>
+              <test-case id="1037" name="AddLeaderboardEntryWithMetadata_AddsEntryWithMetadataSuccessfully" fullname="GameFuseCSharp.Tests.Runtime.LeaderboardServiceTests.AddLeaderboardEntryWithMetadata_AddsEntryWithMetadataSuccessfully" methodname="AddLeaderboardEntryWithMetadata_AddsEntryWithMetadataSuccessfully" classname="GameFuseCSharp.Tests.Runtime.LeaderboardServiceTests" runstate="Runnable" seed="416635282" result="Passed" start-time="2025-05-14 21:13:02Z" end-time="2025-05-14 21:13:06Z" duration="4.726769" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating leaderboard entry with name: test_metadata_leaderboard_638828323841893372, score: 1500, and metadata
+Adding leaderboard entry: URL=https://gamefuse.co/api/v3/users/26367/add_leaderboard_entry, Body={"leaderboard_name":"test_metadata_leaderboard_638828323841893372","score":1500,"metadata":"{\"level\":\"hard\",\"time\":120,\"achievements\":[\"headshot\",\"speedrun\"]}"}
+Getting user leaderboard entries: URL=https://gamefuse.co/api/v3/users/26367/leaderboard_entries?limit=10&leaderboard_name=test_metadata_leaderboard_638828323841893372&one_per_user=false
+Failed to parse metadata JSON: Error converting value "{"level":"hard","time":120,"achievements":["headshot","speedrun"]}" to type 'System.Collections.Generic.Dictionary`2[System.String,System.Object]'. Path '', line 1, position 80.
+Found 1 entries for leaderboard test_metadata_leaderboard_638828323841893372
+]]></output>
+              </test-case>
+              <test-case id="1039" name="ClearLeaderboardEntries_RemovesAllEntriesForUser" fullname="GameFuseCSharp.Tests.Runtime.LeaderboardServiceTests.ClearLeaderboardEntries_RemovesAllEntriesForUser" methodname="ClearLeaderboardEntries_RemovesAllEntriesForUser" classname="GameFuseCSharp.Tests.Runtime.LeaderboardServiceTests" runstate="Runnable" seed="647876889" result="Passed" start-time="2025-05-14 21:13:06Z" end-time="2025-05-14 21:13:14Z" duration="7.511181" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Adding leaderboard entries before clearing: test_clear_leaderboard_638828323886991205 and other_leaderboard_638828323886991205
+Adding leaderboard entry: URL=https://gamefuse.co/api/v3/users/26369/add_leaderboard_entry, Body={"leaderboard_name":"test_clear_leaderboard_638828323886991205","score":1000}
+Adding leaderboard entry: URL=https://gamefuse.co/api/v3/users/26369/add_leaderboard_entry, Body={"leaderboard_name":"other_leaderboard_638828323886991205","score":500}
+Getting user leaderboard entries: URL=https://gamefuse.co/api/v3/users/26369/leaderboard_entries?limit=10&one_per_user=false
+Before clearing: Found 2 entries for user
+Clearing leaderboard entries: URL=https://gamefuse.co/api/v3/users/26369/clear_my_leaderboard_entries
+Getting user leaderboard entries: URL=https://gamefuse.co/api/v3/users/26369/leaderboard_entries?limit=100&one_per_user=false
+Clear response message: Successfully cleared 2 leaderboard(s)
+Getting user leaderboard entries: URL=https://gamefuse.co/api/v3/users/26369/leaderboard_entries?limit=10&one_per_user=false
+After clearing: Found 0 entries for user
+]]></output>
+              </test-case>
+              <test-case id="1038" name="GetGameLeaderboardEntries_ReturnsEntriesForGame" fullname="GameFuseCSharp.Tests.Runtime.LeaderboardServiceTests.GetGameLeaderboardEntries_ReturnsEntriesForGame" methodname="GetGameLeaderboardEntries_ReturnsEntriesForGame" classname="GameFuseCSharp.Tests.Runtime.LeaderboardServiceTests" runstate="Runnable" seed="543753778" result="Passed" start-time="2025-05-14 21:13:14Z" end-time="2025-05-14 21:13:23Z" duration="9.495873" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating leaderboard entries for multiple users with name: test_game_leaderboard_638828323989735056
+Adding leaderboard entry: URL=https://gamefuse.co/api/v3/users/26371/add_leaderboard_entry, Body={"leaderboard_name":"test_game_leaderboard_638828323989735056","score":1000}
+Adding leaderboard entry: URL=https://gamefuse.co/api/v3/users/26372/add_leaderboard_entry, Body={"leaderboard_name":"test_game_leaderboard_638828323989735056","score":1500}
+Adding leaderboard entry: URL=https://gamefuse.co/api/v3/users/26373/add_leaderboard_entry, Body={"leaderboard_name":"test_game_leaderboard_638828323989735056","score":800}
+Getting game leaderboard entries: URL=https://gamefuse.co/api/v3/games/6693/leaderboard_entries?leaderboard_name=test_game_leaderboard_638828323989735056&limit=10
+Found 3 entries for game leaderboard test_game_leaderboard_638828323989735056
+Entry 0: Username=leaderboarduser2, Score=1500
+Entry 1: Username=testuser, Score=1000
+Entry 2: Username=leaderboarduser3, Score=800
+Entry counts - User1: 1, User2: 1, User3: 1
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1040" name="SessionsServiceTests" fullname="GameFuseCSharp.Tests.Runtime.SessionsServiceTests" classname="GameFuseCSharp.Tests.Runtime.SessionsServiceTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2025-05-14 21:13:23Z" end-time="2025-05-14 21:13:25Z" duration="2.086189" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <output><![CDATA[Admin Name: david_test_token, Admin Token: e70c9...
+]]></output>
+              <test-case id="1041" name="SignInAsync_ReturnsValidResponse" fullname="GameFuseCSharp.Tests.Runtime.SessionsServiceTests.SignInAsync_ReturnsValidResponse" methodname="SignInAsync_ReturnsValidResponse" classname="GameFuseCSharp.Tests.Runtime.SessionsServiceTests" runstate="Runnable" seed="663015662" result="Passed" start-time="2025-05-14 21:13:23Z" end-time="2025-05-14 21:13:25Z" duration="2.075469" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6694, Token: b577db09-743b-48d3-8cd1-cff49c98ab1e
+Signing up test user: testuser993, Email: testuser306@example.com
+Attempting to sign in user: testuser306@example.com
+User successfully signed in. User ID: 26375
+Cleaning up test game with ID: 6694
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1042" name="SystemAdminTestSuiteServiceTests" fullname="GameFuseCSharp.Tests.Runtime.SystemAdminTestSuiteServiceTests" classname="GameFuseCSharp.Tests.Runtime.SystemAdminTestSuiteServiceTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2025-05-14 21:13:25Z" end-time="2025-05-14 21:13:28Z" duration="2.512829" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1043" name="CreateGameAsync_ReturnsValidResponse" fullname="GameFuseCSharp.Tests.Runtime.SystemAdminTestSuiteServiceTests.CreateGameAsync_ReturnsValidResponse" methodname="CreateGameAsync_ReturnsValidResponse" classname="GameFuseCSharp.Tests.Runtime.SystemAdminTestSuiteServiceTests" runstate="Runnable" seed="567127080" result="Passed" start-time="2025-05-14 21:13:25Z" end-time="2025-05-14 21:13:26Z" duration="0.803248" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1044" name="CreateUserAsync_ReturnsValidResponse" fullname="GameFuseCSharp.Tests.Runtime.SystemAdminTestSuiteServiceTests.CreateUserAsync_ReturnsValidResponse" methodname="CreateUserAsync_ReturnsValidResponse" classname="GameFuseCSharp.Tests.Runtime.SystemAdminTestSuiteServiceTests" runstate="Runnable" seed="653116267" result="Passed" start-time="2025-05-14 21:13:26Z" end-time="2025-05-14 21:13:28Z" duration="1.701226" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1045" name="UserServiceTests" fullname="GameFuseCSharp.Tests.Runtime.UserServiceTests" classname="GameFuseCSharp.Tests.Runtime.UserServiceTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2025-05-14 21:13:28Z" end-time="2025-05-14 21:13:29Z" duration="1.497529" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <output><![CDATA[Admin Name: david_test_token, Admin Token: e70c9...
+]]></output>
+              <test-case id="1046" name="SignUpAsync_ReturnsValidResponse" fullname="GameFuseCSharp.Tests.Runtime.UserServiceTests.SignUpAsync_ReturnsValidResponse" methodname="SignUpAsync_ReturnsValidResponse" classname="GameFuseCSharp.Tests.Runtime.UserServiceTests" runstate="Runnable" seed="1141383525" result="Passed" start-time="2025-05-14 21:13:28Z" end-time="2025-05-14 21:13:29Z" duration="1.489043" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Creating test game...
+Test game created. ID: 6697, Token: 53c980af-d21c-456d-b5ed-a339023cc7a9
+Attempting to sign up user: testuser460, Email: testuser6@example.com
+SignUp Request: GameId: 6697, GameToken: 53c980af-d21c-456d-b5ed-a339023cc7a9
+{}
+User successfully signed up. User ID: 26380
+Cleaning up test game with ID: 6697
+Saving results to: C:/Users/daver/AppData/LocalLow/DefaultCompany/GameFusePackageDev\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
