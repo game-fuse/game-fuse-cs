@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace GameFuseCSharp
 {
@@ -13,6 +14,14 @@ namespace GameFuseCSharp
         /// Creates a new game round with detailed information.
         /// </summary>
         Task<GameRoundObject> CreateGameRoundAsync(GameRoundObject gameRound);
+
+        /// <summary>
+        /// Creates a new multiplayer game round.
+        /// </summary>
+        /// <param name="gameType">The type of game being played</param>
+        /// <param name="playerRounds">List of player game rounds to include in the multiplayer round</param>
+        /// <returns>The created multiplayer game round with rankings</returns>
+        Task<MultiplayerGameRoundResponse> CreateMultiplayerGameRoundAsync(string gameType, List<GameRoundObject> playerRounds);
 
         /// <summary>
         /// Updates an existing game round with new score and place values.
@@ -31,6 +40,13 @@ namespace GameFuseCSharp
         /// Retrieves all game rounds for a specific user.
         /// </summary>
         Task<GameRoundsResponse> GetUserGameRoundsAsync(int userId);
+
+        /// <summary>
+        /// Retrieves a multiplayer game round by ID, including all player rankings.
+        /// </summary>
+        /// <param name="multiplayerGameRoundId">The ID of the multiplayer game round</param>
+        /// <returns>The multiplayer game round with player rankings</returns>
+        Task<MultiplayerGameRoundResponse> GetMultiplayerGameRoundAsync(int multiplayerGameRoundId);
 
         /// <summary>
         /// Deletes a specific game round.

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
+using Newtonsoft.Json;
 
 namespace GameFuseCSharp
 {
@@ -19,7 +20,7 @@ namespace GameFuseCSharp
         public async Task<SignInResponse> SignUpAsync(SignUpRequest request)
         {
             string url = $"{_baseUrl}/users";
-            string jsonBody = JsonUtility.ToJson(request);
+            string jsonBody = JsonConvert.SerializeObject(request, JsonSettings);
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
             {
                 try
@@ -28,7 +29,7 @@ namespace GameFuseCSharp
                 }
                 catch (ApiException ex)
                 {
-                    Debug.Log($"UserSerive SignUpAsync ApiException: \n Status Code: {ex.StatusCode} \n Message: {ex.Message}");
+                    Debug.Log($"UserService SignUpAsync ApiException: \n Status Code: {ex.StatusCode} \n Message: {ex.Message}");
                     throw;
                 }
             }

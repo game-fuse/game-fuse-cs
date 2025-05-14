@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace GameFuseCSharp
@@ -38,6 +40,49 @@ namespace GameFuseCSharp
             }
         }
 
+        public async Task<MultiplayerGameRoundResponse> CreateMultiplayerGameRoundAsync(string gameType, List<GameRoundObject> playerRounds)
+        {
+            if (string.IsNullOrEmpty(gameType))
+            {
+                throw new ArgumentException("GameType is required for multiplayer game rounds", nameof(gameType));
+            }
+
+            if (playerRounds == null || playerRounds.Count == 0)
+            {
+                throw new ArgumentException("At least one player round is required", nameof(playerRounds));
+            }
+
+            // Create the multiplayer game round first
+            var multiplayerRound = new GameRoundObject
+            {
+                GameType = gameType,
+                Multiplayer = true
+            };
+
+            string url = $"{_baseUrl}/game_rounds";
+            string jsonBody = SerializeRequest(multiplayerRound);
+
+            GameRoundObject createdMultiplayerRound;
+            using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
+            {
+                createdMultiplayerRound = await SendRequestAsync<GameRoundObject>(webRequest);
+            }
+
+            // Now create individual player rounds linked to the multiplayer round
+            var createdPlayerRounds = new List<GameRoundObject>();
+            foreach (var playerRound in playerRounds)
+            {
+                // Make sure we set the multiplayer game round ID to link them
+                playerRound.MultiplayerGameRoundId = createdMultiplayerRound.Id;
+                
+                var createdRound = await CreateGameRoundAsync(playerRound);
+                createdPlayerRounds.Add(createdRound);
+            }
+
+            // Get the complete multiplayer game round with rankings
+            return await GetMultiplayerGameRoundAsync(createdMultiplayerRound.Id);
+        }
+
         public async Task<GameRoundObject> UpdateGameRoundAsync(int gameRoundId, GameRoundObject gameRound)
         {
             string url = $"{_baseUrl}/game_rounds/{gameRoundId}";
@@ -72,6 +117,16 @@ namespace GameFuseCSharp
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.GET))
             {
                 return await SendRequestAsync<GameRoundObject>(webRequest);
+            }
+        }
+
+        public async Task<MultiplayerGameRoundResponse> GetMultiplayerGameRoundAsync(int multiplayerGameRoundId)
+        {
+            string url = $"{_baseUrl}/game_rounds/multiplayer_game_round/{multiplayerGameRoundId}";
+
+            using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.GET))
+            {
+                return await SendRequestAsync<MultiplayerGameRoundResponse>(webRequest);
             }
         }
 

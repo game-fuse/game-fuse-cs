@@ -427,10 +427,14 @@ namespace GameFuseCSharp
 
             }
 
-            GameFuseUtilities.HandleCallback(request, "Store Item has been removed", callback);
+            GameFuseUtilities.HandleCallback(request, "Leaderboard entries retrieved successfully", callback);
             request.Dispose();
 
         }
+        
+        /// <summary>
+        /// Use LeaderboardService.GetGameLeaderboardEntriesAsync instead for new implementations.
+        /// </summary>
         #endregion
 
 
