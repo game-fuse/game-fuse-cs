@@ -55,7 +55,7 @@ namespace GameFuseCSharp.Tests.Runtime
             _testGameToken = gameResponse.token;
 
             _user = await CreateAndSignInUser("testuser");
-            _gameRoundsService = new GameRoundsService("https://gamefuse.co/api/v3", _user.authentication_token);
+            _gameRoundsService = new GameRoundsService("https://gamefuse.co/api/v3", _user.AuthenticationToken);
         }
 
         private async Task TearDownAsync()
@@ -73,22 +73,22 @@ namespace GameFuseCSharp.Tests.Runtime
 
             SignUpRequest signUpRequest = new SignUpRequest
             {
-                email = userEmail,
-                password = password,
-                password_confirmation = password,
-                username = username,
-                game_id = _testGameId,
-                game_token = _testGameToken
+                Email = userEmail,
+                Password = password,
+                PasswordConfirmation = password,
+                Username = username,
+                GameId = _testGameId,
+                GameToken = _testGameToken
             };
 
             await _userService.SignUpAsync(signUpRequest);
 
             SignInRequest signInRequest = new SignInRequest
             {
-                email = userEmail,
-                password = password,
-                game_id = _testGameId,
-                game_token = _testGameToken
+                Email = userEmail,
+                Password = password,
+                GameId = _testGameId,
+                GameToken = _testGameToken
             };
 
             return await _sessionsService.SignInAsync(signInRequest);
@@ -183,12 +183,12 @@ namespace GameFuseCSharp.Tests.Runtime
             {
                 await SetUpAsync();
                 var secondUser = await CreateAndSignInUser("secondplayer");
-                var secondUserService = new GameRoundsService("https://gamefuse.co/api/v3", secondUser.authentication_token);
+                var secondUserService = new GameRoundsService("https://gamefuse.co/api/v3", secondUser.AuthenticationToken);
 
-                // Create multiplayer game round
-                var multiplayerRound = new GameRoundObject
+                // Create multiplayer game round using CreateMultiplayerGameRoundAsync
+                var player1Round = new GameRoundObject
                 {
-                    GameUserId = _user.id,
+                    GameUserId = _user.Id,
                     StartTime = "2024-01-25T10:00:00Z",
                     EndTime = "2024-01-25T10:30:00Z",
                     Score = 1200.0,
@@ -197,46 +197,52 @@ namespace GameFuseCSharp.Tests.Runtime
                     Metadata = new System.Collections.Generic.Dictionary<string, string>
                     {
                         { "difficulty", "Hard" }
-                    },
-                    MultiplayerGameRoundId = null,
-                    Multiplayer = true
+                    }
                 };
 
-                var createdMultiplayerRound = await _gameRoundsService.CreateGameRoundAsync(multiplayerRound);
-                Assert.NotNull(createdMultiplayerRound, "Created multiplayer round should not be null");
-                Debug.Log($"Created multiplayer round ID: {createdMultiplayerRound.Id}");
-                Debug.Log($"Multiplayer game round ID: {createdMultiplayerRound.MultiplayerGameRoundId}");
-
-                // Add second player's round
-                var secondPlayerRound = new GameRoundObject
+                var player2Round = new GameRoundObject
                 {
-                    GameUserId = secondUser.id,
-                    StartTime = "2024-01-25T10:30:00Z",
-                    EndTime = "2024-01-25T11:00:00Z",
+                    GameUserId = secondUser.Id,
+                    StartTime = "2024-01-25T10:00:00Z",
+                    EndTime = "2024-01-25T10:30:00Z",
                     Score = 1100.0,
                     Place = 2,
                     GameType = "multiplayer_battle",
                     Metadata = new System.Collections.Generic.Dictionary<string, string>
                     {
-                        { "difficulty", "Easy" }
-                    },
-                    MultiplayerGameRoundId = createdMultiplayerRound.MultiplayerGameRoundId
+                        { "difficulty", "Medium" }
+                    }
                 };
 
-                var addedPlayerRound = await secondUserService.CreateGameRoundAsync(secondPlayerRound);
-                Assert.NotNull(addedPlayerRound, "Added player round should not be null");
-                Debug.Log($"Added player round ID: {addedPlayerRound.Id}");
+                // Use the new method to create a multiplayer game round with both player rounds
+                var playerRounds = new System.Collections.Generic.List<GameRoundObject>
+                {
+                    player1Round,
+                    player2Round
+                };
 
-                // Verify multiplayer rounds using GetUserGameRoundsAsync
-                var userRounds = await _gameRoundsService.GetUserGameRoundsAsync(_user.id);
-                var foundMultiplayerRound = userRounds.GameRounds.FirstOrDefault(r => r.Id == createdMultiplayerRound.Id);
-               
-                var returnedMultiplayerRound = await _gameRoundsService.GetGameRoundAsync(createdMultiplayerRound.Id);
-                Assert.NotNull(returnedMultiplayerRound, "Should find the multiplayer round");
-                Assert.NotNull(returnedMultiplayerRound.Rankings, "Rankings should not be null");
-                Assert.AreEqual(2, returnedMultiplayerRound.Rankings.Length, "Should have 2 rankings");
-                Assert.That(returnedMultiplayerRound.Rankings.Any(r => r.User.Id == _user.id), "Should contain first player");
-                Assert.That(returnedMultiplayerRound.Rankings.Any(r => r.User.Id == secondUser.id), "Should contain second player");
+                var multiplayerGameRound = await _gameRoundsService.CreateMultiplayerGameRoundAsync("multiplayer_battle", playerRounds);
+                Assert.NotNull(multiplayerGameRound, "Multiplayer game round response should not be null");
+                Assert.NotNull(multiplayerGameRound.MultiplayerGameRound, "Multiplayer game round should not be null");
+                Assert.NotNull(multiplayerGameRound.Rankings, "Rankings should not be null");
+                Assert.AreEqual(2, multiplayerGameRound.Rankings.Length, "Should have 2 rankings");
+                
+                // Get multiplayer game round details
+                var retrievedMultiplayerRound = await _gameRoundsService.GetMultiplayerGameRoundAsync(multiplayerGameRound.MultiplayerGameRound.Id);
+                Assert.NotNull(retrievedMultiplayerRound, "Retrieved multiplayer round should not be null");
+                Assert.NotNull(retrievedMultiplayerRound.Rankings, "Rankings should not be null");
+                Assert.AreEqual(2, retrievedMultiplayerRound.Rankings.Length, "Should have 2 rankings");
+                
+                // Verify player data in rankings
+                var player1Ranking = retrievedMultiplayerRound.Rankings.FirstOrDefault(r => r.User.Id == _user.Id);
+                var player2Ranking = retrievedMultiplayerRound.Rankings.FirstOrDefault(r => r.User.Id == secondUser.Id);
+                
+                Assert.NotNull(player1Ranking, "Player 1 ranking should exist");
+                Assert.NotNull(player2Ranking, "Player 2 ranking should exist");
+                Assert.AreEqual(1, player1Ranking.Place, "Player 1 should be in place 1");
+                Assert.AreEqual(2, player2Ranking.Place, "Player 2 should be in place 2");
+                Assert.AreEqual(1200.0, player1Ranking.Score, "Player 1 score should match");
+                Assert.AreEqual(1100.0, player2Ranking.Score, "Player 2 score should match");
             }
             finally
             {
