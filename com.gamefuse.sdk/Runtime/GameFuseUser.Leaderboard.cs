@@ -118,7 +118,16 @@ namespace GameFuseCSharp
         {
             try
             {
-                int gameId = GameFuse.GetGameId() ?? throw new ApiException(400, "Game ID not set", "No game ID was provided");
+                string gameIdStr = GameFuse.GetGameId();
+                if (string.IsNullOrEmpty(gameIdStr))
+                {
+                    throw new ApiException(400, "Game ID not set", "No game ID was provided");
+                }
+                
+                if (!int.TryParse(gameIdStr, out int gameId))
+                {
+                    throw new ApiException(400, "Invalid Game ID format", $"Game ID '{gameIdStr}' is not a valid integer");
+                }
                 ILeaderboardService leaderboardService = new LeaderboardService(GameFuse.GetBaseURL(), authenticationToken);
                 return await leaderboardService.GetGameLeaderboardEntriesAsync(gameId, leaderboardName, limit);
             }
