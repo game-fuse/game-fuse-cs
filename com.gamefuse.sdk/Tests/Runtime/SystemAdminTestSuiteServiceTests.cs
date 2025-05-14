@@ -58,8 +58,8 @@ namespace GameFuseCSharp.Tests.Runtime
             var response = await _service.CreateGameAsync();
             Assert.IsNotNull(response);
             // Clean up
-            var cleanupResponse = await _service.CleanUpTestAsync(response.id);
-            Assert.AreEqual("everything should have been destroyed!", cleanupResponse.message);            
+            var cleanupResponse = await _service.CleanUpTestAsync(response.Id);
+            Assert.AreEqual("everything should have been destroyed!", cleanupResponse.Message);            
         }
 
         [Test]
@@ -68,12 +68,12 @@ namespace GameFuseCSharp.Tests.Runtime
             CreateGameResponse gameResponse = await _service.CreateGameAsync();
             string userName = $"dave{UnityEngine.Random.Range(1, 1001)}";
             string userEmail = $"dave{UnityEngine.Random.Range(1, 1001)}@email.com";
-            CreateUserResponse userResponse = await _service.CreateUserAsync(gameResponse.id, userName, userEmail);
+            CreateUserResponse userResponse = await _service.CreateUserAsync(gameResponse.Id, userName, userEmail);
             Assert.NotNull(userResponse);
-            Assert.AreEqual(userEmail, userResponse.display_email);
+            Assert.AreEqual(userEmail, userResponse.DisplayEmail);
             //Clean up
-            CleanUpResponse cleanupResponse = await _service.CleanUpTestAsync(gameResponse.id);
-            Assert.AreEqual("everything should have been destroyed!", cleanupResponse.message);
+            CleanUpResponse cleanupResponse = await _service.CleanUpTestAsync(gameResponse.Id);
+            Assert.AreEqual("everything should have been destroyed!", cleanupResponse.Message);
         }
 
     }

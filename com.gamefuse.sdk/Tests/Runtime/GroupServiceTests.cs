@@ -69,15 +69,15 @@ namespace GameFuseCSharp.Tests.Runtime
             // Create a test game
             Debug.Log("Creating test game...");
             var gameResponse = await _adminService.CreateGameAsync();
-            _testGameId = gameResponse.id;
-            _testGameToken = gameResponse.token;
+            _testGameId = gameResponse.Id;
+            _testGameToken = gameResponse.Token;
             Debug.Log($"Test game created. ID: {_testGameId}, Token: {_testGameToken}");
 
             // Create and sign in a test user
             _user = await CreateAndSignInUser("testuser");
 
             // Initialize GroupsService with the authenticated user's token
-            _groupsService = new GroupsService("https://gamefuse.co/api/v3", _user.authentication_token);
+            _groupsService = new GroupsService("https://gamefuse.co/api/v3", _user.AuthenticationToken);
         }
 
         private async Task TearDownAsync()
@@ -96,22 +96,22 @@ namespace GameFuseCSharp.Tests.Runtime
 
             SignUpRequest signUpRequest = new SignUpRequest
             {
-                email = userEmail,
-                password = password,
-                password_confirmation = password,
-                username = username,
-                game_id = _testGameId,
-                game_token = _testGameToken
+                Email = userEmail,
+                Password = password,
+                PasswordConfirmation = password,
+                Username = username,
+                GameId = _testGameId,
+                GameToken = _testGameToken
             };
 
             await _userService.SignUpAsync(signUpRequest);
 
             SignInRequest signInRequest = new SignInRequest
             {
-                email = userEmail,
-                password = password,
-                game_id = _testGameId,
-                game_token = _testGameToken
+                Email = userEmail,
+                Password = password,
+                GameId = _testGameId,
+                GameToken = _testGameToken
             };
 
             return await _sessionsService.SignInAsync(signInRequest);

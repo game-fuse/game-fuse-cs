@@ -73,8 +73,8 @@ namespace GameFuseCSharp.Tests.Runtime
             _user2 = await CreateAndSignInUser("testuser2");
 
             // Initialize FriendshipServices for both users
-            _friendshipService1 = new FriendshipService("https://gamefuse.co/api/v3", _user1.authentication_token);
-            _friendshipService2 = new FriendshipService("https://gamefuse.co/api/v3", _user2.authentication_token);
+            _friendshipService1 = new FriendshipService("https://gamefuse.co/api/v3", _user1.AuthenticationToken);
+            _friendshipService2 = new FriendshipService("https://gamefuse.co/api/v3", _user2.AuthenticationToken);
         }
 
         private async Task TearDownAsync()
@@ -122,7 +122,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 await SetUpAsync();
 
                 // User1 sends a friend request to User2
-                var sendRequestResponse = await _friendshipService1.SendFriendRequestAsync(_user2.username);
+                var sendRequestResponse = await _friendshipService1.SendFriendRequestAsync(_user2.Username);
                 Assert.IsNotNull(sendRequestResponse);
                 Assert.IsTrue(sendRequestResponse.FriendshipId > 0);
 
@@ -137,8 +137,8 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 Assert.IsTrue(user1FriendshipData.Friends.Length > 0);
                 Assert.IsTrue(user2FriendshipData.Friends.Length > 0);
-                Assert.AreEqual(_user2.username, user1FriendshipData.Friends[0].Username);
-                Assert.AreEqual(_user1.username, user2FriendshipData.Friends[0].Username);
+                Assert.AreEqual(_user2.Username, user1FriendshipData.Friends[0].Username);
+                Assert.AreEqual(_user1.Username, user2FriendshipData.Friends[0].Username);
             }
             catch (ApiException ex)
             {
@@ -160,7 +160,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 await SetUpAsync();
 
                 // User1 sends a friend request to User2
-                var sendRequestResponse = await _friendshipService1.SendFriendRequestAsync(_user2.username);
+                var sendRequestResponse = await _friendshipService1.SendFriendRequestAsync(_user2.Username);
                 Assert.IsNotNull(sendRequestResponse);
                 Assert.IsTrue(sendRequestResponse.FriendshipId > 0);
 
@@ -196,7 +196,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 await SetUpAsync();
 
                 // User1 sends a friend request to User2
-                var sendRequestResponse = await _friendshipService1.SendFriendRequestAsync(_user2.username);
+                var sendRequestResponse = await _friendshipService1.SendFriendRequestAsync(_user2.Username);
                 Assert.IsNotNull(sendRequestResponse);
                 Assert.IsTrue(sendRequestResponse.FriendshipId > 0);
 
@@ -232,7 +232,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 await SetUpAsync();
 
                 // User1 sends a friend request to User2
-                var sendRequestResponse = await _friendshipService1.SendFriendRequestAsync(_user2.username);
+                var sendRequestResponse = await _friendshipService1.SendFriendRequestAsync(_user2.Username);
                 Assert.IsNotNull(sendRequestResponse);
                 Assert.IsTrue(sendRequestResponse.FriendshipId > 0);
 
