@@ -68,8 +68,8 @@ namespace GameFuseCSharp.Tests.Runtime
             // Create a test game
             Debug.Log("Creating test game...");
             var gameResponse = await _adminService.CreateGameAsync();
-            _testGameId = gameResponse.id;
-            _testGameToken = gameResponse.token;
+            _testGameId = gameResponse.Id;
+            _testGameToken = gameResponse.Token;
             Debug.Log($"Test game created. ID: {_testGameId}, Token: {_testGameToken}");
 
             // Sign up and sign in two test users

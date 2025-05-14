@@ -51,8 +51,8 @@ namespace GameFuseCSharp.Tests.Runtime
             _sessionsService = new SessionsService("https://gamefuse.co/api/v3");
 
             var gameResponse = await _adminService.CreateGameAsync();
-            _testGameId = gameResponse.id;
-            _testGameToken = gameResponse.token;
+            _testGameId = gameResponse.Id;
+            _testGameToken = gameResponse.Token;
 
             _user = await CreateAndSignInUser("testuser");
             _gameRoundsService = new GameRoundsService("https://gamefuse.co/api/v3", _user.AuthenticationToken);
@@ -101,11 +101,11 @@ namespace GameFuseCSharp.Tests.Runtime
             {
                 await SetUpAsync();
 
-                var gameRound = await _gameRoundsService.CreateGameRoundAsync(_user.id);
+                var gameRound = await _gameRoundsService.CreateGameRoundAsync(_user.Id);
 
                 Assert.NotNull(gameRound);
                 Assert.Greater(gameRound.Id, 0);
-                Assert.AreEqual(_user.id, gameRound.GameUserId);
+                Assert.AreEqual(_user.Id, gameRound.GameUserId);
             }
             finally
             {
@@ -122,7 +122,7 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 var gameRound = new GameRoundObject
                 {
-                    GameUserId = _user.id,
+                    GameUserId = _user.Id,
                     GameType = "solo_adventure",
                     Score = 1000.0,
                     Place = 1,
@@ -138,7 +138,7 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 Assert.NotNull(createdRound);
                 Assert.Greater(createdRound.Id, 0);
-                Assert.AreEqual(_user.id, createdRound.GameUserId);
+                Assert.AreEqual(_user.Id, createdRound.GameUserId);
                 Assert.AreEqual("solo_adventure", createdRound.GameType);
                 Assert.AreEqual(1000.0, createdRound.Score);
                 Assert.AreEqual(1, createdRound.Place);
@@ -259,7 +259,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 await SetUpAsync();
 
                 // Create initial round
-                var initialRound = await _gameRoundsService.CreateGameRoundAsync(_user.id);
+                var initialRound = await _gameRoundsService.CreateGameRoundAsync(_user.Id);
                 Assert.NotNull(initialRound);
 
                 // Update the round
@@ -289,12 +289,12 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 // Create a second player
                 var secondUser = await CreateAndSignInUser("secondplayer");
-                var secondUserService = new GameRoundsService("https://gamefuse.co/api/v3", secondUser.authentication_token);
+                var secondUserService = new GameRoundsService("https://gamefuse.co/api/v3", secondUser.AuthenticationToken);
 
                 // Create initial multiplayer game round for first player
                 var firstPlayerRound = new GameRoundObject
                 {
-                    GameUserId = _user.id,
+                    GameUserId = _user.Id,
                     StartTime = "2024-01-25T10:00:00Z",
                     EndTime = "2024-01-25T10:30:00Z",
                     Score = 1000.0,
@@ -314,7 +314,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 // Add second player to the multiplayer game
                 var secondPlayerRound = new GameRoundObject
                 {
-                    GameUserId = secondUser.id,
+                    GameUserId = secondUser.Id,
                     StartTime = "2024-01-25T10:00:00Z",
                     EndTime = "2024-01-25T10:30:00Z",
                     Score = 800.0,
@@ -354,7 +354,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 await SetUpAsync();
 
                 // Create a round
-                var createdRound = await _gameRoundsService.CreateGameRoundAsync(_user.id);
+                var createdRound = await _gameRoundsService.CreateGameRoundAsync(_user.Id);
                 Assert.NotNull(createdRound);
 
                 // Get the round
@@ -378,16 +378,16 @@ namespace GameFuseCSharp.Tests.Runtime
                 await SetUpAsync();
 
                 // Create multiple rounds
-                await _gameRoundsService.CreateGameRoundAsync(_user.id);
-                await _gameRoundsService.CreateGameRoundAsync(_user.id);
+                await _gameRoundsService.CreateGameRoundAsync(_user.Id);
+                await _gameRoundsService.CreateGameRoundAsync(_user.Id);
 
                 // Get all rounds
-                var response = await _gameRoundsService.GetUserGameRoundsAsync(_user.id);
+                var response = await _gameRoundsService.GetUserGameRoundsAsync(_user.Id);
 
                 Assert.NotNull(response);
                 Assert.NotNull(response.GameRounds);
                 Assert.GreaterOrEqual(response.GameRounds.Length, 2);
-                Assert.That(response.GameRounds.All(r => r.GameUserId == _user.id));
+                Assert.That(response.GameRounds.All(r => r.GameUserId == _user.Id));
             }
             finally
             {
@@ -403,7 +403,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 await SetUpAsync();
 
                 // Create a round
-                var createdRound = await _gameRoundsService.CreateGameRoundAsync(_user.id);
+                var createdRound = await _gameRoundsService.CreateGameRoundAsync(_user.Id);
                 Assert.NotNull(createdRound);
 
                 // Delete the round
@@ -414,7 +414,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.That(deleteResponse.Message.Contains("destroyed successfully"));
 
                 // Verify round is deleted
-                var response = await _gameRoundsService.GetUserGameRoundsAsync(_user.id);
+                var response = await _gameRoundsService.GetUserGameRoundsAsync(_user.Id);
                 Assert.That(!response.GameRounds.Any(r => r.Id == createdRound.Id));
             }
             finally

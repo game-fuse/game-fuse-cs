@@ -51,8 +51,8 @@ namespace GameFuseCSharp.Tests.Runtime
             _sessionsService = new SessionsService("https://gamefuse.co/api/v3");
 
             var gameResponse = await _adminService.CreateGameAsync();
-            _testGameId = gameResponse.id;
-            _testGameToken = gameResponse.token;
+            _testGameId = gameResponse.Id;
+            _testGameToken = gameResponse.Token;
 
             _user = await CreateAndSignInUser("testuser");
             _leaderboardService = new LeaderboardService("https://gamefuse.co/api/v3", _user.AuthenticationToken);

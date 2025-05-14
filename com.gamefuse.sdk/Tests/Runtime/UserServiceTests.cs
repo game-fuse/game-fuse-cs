@@ -57,8 +57,8 @@ namespace GameFuseCSharp.Tests.Runtime
 
             Debug.Log("Creating test game...");
             var gameResponse = await _adminService.CreateGameAsync();
-            _testGameId = gameResponse.id;
-            _testGameToken = gameResponse.token;
+            _testGameId = gameResponse.Id;
+            _testGameToken = gameResponse.Token;
             Debug.Log($"Test game created. ID: {_testGameId}, Token: {_testGameToken}");
 
             _userService = new UserService("https://gamefuse.co/api/v3");
