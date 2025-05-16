@@ -22,6 +22,11 @@
             "displayName": "GameFuse Example",
             "description": "An example scene demonstrating how to use the GameFuse SDK.",
             "path": "Samples~/GameFuse Example"
+        },
+		{
+            "displayName": "GameFuse UI Toolkit",
+            "description": "An example scene demonstrating how to use the GameFuse SDK.",
+            "path": "Samples~/UIToolkitExample"
         }
     ],
     "testDependencies": {
