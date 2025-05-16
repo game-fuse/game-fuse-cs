@@ -61,7 +61,7 @@ namespace GameFuseCSharp
         public List<FriendRequest> IncomingFriendRequests { get; set; }
         
         [JsonProperty("groups")]
-        public List<Group> Groups { get; set; }
+        public List<GroupResponse> Groups { get; set; }
         
         [JsonProperty("group_join_requests")]
         public List<JoinRequest> GroupJoinRequests { get; set; }
