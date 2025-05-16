@@ -284,7 +284,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 var readMessage = messages.Messages.FirstOrDefault(m => m.Id == sentMessage.Id);
                 Assert.NotNull(readMessage, "Message should be found");
                 Assert.IsTrue(readMessage.Read, "Message should be marked as read for user2");
-                Assert.That(readMessage.ReadBy.Contains(_user2.Id.ToString()), "User2 should be in the read by list");
+                Assert.That(readMessage.ReadBy.ToList().Contains(_user2.Id), "User2 should be in the read by list");
             }
             catch (ApiException ex)
             {
