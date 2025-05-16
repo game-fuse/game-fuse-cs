@@ -26,17 +26,18 @@ namespace GameFuseCSharp
         {
             string url = $"{_baseUrl}/chats";
 
-            var request = new
+            var request = new CreateDirectChatRequest
             {
-                usernames = usernames,
-                text = text
+                Username = usernames.Length > 0 ? usernames[0] : null,
+                Text = text
             };
 
             string jsonBody = SerializeRequest(request);
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
             {
-                return await SendRequestAsync<Chat>(webRequest);
+                var response = await SendRequestAsync<CreateChatResponse>(webRequest);
+                return response.Chat;
             }
         }
 
@@ -44,17 +45,19 @@ namespace GameFuseCSharp
         {
             string url = $"{_baseUrl}/chats";
 
-            var request = new
+            var request = new CreateGroupChatRequest
             {
-                group_id = groupId,
-                text = text
+                GroupId = groupId,
+                Text = text,
+                Usernames = null // Not needed for group chat
             };
 
             string jsonBody = SerializeRequest(request);
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
             {
-                return await SendRequestAsync<Chat>(webRequest);
+                var response = await SendRequestAsync<CreateChatResponse>(webRequest);
+                return response.Chat;
             }
         }
 
@@ -72,17 +75,18 @@ namespace GameFuseCSharp
         {
             string url = $"{_baseUrl}/messages";
 
-            var request = new
+            var request = new SendMessageRequest
             {
-                chat_id = chatId,
-                text = text
+                ChatId = chatId,
+                Text = text
             };
 
             string jsonBody = SerializeRequest(request);
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
             {
-                return await SendRequestAsync<ChatMessage>(webRequest);
+                var response = await SendRequestAsync<SendMessageResponse>(webRequest);
+                return response.Message;
             }
         }
 

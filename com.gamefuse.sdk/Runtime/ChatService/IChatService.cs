@@ -16,9 +16,9 @@ namespace GameFuseCSharp
         Task<GetChatsResponse> GetChatsAsync(int page = 1);
 
         /// <summary>
-        /// Creates a new direct chat with specified users and sends the first message.
+        /// Creates a new direct chat with a specified user and sends the first message.
         /// </summary>
-        /// <param name="usernames">List of usernames to start a direct chat with.</param>
+        /// <param name="usernames">List of usernames to start a direct chat with (only the first one is used).</param>
         /// <param name="text">The initial message text to send.</param>
         /// <returns>Response containing the newly created chat.</returns>
         /// <exception cref="ApiException">Thrown when request fails or parameters are invalid.</exception>

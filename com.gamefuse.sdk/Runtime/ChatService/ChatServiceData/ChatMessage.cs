@@ -19,7 +19,7 @@ namespace GameFuseCSharp
         public string CreatedAt { get; set; }
 
         [JsonProperty("read_by")]
-        public string[] ReadBy { get; set; }
+        public int[] ReadBy { get; set; }
 
         [JsonProperty("read")]
         public bool Read { get; set; }

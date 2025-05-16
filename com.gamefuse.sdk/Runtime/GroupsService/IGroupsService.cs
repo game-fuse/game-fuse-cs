@@ -14,5 +14,9 @@ namespace GameFuseCSharp
         Task<GroupAttributesResponse> GetGroupAttributesAsync(int groupId);
         Task<GroupAttributesResponse> AddGroupAttributesAsync(int groupId, GroupAttributesRequest groupAttributesRequest);
         Task<GroupAttribute> ModifyGroupAttributeAsync(int groupId, string key, string value);
+        Task<GroupAttribute> AddGroupAttributeAsync(int groupId, GroupAttributeRequest request);
+        Task<RemoveGroupMemberResponse> RemoveGroupMemberAsync(int groupId, int userId);
+        Task<RemoveGroupMemberResponse> PromoteToGroupAdminAsync(int groupId, int userId);
+        Task<RemoveGroupMemberResponse> LeaveGroupAsync(int groupId);
     }
 }

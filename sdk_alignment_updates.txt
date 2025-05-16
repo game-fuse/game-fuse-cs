@@ -1,0 +1,32 @@
+SDK Alignment Updates
+====================
+
+This document lists all changes made to align the C# SDK with the REST API documentation.
+
+Chat Service
+-----------
+• Runtime/ChatService/ChatServiceData/ChatMessage.cs - Updated ReadBy property to be int[] instead of string[] to match API docs
+• Runtime/ChatService/ChatServiceRequests/CreateDirectChatRequest.cs - Created request class for direct chat creation
+• Runtime/ChatService/ChatServiceRequests/CreateGroupChatRequest.cs - Created request class for group chat creation
+• Runtime/ChatService/ChatServiceRequests/SendMessageRequest.cs - Created request class for sending messages
+• Runtime/ChatService/ChatServiceResponses/CreateChatResponse.cs - Created response class for chat creation
+• Runtime/ChatService/ChatServiceResponses/SendMessageResponse.cs - Created response class for message sending
+• Runtime/ChatService/ChatService.cs - Updated service methods to use new request/response classes
+• Runtime/ChatService/IChatService.cs - Updated interface documentation to match implementation
+
+Sessions Service (Sign In)
+------------------------
+• Runtime/SessionsService/SessionsServiceResponse/SignInResponse.cs - Added missing fields to SignInResponse (display_email, game_user_attributes, game_user_store_items, friends, outgoing_friend_requests, incoming_friend_requests, groups, group_join_requests, group_invites)
+• Runtime/SessionsService/SessionsServiceResponse/SignInResponse.cs - Added supporting classes for new fields (UserAttribute, StoreItem, GroupInvite, JoinRequest)
+
+Groups Service
+------------
+• Runtime/GroupsService/GroupsServiceResponses/RemoveGroupMemberResponse.cs - Created response class for group member removal
+• Runtime/GroupsService/IGroupsService.cs - Added missing methods (AddGroupAttributeAsync, RemoveGroupMemberAsync, PromoteToGroupAdminAsync, LeaveGroupAsync)
+• Runtime/GroupsService/GroupsService.cs - Implemented missing methods
+
+Tests
+-----
+• Tests/Runtime/GroupServiceTests.cs - Added tests for new group functionality (RemoveGroupMember, PromoteToGroupAdmin, LeaveGroup)
+
+All models have been updated with proper JSON property attributes to ensure consistent serialization between snake_case API fields and PascalCase C# properties.

@@ -255,5 +255,78 @@ namespace GameFuseCSharp
                 }
             }
         }
+        
+        public async Task<GroupAttribute> AddGroupAttributeAsync(int groupId, GroupAttributeRequest request)
+        {
+            string url = $"{_baseUrl}/groups/{groupId}/add_attribute";
+            string jsonBody = SerializeRequest(request);
+
+            using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
+            {
+                try
+                {
+                    return await SendRequestAsync<GroupAttribute>(webRequest);
+                }
+                catch (ApiException ex)
+                {
+                    Debug.LogError($"Failed to add attribute to group {groupId}. Status: {ex.StatusCode}, Message: {ex.Message}");
+                    throw;
+                }
+            }
+        }
+        
+        public async Task<RemoveGroupMemberResponse> RemoveGroupMemberAsync(int groupId, int userId)
+        {
+            string url = $"{_baseUrl}/groups/{groupId}/members/{userId}";
+
+            using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.DELETE))
+            {
+                try
+                {
+                    return await SendRequestAsync<RemoveGroupMemberResponse>(webRequest);
+                }
+                catch (ApiException ex)
+                {
+                    Debug.LogError($"Failed to remove member from group {groupId}. Status: {ex.StatusCode}, Message: {ex.Message}");
+                    throw;
+                }
+            }
+        }
+        
+        public async Task<RemoveGroupMemberResponse> PromoteToGroupAdminAsync(int groupId, int userId)
+        {
+            string url = $"{_baseUrl}/groups/{groupId}/admins/{userId}";
+
+            using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST))
+            {
+                try
+                {
+                    return await SendRequestAsync<RemoveGroupMemberResponse>(webRequest);
+                }
+                catch (ApiException ex)
+                {
+                    Debug.LogError($"Failed to promote user to admin in group {groupId}. Status: {ex.StatusCode}, Message: {ex.Message}");
+                    throw;
+                }
+            }
+        }
+        
+        public async Task<RemoveGroupMemberResponse> LeaveGroupAsync(int groupId)
+        {
+            string url = $"{_baseUrl}/groups/{groupId}/leave";
+
+            using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST))
+            {
+                try
+                {
+                    return await SendRequestAsync<RemoveGroupMemberResponse>(webRequest);
+                }
+                catch (ApiException ex)
+                {
+                    Debug.LogError($"Failed to leave group {groupId}. Status: {ex.StatusCode}, Message: {ex.Message}");
+                    throw;
+                }
+            }
+        }
     }
 }

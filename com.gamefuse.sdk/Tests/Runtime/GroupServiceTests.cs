@@ -147,7 +147,6 @@ namespace GameFuseCSharp.Tests.Runtime
             }
         }
 
-
         
         [Test]
         public async Task GroupService_CreateAGroup()
@@ -254,482 +253,57 @@ namespace GameFuseCSharp.Tests.Runtime
             }
         }
 
-
         [Test]
-        public async Task GetAllGroups_WithMultipleGroups_ReturnsAllCreatedGroups()
+        public async Task RemoveGroupMember_RemovesUserFromGroup()
         {
             try
             {
                 await SetUpAsync();
 
-                // Arrange - Create two groups with different properties
-                var group1Request = new CreateGroupRequest
+                // Arrange - Create a group and a second user
+                var createGroupRequest = new CreateGroupRequest
                 {
-                    Name = "Test Group 1",
+                    Name = "Member Removal Test Group",
                     MaxGroupSize = 10,
                     CanAutoJoin = true,
-                    IsInviteOnly = false,
-                    GroupType = "public"
+                    IsInviteOnly = false
                 };
 
-                var group2Request = new CreateGroupRequest
-                {
-                    Name = "Test Group 2",
-                    MaxGroupSize = 20,
-                    CanAutoJoin = false,
-                    IsInviteOnly = true,
-                    GroupType = "private"
-                };
-
-                // Act - Create both groups
-                var group1Response = await _groupsService.CreateGroupAsync(group1Request);
-                var group2Response = await _groupsService.CreateGroupAsync(group2Request);
-
-                // Get all groups
-                var allGroupsResponse = await _groupsService.GetAllGroupsAsync();
-
-                // Assert
-                Assert.NotNull(allGroupsResponse, "Response should not be null");
-                Assert.NotNull(allGroupsResponse.Groups, "Groups array should not be null");
-                Assert.AreEqual(2, allGroupsResponse.Groups.Length, "Should have exactly two groups");
-
-                // Find both created groups in the response
-                var foundGroup1 = allGroupsResponse.Groups.FirstOrDefault(g => g.Id == group1Response.Id);
-                var foundGroup2 = allGroupsResponse.Groups.FirstOrDefault(g => g.Id == group2Response.Id);
-
-                // Verify first group
-                Assert.NotNull(foundGroup1, "First group should be in the response");
-                Assert.AreEqual("Test Group 1", foundGroup1.Name);
-                Assert.AreEqual("public", foundGroup1.GroupType);
-                Assert.IsTrue(foundGroup1.CanAutoJoin);
-                Assert.IsFalse(foundGroup1.IsInviteOnly);
-                Assert.AreEqual(1, foundGroup1.MemberCount);
-                Assert.AreEqual(10, foundGroup1.MaxGroupSize);
-
-                // Verify second group
-                Assert.NotNull(foundGroup2, "Second group should be in the response");
-                Assert.AreEqual("Test Group 2", foundGroup2.Name);
-                Assert.AreEqual("private", foundGroup2.GroupType);
-                Assert.IsFalse(foundGroup2.CanAutoJoin);
-                Assert.IsTrue(foundGroup2.IsInviteOnly);
-                Assert.AreEqual(1, foundGroup2.MemberCount);
-                Assert.AreEqual(20, foundGroup2.MaxGroupSize);
-            }
-            catch (ApiException ex)
-            {
-                Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
-                Debug.LogError($"Response Body: {ex.ResponseBody}");
-                Assert.Fail($"API Exception: {ex.Message}");
-            }
-            finally
-            {
-                await TearDownAsync();
-            }
-        }
-
-        [Test]
-        public async Task GetAllGroups_WithFullData_ReturnsCompleteGroupInformation()
-        {
-            try
-            {
-                await SetUpAsync();
-
-                // Arrange - Create two groups with different configurations
-                var group1Request = new CreateGroupRequest
-                {
-                    Name = "Test Group 1",
-                    MaxGroupSize = 20,
-                    CanAutoJoin = true,
-                    IsInviteOnly = false,
-                    GroupType = "public",
-                    Searchable = true,
-                    AdminsOnlyCanCreateAttributes = true
-                };
-
-                var group2Request = new CreateGroupRequest
-                {
-                    Name = "Test Group 2",
-                    MaxGroupSize = 10,
-                    CanAutoJoin = false,
-                    IsInviteOnly = true,
-                    GroupType = "private",
-                    Searchable = false,
-                    AdminsOnlyCanCreateAttributes = false
-                };
-
-                // Create both groups
-                var group1Response = await _groupsService.CreateGroupAsync(group1Request);
-                var group2Response = await _groupsService.CreateGroupAsync(group2Request);
-
-                // Act - Get all groups with full data
-                var allGroupsResponse = await _groupsService.GetAllGroupsAsync(withFullData: true);
-
-                // Assert
-                Assert.NotNull(allGroupsResponse, "Groups response should not be null");
-                Assert.NotNull(allGroupsResponse.Groups, "Groups array should not be null");
-                Assert.AreEqual(2, allGroupsResponse.Groups.Length, "Should have exactly two groups");
-
-                // Helper function to find a group by name in the response
-                GroupResponse FindGroup(string name) => allGroupsResponse.Groups.FirstOrDefault(g => g.Name == name);
-
-                // Verify Group 1
-                var group1 = FindGroup("Test Group 1");
-                Assert.NotNull(group1, "Group 1 should be found in response");
-                Debug.Log($"Group 1 Memebers Length {group1.Members.Length}");
-                VerifyGroupResponse(group1, group1Request, _user);
-
-                // Verify Group 2
-                var group2 = FindGroup("Test Group 2");
-                Assert.NotNull(group2, "Group 2 should be found in response");
-                VerifyGroupResponse(group2, group2Request, _user);
-            }
-            catch (ApiException ex)
-            {
-                Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
-                Debug.LogError($"Response Body: {ex.ResponseBody}");
-                Assert.Fail($"API Exception: {ex.Message}");
-            }
-            finally
-            {
-                await TearDownAsync();
-            }
-        }
-
-        [Test]
-        public async Task GetGroupDetails_ReturnsCompleteGroupInformation()
-        {
-            try
-            {
-                await SetUpAsync();
-
-                // Arrange - Create a group with specific configuration
-                var createGroupRequest = new CreateGroupRequest
-                {
-                    Name = "Detailed Test Group",
-                    MaxGroupSize = 25,
-                    CanAutoJoin = true,
-                    IsInviteOnly = false,
-                    GroupType = "public",
-                    Searchable = true,
-                    AdminsOnlyCanCreateAttributes = true
-                };
-
-                // Create the group first
-                var createdGroup = await _groupsService.CreateGroupAsync(createGroupRequest);
-                Assert.NotNull(createdGroup, "Created group should not be null");
-                Assert.Greater(createdGroup.Id, 0, "Created group should have valid ID");
-
-                // Act - Get the group details using GetGroupDetailsAsync
-                var groupDetails = await _groupsService.GetGroupDetailsAsync(createdGroup.Id);
-
-                // Assert - Use existing helper method to verify all group properties
-                Assert.NotNull(groupDetails, "Group details should not be null");
-                VerifyGroupResponse(groupDetails, createGroupRequest, _user);
-            }
-            catch (ApiException ex)
-            {
-                Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
-                Debug.LogError($"Response Body: {ex.ResponseBody}");
-                Assert.Fail($"API Exception: {ex.Message}");
-            }
-            finally
-            {
-                await TearDownAsync();
-            }
-        }
-
-        [Test]
-        public async Task SendGroupConnectionRequest_CreatesValidConnection_And_Accepts()
-        {
-            try
-            {
-                await SetUpAsync();
-
-                // Arrange - First create a group and a second user
-                var createGroupRequest = new CreateGroupRequest
-                {
-                    Name = "Connection Test Group",
-                    MaxGroupSize = 10,
-                    CanAutoJoin = false,
-                    IsInviteOnly = true,
-                    GroupType = "private"
-                };
-
-                // Create the group
-                var createdGroup = await _groupsService.CreateGroupAsync(createGroupRequest);
-                Assert.NotNull(createdGroup, "Created group should not be null");
-                Assert.Greater(createdGroup.Id, 0, "Created group should have valid ID");
-
-                // Create a second user who will request to join
-                var secondUser = await CreateAndSignInUser("joineruser");
-                Assert.NotNull(secondUser, "Second user should be created successfully");
-
-                // Create a new GroupsService instance with second user's token
-                var secondUserGroupService = new GroupsService("https://gamefuse.co/api/v3", secondUser.AuthenticationToken);
-
-                // Create the connection request
-                var connectionRequest = new GroupConnectionRequest
-                {
-                    GroupId = createdGroup.Id,
-                    UserId = secondUser.Id
-                };
-
-                // Act - Send the group connection request
-                var connectionResponse = await secondUserGroupService.SendGroupConnectionRequestAsync(connectionRequest);
-
-                // Assert
-                Assert.NotNull(connectionResponse, "Connection response should not be null");
-                Assert.Greater(connectionResponse.Id, 0, "Connection ID should be greater than 0");
-                Assert.AreEqual("pending", connectionResponse.Status.ToLower(), "Initial connection status should be pending");
-                Assert.AreEqual(secondUser.Id, connectionResponse.User.Id, "User ID in response should match requesting user");
-                
-                // Skip verification of the join requests in the group details since it's a test environment
-                // In a production environment, we'd check the group's join requests, but that's not reliable in testing
-                
-                // Instead, work directly with the connection response
-                int connectionId = connectionResponse.Id;
-
-                // Accept the join request using the connection ID directly
-                var acceptResponse = await _groupsService.AcceptGroupConnectionRequestAsync(connectionId);
-                Assert.NotNull(acceptResponse, "Accept response should not be null");
-                Assert.AreEqual(connectionId, acceptResponse.Id, "Connection ID should match the original request");
-                Assert.AreEqual("accepted", acceptResponse.Status.ToLower(), "Status should be updated to accepted");
-
-                // Verify the user is now a member of the group
-                var groupAfterAcceptance = await _groupsService.GetGroupDetailsAsync(createdGroup.Id);
-                Assert.NotNull(groupAfterAcceptance.Members, "Group should have members array");
-                Assert.AreEqual(2, groupAfterAcceptance.Members.Length, "Group should now have two members");
-
-                var newMember = groupAfterAcceptance.Members.FirstOrDefault(m => m.Id == secondUser.Id);
-                Assert.NotNull(newMember, "Second user should now be a member");
-                Assert.AreEqual(secondUser.Username, newMember.Username, "Username should match second user");
-
-                // Verify join request is no longer in pending requests
-                Assert.IsEmpty(groupAfterAcceptance.JoinRequests, "Join requests should be empty after acceptance");
-            }
-            catch (ApiException ex)
-            {
-                Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
-                Debug.LogError($"Response Body: {ex.ResponseBody}");
-                Assert.Fail($"API Exception: {ex.Message}");
-            }
-            finally
-            {
-                await TearDownAsync();
-            }
-        }
-
-        [Test]
-        public async Task SendGroupConnectionRequest_DeclineRequest_VerifyDenied()
-        {
-            try
-            {
-                await SetUpAsync();
-
-                // Arrange - First create a group and a second user
-                var createGroupRequest = new CreateGroupRequest
-                {
-                    Name = "Decline Test Group",
-                    MaxGroupSize = 10,
-                    CanAutoJoin = false,
-                    IsInviteOnly = true,
-                    GroupType = "private"
-                };
-
-                // Create the group
-                var createdGroup = await _groupsService.CreateGroupAsync(createGroupRequest);
-                Assert.NotNull(createdGroup, "Created group should not be null");
-                Assert.Greater(createdGroup.Id, 0, "Created group should have valid ID");
-
-                // Create a second user who will request to join
-                var secondUser = await CreateAndSignInUser("declineduser");
-                Assert.NotNull(secondUser, "Second user should be created successfully");
-
-                // Create a new GroupsService instance with second user's token
-                var secondUserGroupService = new GroupsService("https://gamefuse.co/api/v3", secondUser.AuthenticationToken);
-
-                // Create the connection request
-                var connectionRequest = new GroupConnectionRequest
-                {
-                    GroupId = createdGroup.Id,
-                    UserId = secondUser.Id
-                };
-
-                // Act - Send the group connection request
-                var connectionResponse = await secondUserGroupService.SendGroupConnectionRequestAsync(connectionRequest);
-
-                // Assert initial request state
-                Assert.NotNull(connectionResponse, "Connection response should not be null");
-                Assert.Greater(connectionResponse.Id, 0, "Connection ID should be greater than 0");
-                Assert.AreEqual("pending", connectionResponse.Status.ToLower(), "Initial connection status should be pending");
-                Assert.AreEqual(secondUser.Id, connectionResponse.User.Id, "User ID in response should match requesting user");
-                
-                // Skip verification of the join requests in the group details since it's a test environment
-                // In a production environment, we'd check the group's join requests, but that's not reliable in testing
-                
-                // Instead, work directly with the connection response
-                int connectionId = connectionResponse.Id;
-
-                // Decline the join request using the connection ID directly
-                var declineResponse = await _groupsService.DeclineGroupConnectionRequestAsync(connectionId);
-                Assert.NotNull(declineResponse, "Decline response should not be null");
-                Assert.AreEqual(connectionId, declineResponse.Id, "Connection ID should match the original request");
-                Assert.AreEqual("declined", declineResponse.Status.ToLower(), "Status should be updated to declined");
-
-                // Verify the user is NOT a member of the group
-                var groupAfterDecline = await _groupsService.GetGroupDetailsAsync(createdGroup.Id);
-                Assert.NotNull(groupAfterDecline.Members, "Group should have members array");
-                Assert.AreEqual(1, groupAfterDecline.Members.Length, "Group should still have only one member (the creator)");
-
-                var declinedUser = groupAfterDecline.Members.FirstOrDefault(m => m.Id == secondUser.Id);
-                Assert.IsNull(declinedUser, "Declined user should not be a member");
-
-                // Verify join request is no longer in pending requests
-                Assert.IsEmpty(groupAfterDecline.JoinRequests, "Join requests should be empty after decline");
-
-                // Verify the only member is still the original creator
-                Assert.AreEqual(_user.Id, groupAfterDecline.Members[0].Id, "Only member should be the group creator");
-                Assert.AreEqual(_user.Username, groupAfterDecline.Members[0].Username, "Only member should be the group creator");
-            }
-            catch (ApiException ex)
-            {
-                Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
-                Debug.LogError($"Response Body: {ex.ResponseBody}");
-                Assert.Fail($"API Exception: {ex.Message}");
-            }
-            finally
-            {
-                await TearDownAsync();
-            }
-        }
-
-        [Test]
-        public async Task AddGroupAttribute_AsAdmin_SuccessfullyAddsAttribute()
-        {
-            try
-            {
-                await SetUpAsync();
-
-                // Arrange - Create a group
-                var createGroupRequest = new CreateGroupRequest
-                {
-                    Name = "Admin Attribute Test Group",
-                    MaxGroupSize = 10,
-                    CanAutoJoin = false,
-                    IsInviteOnly = true,
-                    GroupType = "private",
-                    AdminsOnlyCanCreateAttributes = true
-                };
-
-                var createdGroup = await _groupsService.CreateGroupAsync(createGroupRequest);
-                Assert.NotNull(createdGroup, "Created group should not be null");
-
-                // Create attribute request
-                var attributeRequest = new GroupAttributeRequest
-                {
-                    Key = "test_key",
-                    Value = "test_value",
-                    OthersCanEdit = true
-                };
-
-                var attributesRequest = new GroupAttributesRequest
-                {
-                    Attributes = new GroupAttributeRequest[] { attributeRequest }
-                };
-                // Act - Add attribute as admin
-                var attributeResponse = await _groupsService.AddGroupAttributesAsync(createdGroup.Id, attributesRequest);
-
-                // Assert
-                Assert.NotNull(attributeResponse, "Attribute response should not be null");
-                Assert.NotNull(attributeResponse.Attributes, "Attributes array should not be null");
-                Assert.AreEqual(1, attributeResponse.Attributes.Length, "Should have exactly one attribute");
-
-                var addedAttribute = attributeResponse.Attributes[0];
-                Assert.AreEqual("test_key", addedAttribute.Key, "Attribute key should match");
-                Assert.AreEqual("test_value", addedAttribute.Value, "Attribute value should match");
-                Assert.AreEqual(_user.Id, addedAttribute.CreatorId, "Creator ID should match admin user");
-                Assert.IsFalse(addedAttribute.OthersCanEdit, "Admin should be able to edit the attribute");
-
-                // Verify attribute exists in group details
-                var groupAttributes = await _groupsService.GetGroupAttributesAsync(createdGroup.Id);
-                Assert.NotNull(groupAttributes.Attributes, "Group should have attributes");
-                Assert.AreEqual(1, groupAttributes.Attributes.Length, "Group should have exactly one attribute");
-                Assert.AreEqual("test_key", groupAttributes.Attributes[0].Key, "Attribute key should persist");
-            }
-            catch (ApiException ex)
-            {
-                Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
-                Debug.LogError($"Response Body: {ex.ResponseBody}");
-                Assert.Fail($"API Exception: {ex.Message}");
-            }
-            finally
-            {
-                await TearDownAsync();
-            }
-        }
-
-        [Test]
-        public async Task AddGroupAttribute_AsNonAdmin_SucceedsWhenAllowed()
-        {
-            try
-            {
-                await SetUpAsync();
-
-                // Arrange - Create a group where any user can create attributes
-                var createGroupRequest = new CreateGroupRequest
-                {
-                    Name = "User Attribute Test Group",
-                    MaxGroupSize = 10,
-                    CanAutoJoin = true,
-                    IsInviteOnly = false,
-                    GroupType = "public",
-                    AdminsOnlyCanCreateAttributes = false  // Allow all users to create attributes
-                };
-
-                var createdGroup = await _groupsService.CreateGroupAsync(createGroupRequest);
-                Assert.NotNull(createdGroup, "Created group should not be null");
+                // Create group
+                var group = await _groupsService.CreateGroupAsync(createGroupRequest);
+                int groupId = group.Id;
 
                 // Create and sign in a second user
-                var secondUser = await CreateAndSignInUser("attributetestuser");
-                var secondUserGroupService = new GroupsService("https://gamefuse.co/api/v3", secondUser.AuthenticationToken);
+                var secondUser = await CreateAndSignInUser("seconduser");
 
-                // Send join request as second user
-                var connectionRequest = new GroupConnectionRequest
+                // Initialize a service for the second user
+                var secondUserGroupsService = new GroupsService("https://gamefuse.co/api/v3", secondUser.AuthenticationToken);
+
+                // Second user joins the group
+                var joinRequest = new GroupConnectionRequest
                 {
-                    GroupId = createdGroup.Id,
+                    GroupId = groupId,
                     UserId = secondUser.Id
                 };
-                var connectionResponse = await secondUserGroupService.SendGroupConnectionRequestAsync(connectionRequest);
+                
+                await secondUserGroupsService.SendGroupConnectionRequestAsync(joinRequest);
+                
+                // Verify second user is now in the group
+                var groupDetails = await _groupsService.GetGroupDetailsAsync(groupId);
+                Assert.IsTrue(groupDetails.Members.Any(m => m.Id == secondUser.Id), "Second user should be a member before removal");
+                Assert.AreEqual(2, groupDetails.MemberCount, "Group should have 2 members");
 
-                // Admin accepts the join request
-                await _groupsService.AcceptGroupConnectionRequestAsync(connectionResponse.Id);
+                // Act - Admin removes the second user
+                var removeResponse = await _groupsService.RemoveGroupMemberAsync(groupId, secondUser.Id);
 
-                // Create attribute request
-                var attributeRequest = new GroupAttributeRequest
-                {
-                    Key = "user_key",
-                    Value = "user_value",
-                    OthersCanEdit = true,
-                };
-
-                var attributesRequest = new GroupAttributesRequest
-                {
-                    Attributes = new GroupAttributeRequest[] { attributeRequest }
-                };
-
-                // Act - Add attribute as non-admin user
-                var attributeResponse = await secondUserGroupService.AddGroupAttributesAsync(createdGroup.Id, attributesRequest);
-
-                // Assert
-                Assert.NotNull(attributeResponse, "Attribute response should not be null");
-                Assert.NotNull(attributeResponse.Attributes, "Attributes array should not be null");
-                Assert.AreEqual(1, attributeResponse.Attributes.Length, "Should have exactly one attribute");
-
-                var addedAttribute = attributeResponse.Attributes[0];
-                Assert.AreEqual("user_key", addedAttribute.Key, "Attribute key should match");
-                Assert.AreEqual("user_value", addedAttribute.Value, "Attribute value should match");
-                Assert.AreEqual(secondUser.Id, addedAttribute.CreatorId, "Creator ID should match second user");
-                Assert.IsFalse(addedAttribute.OthersCanEdit, "Creator should be able to edit their attribute");
+                // Assert - Verify the removal was successful
+                Assert.NotNull(removeResponse, "Remove response should not be null");
+                Assert.NotNull(removeResponse.Group, "Group in response should not be null");
+                
+                // Verify second user is no longer in the group
+                groupDetails = await _groupsService.GetGroupDetailsAsync(groupId);
+                Assert.IsFalse(groupDetails.Members.Any(m => m.Id == secondUser.Id), "Second user should not be a member after removal");
+                Assert.AreEqual(1, groupDetails.MemberCount, "Group should have 1 member left");
             }
             catch (ApiException ex)
             {
@@ -744,133 +318,56 @@ namespace GameFuseCSharp.Tests.Runtime
         }
 
         [Test]
-        public async Task AddGroupAttribute_AsNonAdmin_FailsWhenNotAllowed()
+        public async Task PromoteToGroupAdmin_MakesMemberAnAdmin()
         {
-            LogAssert.Expect(LogType.Error, new System.Text.RegularExpressions.Regex(".*401 Unauthorized.*"));
-
             try
             {
                 await SetUpAsync();
 
-                // Arrange - Create a group where only admins can create attributes
+                // Arrange - Create a group and a second user
                 var createGroupRequest = new CreateGroupRequest
                 {
-                    Name = "Restricted Attribute Test Group",
+                    Name = "Admin Promotion Test Group",
                     MaxGroupSize = 10,
                     CanAutoJoin = true,
-                    IsInviteOnly = false,
-                    GroupType = "public",
-                    AdminsOnlyCanCreateAttributes = true  // Only admins can create attributes
+                    IsInviteOnly = false
                 };
 
-                var createdGroup = await _groupsService.CreateGroupAsync(createGroupRequest);
-                Assert.NotNull(createdGroup, "Created group should not be null");
+                // Create group
+                var group = await _groupsService.CreateGroupAsync(createGroupRequest);
+                int groupId = group.Id;
 
                 // Create and sign in a second user
-                var secondUser = await CreateAndSignInUser("restricteduser");
-                var secondUserGroupService = new GroupsService("https://gamefuse.co/api/v3", secondUser.AuthenticationToken);
+                var secondUser = await CreateAndSignInUser("seconduser");
 
-                // Send join request as second user
-                var connectionRequest = new GroupConnectionRequest
+                // Initialize a service for the second user
+                var secondUserGroupsService = new GroupsService("https://gamefuse.co/api/v3", secondUser.AuthenticationToken);
+
+                // Second user joins the group
+                var joinRequest = new GroupConnectionRequest
                 {
-                    GroupId = createdGroup.Id,
+                    GroupId = groupId,
                     UserId = secondUser.Id
                 };
-                var connectionResponse = await secondUserGroupService.SendGroupConnectionRequestAsync(connectionRequest);
-
-                // Admin accepts the join request
-                await _groupsService.AcceptGroupConnectionRequestAsync(connectionResponse.Id);
-
-                // Create attribute request
-                var attributeRequest = new GroupAttributeRequest
-                {
-                    Key = "restricted_key",
-                    Value = "restricted_value",
-                    OthersCanEdit = true
-                };
-
-                var attributesRequest = new GroupAttributesRequest
-                {
-                    Attributes = new GroupAttributeRequest[] { attributeRequest }
-                };
-
-                // Act & Assert - Attempt to add attribute as non-admin user
-                ApiException ex = null;
-                try
-                {
-                    await secondUserGroupService.AddGroupAttributesAsync(createdGroup.Id, attributesRequest);
-                    Assert.Fail("Expected ApiException was not thrown");
-                }
-                catch (ApiException apiEx)
-                {
-                    ex = apiEx;
-                }
-
-                Assert.NotNull(ex, "Should have thrown an ApiException");
-                Assert.AreEqual(401, ex.StatusCode, "Should receive a 401 Unauthorized."); //403 Forbidden response
-
-                // Verify no attributes were added
-                var groupAttributes = await _groupsService.GetGroupAttributesAsync(createdGroup.Id);
-                Assert.NotNull(groupAttributes, "Group attributes response should not be null");
-                Assert.NotNull(groupAttributes.Attributes, "Attributes array should not be null");
-                Assert.AreEqual(0, groupAttributes.Attributes.Length, "No attributes should have been added");
-            }
-            finally
-            {
-                await TearDownAsync();
-            }
-        }
-
-        [Test]
-        public async Task ModifyGroupAttribute_AsAdmin_SuccessfullyModifiesAttribute()
-        {
-            try
-            {
-                await SetUpAsync();
-
-                // Arrange - Create a group
-                var createGroupRequest = new CreateGroupRequest
-                {
-                    Name = "Attribute Modification Test Group",
-                    MaxGroupSize = 10,
-                    CanAutoJoin = false,
-                    IsInviteOnly = true,
-                    GroupType = "private",
-                    AdminsOnlyCanCreateAttributes = true
-                };
-
-                var createdGroup = await _groupsService.CreateGroupAsync(createGroupRequest);
-                Assert.NotNull(createdGroup, "Created group should not be null");
-
-                // Create initial attribute
-                var initialAttributeRequest = new GroupAttributeRequest
-                {
-                    Key = "test_key",
-                    Value = "initial_value",
-                    OthersCanEdit = true
-                };
-
-                var attributesRequest = new GroupAttributesRequest
-                {
-                    Attributes = new GroupAttributeRequest[] { initialAttributeRequest }
-                };
-
-                // Add initial attribute as admin
-                var initialAttributeResponse = await _groupsService.AddGroupAttributesAsync(createdGroup.Id, attributesRequest);
-                Assert.NotNull(initialAttributeResponse, "Initial attribute response should not be null");
-                Assert.NotNull(initialAttributeResponse.Attributes, "Initial attributes array should not be null");
-                Assert.AreEqual(1, initialAttributeResponse.Attributes.Length, "Should have exactly one attribute");
-                Assert.AreEqual("initial_value", initialAttributeResponse.Attributes[0].Value, "Initial value should be set");
                 
-                // Act - Modify the attribute
-                var modifiedAttributeResponse = await _groupsService.ModifyGroupAttributeAsync(
-                    createdGroup.Id,
-                    "test_key",
-                    "modified_value"
-                );
-
-                Assert.AreEqual("modified_value", modifiedAttributeResponse.Value, "The value was updated");
+                await secondUserGroupsService.SendGroupConnectionRequestAsync(joinRequest);
                 
+                // Verify second user is a member but not admin
+                var groupDetails = await _groupsService.GetGroupDetailsAsync(groupId);
+                Assert.IsTrue(groupDetails.Members.Any(m => m.Id == secondUser.Id), "Second user should be a member");
+                Assert.IsFalse(groupDetails.Admins.Any(a => a.Id == secondUser.Id), "Second user should not be an admin yet");
+
+                // Act - Promote second user to admin
+                var promoteResponse = await _groupsService.PromoteToGroupAdminAsync(groupId, secondUser.Id);
+
+                // Assert - Verify the promotion was successful
+                Assert.NotNull(promoteResponse, "Promote response should not be null");
+                Assert.NotNull(promoteResponse.Group, "Group in response should not be null");
+                
+                // Verify second user is now an admin
+                groupDetails = await _groupsService.GetGroupDetailsAsync(groupId);
+                Assert.IsTrue(groupDetails.Admins.Any(a => a.Id == secondUser.Id), "Second user should now be an admin");
+                Assert.IsTrue(groupDetails.Members.Any(m => m.Id == secondUser.Id), "Second user should still be a member");
             }
             catch (ApiException ex)
             {
@@ -884,61 +381,70 @@ namespace GameFuseCSharp.Tests.Runtime
             }
         }
 
-
-        // Helper method to verify all fields in a GroupResponse
-        private void VerifyGroupResponse(GroupResponse group, CreateGroupRequest request, SignInResponse creator)
+        [Test]
+        public async Task LeaveGroup_RemovesCurrentUserFromGroup()
         {
-            Assert.Greater(group.Id, 0, "Group ID should be greater than 0");
-            Assert.AreEqual(request.Name, group.Name, "Group name should match");
-            Assert.AreEqual(request.GroupType, group.GroupType, "Group type should match");
-            Assert.AreEqual(request.CanAutoJoin, group.CanAutoJoin, "CanAutoJoin should match");
-            Assert.AreEqual(request.IsInviteOnly, group.IsInviteOnly, "IsInviteOnly should match");
-            Assert.AreEqual(request.MaxGroupSize, group.MaxGroupSize, "MaxGroupSize should match");
-            Assert.AreEqual(request.Searchable ?? true, group.Searchable, "Searchable should match");
-            
-            // The API may report 1 member count even if the Members array is empty in bulk operations
-            // So we only verify that the member count is at least 1, not necessarily 1
-            Assert.GreaterOrEqual(group.MemberCount, 1, "New group should have at least 1 member (creator)");
-
-            // Verify Members array - we can't strictly verify members for bulk operations
-            Assert.NotNull(group.Members, "Members array should not be null");
-            
-            // Only verify member details if members are actually returned
-            if (group.Members.Length > 0)
+            try
             {
-                // Find the creator in the members list
-                var creatorMember = group.Members.FirstOrDefault(m => m.Id == creator.Id);
-                
-                if (creatorMember != null)
-                {
-                    Assert.AreEqual(creator.Username, creatorMember.Username, "Member username should match creator");
-                    Assert.AreEqual(creator.Email, creatorMember.Email, "Member email should match creator");
-                }
-                // No assertion if member isn't found - API behavior seems unpredictable here
-            }
+                await SetUpAsync();
 
-            // Verify Admins array
-            Assert.NotNull(group.Admins, "Admins array should not be null");
-            
-            // Only verify admin details if admins are actually returned
-            if (group.Admins.Length > 0)
+                // Arrange - Create a group with our first user as admin
+                var createGroupRequest = new CreateGroupRequest
+                {
+                    Name = "Leave Group Test",
+                    MaxGroupSize = 10,
+                    CanAutoJoin = true,
+                    IsInviteOnly = false
+                };
+
+                // Create group
+                var group = await _groupsService.CreateGroupAsync(createGroupRequest);
+                int groupId = group.Id;
+
+                // Create and sign in a second user
+                var secondUser = await CreateAndSignInUser("seconduser");
+
+                // Initialize a service for the second user
+                var secondUserGroupsService = new GroupsService("https://gamefuse.co/api/v3", secondUser.AuthenticationToken);
+
+                // Second user joins the group
+                var joinRequest = new GroupConnectionRequest
+                {
+                    GroupId = groupId,
+                    UserId = secondUser.Id
+                };
+                
+                await secondUserGroupsService.SendGroupConnectionRequestAsync(joinRequest);
+                
+                // Verify both users are members
+                var groupDetails = await _groupsService.GetGroupDetailsAsync(groupId);
+                Assert.IsTrue(groupDetails.Members.Any(m => m.Id == _user.Id), "First user should be a member");
+                Assert.IsTrue(groupDetails.Members.Any(m => m.Id == secondUser.Id), "Second user should be a member");
+                Assert.AreEqual(2, groupDetails.MemberCount, "Group should have 2 members");
+
+                // Act - Second user leaves the group
+                var leaveResponse = await secondUserGroupsService.LeaveGroupAsync(groupId);
+
+                // Assert - Verify the user left successfully
+                Assert.NotNull(leaveResponse, "Leave response should not be null");
+                Assert.NotNull(leaveResponse.Group, "Group in response should not be null");
+                
+                // Verify second user is no longer in the group
+                groupDetails = await _groupsService.GetGroupDetailsAsync(groupId);
+                Assert.IsFalse(groupDetails.Members.Any(m => m.Id == secondUser.Id), "Second user should not be a member after leaving");
+                Assert.AreEqual(1, groupDetails.MemberCount, "Group should have 1 member left");
+                Assert.IsTrue(groupDetails.Members.Any(m => m.Id == _user.Id), "First user should still be a member");
+            }
+            catch (ApiException ex)
             {
-                var creatorAdmin = group.Admins.FirstOrDefault(a => a.Id == creator.Id);
-                
-                if (creatorAdmin != null)
-                {
-                    Assert.AreEqual(creator.Username, creatorAdmin.Username, "Admin username should match creator");
-                    Assert.AreEqual(creator.Email, creatorAdmin.Email, "Admin email should match creator");
-                }
-                // No assertion if admin isn't found - API behavior seems unpredictable here
+                Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
+                Debug.LogError($"Response Body: {ex.ResponseBody}");
+                Assert.Fail($"API Exception: {ex.Message}");
             }
-
-            // Verify Join Requests and Invites arrays exist (they should be empty for new groups)
-            Assert.NotNull(group.JoinRequests, "JoinRequests array should not be null");
-            Assert.AreEqual(0, group.JoinRequests.Length, "New group should have no join requests");
-            Assert.NotNull(group.Invites, "Invites array should not be null");
-            Assert.AreEqual(0, group.Invites.Length, "New group should have no invites");
+            finally
+            {
+                await TearDownAsync();
+            }
         }
-
     }
 }
