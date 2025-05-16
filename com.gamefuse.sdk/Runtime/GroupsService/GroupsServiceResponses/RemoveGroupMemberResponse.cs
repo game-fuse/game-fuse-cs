@@ -11,6 +11,6 @@ namespace GameFuseCSharp
         public string Message { get; set; }
         
         [JsonProperty("group")]
-        public Group Group { get; set; }
+        public GroupResponse Group { get; set; }
     }
 }
