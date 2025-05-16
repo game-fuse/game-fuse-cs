@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
 using System.IO;
+using System.Reflection;
+using System.Linq;
 
 namespace GameFuseCSharp.Tests.Runtime
 {
@@ -15,6 +18,7 @@ namespace GameFuseCSharp.Tests.Runtime
         private string _adminName;
         private int _testGameId;
         private string _testGameToken;
+        private SignInResponse _testUser;
 
         [Serializable]
         private class TestConfig
@@ -99,6 +103,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 Debug.Log($"SignUp Request: GameId: {request.GameId}, GameToken: {request.GameToken}");
 
                 SignInResponse response = await _userService.SignUpAsync(request);
+                _testUser = response;
 
                 string responseJsonString = JsonUtility.ToJson(response, true);
                 Debug.Log(responseJsonString);
@@ -124,6 +129,86 @@ namespace GameFuseCSharp.Tests.Runtime
             finally
             {
                 await TearDownAsync();
+            }
+        }
+        
+        [Test]
+        public void UserService_HasAllRequiredUserEndpoints()
+        {
+            // This test verifies that all necessary methods are defined in the interface
+            
+            // Get the interface type
+            var interfaceType = typeof(IUserService);
+            
+            // Get all methods from the interface
+            var methods = interfaceType.GetMethods();
+            var methodNames = methods.Select(m => m.Name).ToList();
+            
+            // Essential methods
+            Assert.Contains("SignUpAsync", methodNames, "SignUpAsync method should exist");
+            
+            // Credits and Score methods
+            Assert.Contains("AddCreditsAsync", methodNames, "AddCreditsAsync method should exist");
+            Assert.Contains("SetCreditsAsync", methodNames, "SetCreditsAsync method should exist");
+            Assert.Contains("AddScoreAsync", methodNames, "AddScoreAsync method should exist");
+            Assert.Contains("SetScoreAsync", methodNames, "SetScoreAsync method should exist");
+            
+            // Attributes methods
+            Assert.Contains("GetAttributesAsync", methodNames, "GetAttributesAsync method should exist");
+            Assert.Contains("SetAttributeAsync", methodNames, "SetAttributeAsync method should exist");
+            Assert.Contains("SetAttributesAsync", methodNames, "SetAttributesAsync method should exist");
+            Assert.Contains("RemoveAttributeAsync", methodNames, "RemoveAttributeAsync method should exist");
+            
+            // Store items methods
+            Assert.Contains("GetStoreItemsAsync", methodNames, "GetStoreItemsAsync method should exist");
+            Assert.Contains("PurchaseStoreItemAsync", methodNames, "PurchaseStoreItemAsync method should exist");
+            Assert.Contains("RemoveStoreItemAsync", methodNames, "RemoveStoreItemAsync method should exist");
+        }
+        
+        [Test]
+        public void GameFuseUserExtensions_HasAllRequiredExtensionMethods()
+        {
+            try
+            {
+                // Check for extension methods
+                var extensionType = typeof(GameFuseUserExtensions);
+                
+                // Find methods with the GameFuseUser parameter (extension methods)
+                var methods = extensionType.GetMethods(BindingFlags.Public | BindingFlags.Static);
+                var extensionMethods = new List<string>();
+                
+                foreach (var method in methods)
+                {
+                    var parameters = method.GetParameters();
+                    if (parameters.Length > 0 && parameters[0].ParameterType == typeof(GameFuseUser))
+                    {
+                        extensionMethods.Add(method.Name);
+                    }
+                }
+                
+                Debug.Log($"Found extension methods: {string.Join(", ", extensionMethods)}");
+                
+                // Credits and Score methods
+                Assert.Contains("AddCreditsAsync", extensionMethods, "AddCreditsAsync extension method should exist");
+                Assert.Contains("SetCreditsAsync", extensionMethods, "SetCreditsAsync extension method should exist");
+                Assert.Contains("AddScoreAsync", extensionMethods, "AddScoreAsync extension method should exist");
+                Assert.Contains("SetScoreAsync", extensionMethods, "SetScoreAsync extension method should exist");
+                
+                // Attributes methods
+                Assert.Contains("GetAttributesAsync", extensionMethods, "GetAttributesAsync extension method should exist");
+                Assert.Contains("SetAttributeAsync", extensionMethods, "SetAttributeAsync extension method should exist");
+                Assert.Contains("SetAttributesAsync", extensionMethods, "SetAttributesAsync extension method should exist");
+                Assert.Contains("RemoveAttributeAsync", extensionMethods, "RemoveAttributeAsync extension method should exist");
+                
+                // Store items methods
+                Assert.Contains("GetStoreItemsAsync", extensionMethods, "GetStoreItemsAsync extension method should exist");
+                Assert.Contains("PurchaseStoreItemAsync", extensionMethods, "PurchaseStoreItemAsync extension method should exist");
+                Assert.Contains("RemoveStoreItemAsync", extensionMethods, "RemoveStoreItemAsync extension method should exist");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Test failed with exception: {ex}");
+                Assert.Fail($"Test failed: {ex.Message}");
             }
         }
     }

@@ -25,7 +25,6 @@ namespace GameFuseCSharp
         private string description;
         private bool verboseLogging = false;
         private List<GameFuseStoreItem> store = new List<GameFuseStoreItem>();
-        public List<GameFuseLeaderboardEntry> leaderboardEntries = new List<GameFuseLeaderboardEntry>();
         public Dictionary<string, string> gameVariables = new Dictionary<string, string>();
         #endregion
 
@@ -383,59 +382,9 @@ namespace GameFuseCSharp
 
         #endregion
 
-        #region Leaderboard
-
-        public void GetLeaderboard(int limit, bool onePerUser, string LeaderboardName, Action<string, bool> callback = null)
-        {
-            StartCoroutine(GetLeaderboardRoutine(limit, onePerUser, LeaderboardName, callback));
-        }
-
-        private IEnumerator GetLeaderboardRoutine(int limit, bool onePerUser, string LeaderboardName, Action<string, bool> callback = null)
-        {
-            GameFuse.Log("GameFuse Get Leaderboard: " + limit.ToString());
-
-            if (GameFuse.GetGameId() == null)
-                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
-
-            var parameters = "?authentication_token=" + GameFuseUser.CurrentUser.GetAuthenticationToken() + "&limit=" + limit.ToString() + "&one_per_user=" + onePerUser.ToString()+ "&leaderboard_name="+ LeaderboardName.ToString();
-            var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/games/" + GameFuse.GetGameId() + "/leaderboard_entries" + parameters);
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
-
-            yield return request.SendWebRequest();
-
-            if (GameFuseUtilities.RequestIsSuccessful(request))
-            {
-                GameFuse.Log("GameFuse Get Leaderboard Success: : " + limit.ToString());
-
-                var data = request.downloadHandler.text;
-                JSONObject json = JSONObject.Parse(data);
-                Debug.Log("got " + json);
-                var storeItems = json.GetArray("leaderboard_entries");
-                GameFuse.Instance.leaderboardEntries.Clear();
-                foreach (var storeItem in storeItems)
-                {
-                    GameFuse.Instance.leaderboardEntries.Add(new GameFuseLeaderboardEntry(
-                        storeItem.Obj.GetString("username"),
-                        Convert.ToInt32(storeItem.Obj.GetNumber("score")),
-                        storeItem.Obj.GetString("leaderboard_name"),
-                        storeItem.Obj.GetString("extra_attributes"),
-                        Convert.ToInt32(storeItem.Obj.GetNumber("game_user_id")),
-                        storeItem.Obj.GetString("created_at")
-                        )
-                   );
-                }
-
-            }
-
-            GameFuseUtilities.HandleCallback(request, "Leaderboard entries retrieved successfully", callback);
-            request.Dispose();
-
-        }
-        
-        /// <summary>
-        /// Use LeaderboardService.GetGameLeaderboardEntriesAsync instead for new implementations.
-        /// </summary>
-        #endregion
+        // Leaderboard functionality has been moved to LeaderboardService.
+        // Use LeaderboardService.GetGameLeaderboardEntriesAsync for game leaderboard data.
+        // For user-specific entries, use GameFuseUser.GetGameLeaderboardEntriesAsync methods.
 
 
         #region Forgot Password

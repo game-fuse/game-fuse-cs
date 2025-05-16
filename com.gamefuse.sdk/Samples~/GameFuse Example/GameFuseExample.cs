@@ -169,90 +169,87 @@ public class GameFuseExample : MonoBehaviour {
             print("Current Credits: " + GameFuseUser.CurrentUser.GetCredits());
         }
 
-        var extraAttributes = new Dictionary<string, string>();
-        extraAttributes.Add("deaths", "15");
-        extraAttributes.Add("Jewels", "12");
+        // Add metadata for leaderboard entry
+        var extraAttributes = new Dictionary<string, object>
+        {
+            { "deaths", 15 },
+            { "Jewels", 12 }
+        };
 
-        GameFuseUser.CurrentUser.AddLeaderboardEntry("TimeRound",10, extraAttributes, LeaderboardEntryAdded);
+        // Start asynchronous leaderboard operations
+        AddLeaderboardEntriesAsync(extraAttributes);
     }
 
-
-    void LeaderboardEntryAdded(string message, bool hasError)
+    // Async method to handle all leaderboard operations
+    private async void AddLeaderboardEntriesAsync(Dictionary<string, object> initialAttributes)
     {
-        if (hasError)
+        try
         {
-            print("Error adding leaderboard entry: " + message);
-        }
-        else
-        {
+            // Add first leaderboard entry
+            print("Adding first leaderboard entry...");
+            await GameFuseUser.CurrentUser.AddLeaderboardEntryAsync("TimeRound", 10, initialAttributes);
+            print("First leaderboard entry added successfully");
 
-            print("Set Leaderboard Entry 2");
-            var extraAttributes = new Dictionary<string, string>();
-            extraAttributes.Add("deaths", "25");
-            extraAttributes.Add("Jewels", "15");
-
-            GameFuseUser.CurrentUser.AddLeaderboardEntry("TimeRound", 7, extraAttributes, LeaderboardEntryAdded2);
-
-        }
-    }
-
-    void LeaderboardEntryAdded2(string message, bool hasError)
-    {
-        if (hasError)
-        {
-            print("Error adding leaderboard entry 2: " + message);
-        }
-        else
-        {
-            print("Set Leaderboard Entry 2");
-            GameFuseUser.CurrentUser.GetLeaderboard(5, true, LeaderboardEntriesRetrieved);
-        }
-    }
-
-    void LeaderboardEntriesRetrieved(string message, bool hasError)
-    {
-        if (hasError)
-        {
-            print("Error loading leaderboard entries: " + message);
-        }
-        else
-        {
-
-            print("Got leaderboard entries for specific user!");
-            foreach( GameFuseLeaderboardEntry entry in GameFuse.Instance.leaderboardEntries)
+            // Add second leaderboard entry with different metadata
+            var secondAttributes = new Dictionary<string, object>
             {
-                print(entry.GetUsername() + ": " + entry.GetScore().ToString() + ": " + entry.GetLeaderboardName() );
-                foreach (KeyValuePair<string,string> kvPair in entry.GetMetadata())
+                { "deaths", 25 },
+                { "Jewels", 15 }
+            };
+            
+            print("Adding second leaderboard entry...");
+            await GameFuseUser.CurrentUser.AddLeaderboardEntryAsync("TimeRound", 7, secondAttributes);
+            print("Second leaderboard entry added successfully");
+
+            // Get user's own leaderboard entries
+            print("Retrieving user's leaderboard entries...");
+            var userEntries = await GameFuseUser.CurrentUser.GetMyLeaderboardEntriesAsync(5, "TimeRound", true);
+            
+            print("Got leaderboard entries for current user!");
+            if (userEntries.LeaderboardEntries != null)
+            {
+                foreach (var entry in userEntries.LeaderboardEntries)
                 {
-                    print(kvPair.Key + ": " + kvPair.Value);
+                    print($"{entry.Username}: {entry.Score}: {entry.LeaderboardName}");
+                    if (entry.Metadata != null && entry.Metadata.Count > 0)
+                    {
+                        foreach (var kvPair in entry.Metadata)
+                        {
+                            print($"{kvPair.Key}: {kvPair.Value}");
+                        }
+                    }
                 }
+            }
+
+            // Get game-wide leaderboard entries
+            string gameIdStr = GameFuse.GetGameId();
+            if (!string.IsNullOrEmpty(gameIdStr))
+            {
+                print("Retrieving game-wide leaderboard entries...");
+                var gameEntries = await GameFuseUser.CurrentUser.GetGameLeaderboardEntriesAsync("TimeRound", 5);
                 
-            }
-            GameFuse.Instance.GetLeaderboard(5, true, "TimeRound", LeaderboardEntriesRetrievedAll);
-
-        }
-    }
-
-    void LeaderboardEntriesRetrievedAll(string message, bool hasError)
-    {
-        if (hasError)
-        {
-            print("Error loading leaderboard entries: " + message);
-        }
-        else
-        {
-            print("Got leaderboard entries for whole game!");
-            foreach (GameFuseLeaderboardEntry entry in GameFuse.Instance.leaderboardEntries)
-            {
-                print(entry.GetUsername() + ": " + entry.GetScore().ToString() + ": " + entry.GetLeaderboardName());
-                foreach (KeyValuePair<string, string> kvPair in entry.GetMetadata())
+                print("Got leaderboard entries for whole game!");
+                if (gameEntries.LeaderboardEntries != null)
                 {
-                    print(kvPair.Key + ": " + kvPair.Value);
+                    foreach (var entry in gameEntries.LeaderboardEntries)
+                    {
+                        print($"{entry.Username}: {entry.Score}: {entry.LeaderboardName}");
+                        if (entry.Metadata != null && entry.Metadata.Count > 0)
+                        {
+                            foreach (var kvPair in entry.Metadata)
+                            {
+                                print($"{kvPair.Key}: {kvPair.Value}");
+                            }
+                        }
+                    }
                 }
-
             }
-
         }
+        catch (Exception ex)
+        {
+            print($"Error in leaderboard operations: {ex.Message}");
+        }
+        
         print("GameFuse Test Complete");
     }
 

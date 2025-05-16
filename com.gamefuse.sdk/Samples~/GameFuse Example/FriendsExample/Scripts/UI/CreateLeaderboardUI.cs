@@ -1,71 +1,73 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using GameFuseCSharp;
 using UnityEngine.UI;
 
 public class CreateLeaderboardUI : MonoBehaviour
 {
-
     [SerializeField]
     Button _createLeaderBoardButton;
 
     // Start is called before the first frame update
     void Start()
     {
-        _createLeaderBoardButton.onClick.AddListener(CreateLeaderBoard);
+        _createLeaderBoardButton.onClick.AddListener(OnCreateLeaderboardClicked);
     }
 
-    // Update is called once per frame
-    void CreateLeaderBoard()
+    // Handler for button click - launches async method
+    private void OnCreateLeaderboardClicked()
     {
-        var metadata = new Dictionary<string, string>
-                {
-                    { "level", "5" },
-                    { "difficulty", "hard" }
-                };
-
-        // Add entry with metadata
-        bool success = false;
-        GameFuseUser.CurrentUser.AddLeaderboardEntry("test_leaderboard_metadata", 2000, metadata, LeaderboardEntryAdded2);
-
-        Debug.Log("Created leader board with metada");
+        CreateLeaderBoardAsync();
     }
 
-    void LeaderboardEntryAdded2(string message, bool hasError)
+    // Async method to create leaderboard entry and retrieve data
+    private async void CreateLeaderBoardAsync()
     {
-        if (hasError)
+        try
         {
-            print("Error adding leaderboard entry 2: " + message);
-        }
-        else
-        {
-            print("Set Leaderboard Entry 2");
-            GameFuseUser.CurrentUser.GetLeaderboard(5, true, LeaderboardEntriesRetrieved);
-        }
-    }
-
-    void LeaderboardEntriesRetrieved(string message, bool hasError)
-    {
-        if (hasError)
-        {
-            print("Error loading leaderboard entries: " + message);
-        }
-        else
-        {
-
-            print("Got leaderboard entries for specific user!");
-            foreach (GameFuseLeaderboardEntry entry in GameFuse.Instance.leaderboardEntries)
+            var metadata = new Dictionary<string, object>
             {
-                print(entry.GetUsername() + ": " + entry.GetScore().ToString() + ": " + entry.GetLeaderboardName());
-                foreach (KeyValuePair<string, string> kvPair in entry.GetMetadata())
+                { "level", 5 },
+                { "difficulty", "hard" }
+            };
+
+            // Add entry with metadata using the new async method
+            Debug.Log("Creating leaderboard entry with metadata...");
+            await GameFuseUser.CurrentUser.AddLeaderboardEntryAsync("test_leaderboard_metadata", 2000, metadata);
+            Debug.Log("Leaderboard entry created successfully");
+
+            // Retrieve leaderboard entries using the new async method
+            Debug.Log("Retrieving leaderboard entries...");
+            var leaderboardResponse = await GameFuseUser.CurrentUser.GetMyLeaderboardEntriesAsync(5, "test_leaderboard_metadata", true);
+
+            // Display leaderboard entries
+            if (leaderboardResponse.LeaderboardEntries != null && leaderboardResponse.LeaderboardEntries.Length > 0)
+            {
+                Debug.Log("Got leaderboard entries for current user!");
+                foreach (var entry in leaderboardResponse.LeaderboardEntries)
                 {
-                    Debug.Log(kvPair.Key + ": " + kvPair.Value);
+                    Debug.Log($"{entry.Username}: {entry.Score}: {entry.LeaderboardName}");
+                    
+                    // Display metadata if available
+                    if (entry.Metadata != null && entry.Metadata.Count > 0)
+                    {
+                        foreach (var kvPair in entry.Metadata)
+                        {
+                            Debug.Log($"{kvPair.Key}: {kvPair.Value}");
+                        }
+                    }
                 }
-
             }
-           
-
+            else
+            {
+                Debug.Log("No leaderboard entries found");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"Error working with leaderboard: {ex.Message}");
         }
     }
 }

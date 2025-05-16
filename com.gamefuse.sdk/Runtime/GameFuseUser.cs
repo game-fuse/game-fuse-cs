@@ -11,7 +11,6 @@ namespace GameFuseCSharp
 {
     public partial class GameFuseUser : MonoBehaviour
     {
-
         #region instance vars
         private bool signedIn = false;
         private int numberOfLogins;
@@ -24,6 +23,7 @@ namespace GameFuseCSharp
         private Dictionary<string, string> attributes = new Dictionary<string, string>();
         private Dictionary<string, string> dirtyAttributes = new Dictionary<string, string>();
         private List<GameFuseStoreItem> purchasedStoreItems = new List<GameFuseStoreItem>();
+        private IUserService userService;
         #endregion
 
 
@@ -44,6 +44,7 @@ namespace GameFuseCSharp
         internal void SetAuthenticationTokenInternal(string authenticationToken)
         {
             this.authenticationToken = authenticationToken;
+            UpdateUserServiceToken();
         }
         internal void SetUsernameInternal(string username)
         {
@@ -115,6 +116,20 @@ namespace GameFuseCSharp
             else
             {
                 _instance = this;
+                InitializeUserService();
+            }
+        }
+        
+        private void InitializeUserService()
+        {
+            userService = new UserService(GameFuse.GetBaseURL());
+        }
+        
+        private void UpdateUserServiceToken()
+        {
+            if (!string.IsNullOrEmpty(authenticationToken))
+            {
+                userService = new UserService(GameFuse.GetBaseURL(), authenticationToken);
             }
         }
         #endregion
@@ -719,137 +734,12 @@ namespace GameFuseCSharp
 
         #endregion
 
-        #region Leaderboard
-
-        public void AddLeaderboardEntry(string leaderboardName, int score, Dictionary<string, string> metadata = null, Action<string, bool> callback = null)
-        {
-            StartCoroutine(AddLeaderboardEntryRoutine(leaderboardName, score, metadata, callback));
-        }
-
-        public void AddLeaderboardEntry(string leaderboardName, int score, Action<string, bool> callback = null)
-        {
-            StartCoroutine(AddLeaderboardEntryRoutine(leaderboardName, score, new Dictionary<string, string>(), callback));
-        }
-
-
-        private IEnumerator AddLeaderboardEntryRoutine(string leaderboardName, int score, Dictionary<string, string> metadata, Action<string, bool> callback = null)
-        {
-            GameFuse.Log("GameFuseUser Adding Leaderboard Entry: " + leaderboardName + ": " + score.ToString());
-
-            if (GameFuse.GetGameId() == null)
-                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
-
-            List<string> metadataList = new List<string>();
-            foreach (KeyValuePair<string, string> entry in metadata)
-            {
-                metadataList.Add("\"" + entry.Key.ToString() + "\": " + entry.Value.ToString());
-            }
-
-            string metadataJson = "{" + String.Join(", ", metadataList.ToArray()) + "}";
-            WWWForm form = new WWWForm();
-            form.AddField("authentication_token", GetAuthenticationToken());
-            form.AddField("leaderboard_name", leaderboardName);
-            form.AddField("metadata", metadataJson);
-            form.AddField("score", score);
-
-            var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/add_leaderboard_entry", form);
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
-
-            yield return request.SendWebRequest();
-
-            if (GameFuseUtilities.RequestIsSuccessful(request))
-            {
-                GameFuse.Log("GameFuseUser Add Leaderboard Entry: " + leaderboardName + ": " + score);
-
-                var data = request.downloadHandler.text;
-            }
-
-            GameFuseUtilities.HandleCallback(request, "Leaderboard Entry Has Been Added", callback);
-            request.Dispose();
-
-        }
-
-        public void ClearLeaderboardEntries(string leaderboardName, Action<string, bool> callback = null)
-        {
-            StartCoroutine(ClearLeaderboardEntriesRoutine(leaderboardName, callback));
-        }
-
-
-        private IEnumerator ClearLeaderboardEntriesRoutine(string leaderboardName, Action<string, bool> callback = null)
-        {
-            GameFuse.Log("GameFuseUser Clearing Leaderboard Entry: " + leaderboardName);
-
-            if (GameFuse.GetGameId() == null)
-                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
-
-            WWWForm form = new WWWForm();
-            form.AddField("authentication_token", GetAuthenticationToken());
-            form.AddField("leaderboard_name", leaderboardName);
-
-            var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/clear_my_leaderboard_entries", form);
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
-
-            yield return request.SendWebRequest();
-
-            if (GameFuseUtilities.RequestIsSuccessful(request))
-            {
-                GameFuse.Log("GameFuseUser Clear Leaderboard Entry: " + leaderboardName);
-
-                var data = request.downloadHandler.text;
-            }
-
-            GameFuseUtilities.HandleCallback(request, "Leaderboard Entries Have Been Cleared", callback);
-            request.Dispose();
-
-        }
-
-        public void GetLeaderboard(int limit, bool onePerUser, Action<string, bool> callback = null)
-        {
-            StartCoroutine(GetLeaderboardRoutine(limit, onePerUser, callback));
-        }
-
-        private IEnumerator GetLeaderboardRoutine(int limit, bool onePerUser, Action<string, bool> callback = null)
-        {
-            GameFuse.Log("GameFuseUser Get Leaderboard: " + limit.ToString());
-
-            if (GameFuse.GetGameId() == null)
-                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
-
-            var parameters = "?authentication_token=" + GetAuthenticationToken() + "&limit=" + limit.ToString() + "&one_per_user=" + onePerUser.ToString();
-            var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/leaderboard_entries" + parameters);
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
-
-            yield return request.SendWebRequest();
-
-            if (GameFuseUtilities.RequestIsSuccessful(request))
-            {
-                GameFuse.Log("GameFuseUser Get Leaderboard Success: : " + limit.ToString());
-
-                var data = request.downloadHandler.text;
-                JSONObject json = JSONObject.Parse(data);
-                Debug.Log("got " + json);
-                var storeItems = json.GetArray("leaderboard_entries");
-                GameFuse.Instance.leaderboardEntries.Clear();
-                foreach (var storeItem in storeItems)
-                {
-                    GameFuse.Instance.leaderboardEntries.Add(new GameFuseLeaderboardEntry(
-                        storeItem.Obj.GetString("username"),
-                        Convert.ToInt32(storeItem.Obj.GetNumber("score")),
-                        storeItem.Obj.GetString("leaderboard_name"),
-                        storeItem.Obj.GetString("metadata"),
-                        Convert.ToInt32(storeItem.Obj.GetNumber("game_user_id")),
-                        storeItem.Obj.GetString("created_at")
-                        )
-                   );
-                }
-
-            }
-
-            GameFuseUtilities.HandleCallback(request, "Store Item has been removed", callback);
-            request.Dispose();
-
-        }
-
-        #endregion Leaderboard 
+        // Leaderboard functionality has been moved to GameFuseUser.Leaderboard.cs
+        // For leaderboard-related methods, use the async/await versions:
+        // - AddLeaderboardEntryAsync
+        // - ClearLeaderboardEntriesAsync
+        // - GetMyLeaderboardEntriesAsync
+        // - GetUserLeaderboardEntriesAsync
+        // - GetGameLeaderboardEntriesAsync
     }
 }
