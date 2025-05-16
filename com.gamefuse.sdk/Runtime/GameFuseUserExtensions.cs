@@ -479,22 +479,5 @@ namespace GameFuseCSharp
         }
     }
     
-    /// <summary>
-    /// Helper class for handling exceptions in GameFuseUser
-    /// </summary>
-    internal static class GameFuseUtilities
-    {
-        /// <summary>
-        /// Handles exceptions for legacy callbacks
-        /// </summary>
-        public static void HandleException(Exception ex, string errorMessage, Action<string, bool> callback)
-        {
-            Debug.LogError($"{errorMessage}: {ex.Message}");
-            
-            if (callback != null)
-            {
-                callback($"{errorMessage}: {ex.Message}", true);
-            }
-        }
-    }
+    
 }

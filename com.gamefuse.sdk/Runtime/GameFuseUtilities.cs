@@ -13,7 +13,7 @@ namespace GameFuseCSharp
     /// create users.  When a user is signed in you can use GameFuseUser to 
     /// access your account, attributes and purchased store items.
     /// </summary>
-    public class GameFuseUtilities : MonoBehaviour
+    public class GameFuseUtilities 
     {
 
         internal static void HandleCallback(UnityWebRequest request, string successString, Action<string, bool> callback = null)
@@ -40,6 +40,19 @@ namespace GameFuseCSharp
             {
                 if (callback != null)
                     callback(successString, false);
+            }
+        }
+
+        /// <summary>
+        /// Handles exceptions for legacy callbacks
+        /// </summary>
+        public static void HandleException(Exception ex, string errorMessage, Action<string, bool> callback)
+        {
+            Debug.LogError($"{errorMessage}: {ex.Message}");
+
+            if (callback != null)
+            {
+                callback($"{errorMessage}: {ex.Message}", true);
             }
         }
 
