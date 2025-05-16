@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" 
+      xmlns:editor="UnityEditor.UIElements" xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd">
+    
+    <Style src="../USS/GameFuseDemoStyles.uss" />
+    
+    <VisualElement class="list-item">
+        <Label name="item-title" class="list-item-label" style="-unity-font-style: bold;" />
+        <VisualElement name="item-properties" style="margin-left: 10px;">
+            <!-- Properties will be added dynamically -->
+        </VisualElement>
+    </VisualElement>
+</UXML>

@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" 
+      xmlns:editor="UnityEditor.UIElements" xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd">
+    
+    <Style src="../USS/GameFuseDemoStyles.uss" />
+    
+    <VisualElement class="main-container">
+        <Label text="GameFuse SDK Demo" class="header" />
+        
+        <!-- Tab Navigation -->
+        <VisualElement style="flex-direction: row; margin-bottom: 10px;">
+            <Button text="Game Setup" class="tab-button tab-button-selected" name="tab-game-setup" />
+            <Button text="Authentication" class="tab-button" name="tab-authentication" />
+            <Button text="User Management" class="tab-button" name="tab-user-management" />
+            <Button text="Store" class="tab-button" name="tab-store" />
+            <Button text="Leaderboards" class="tab-button" name="tab-leaderboards" />
+            <Button text="Game Rounds" class="tab-button" name="tab-game-rounds" />
+            <Button text="Groups" class="tab-button" name="tab-groups" />
+            <Button text="Chats" class="tab-button" name="tab-chats" />
+            <Button text="Friends" class="tab-button" name="tab-friends" />
+        </VisualElement>
+        
+        <!-- Tab Content Container -->
+        <VisualElement class="tab-content">
+            
+            <!-- Game Setup Tab -->
+            <VisualElement name="content-game-setup" style="display: flex;">
+                <VisualElement class="panel">
+                    <Label text="Game Configuration" class="section-header" />
+                    <VisualElement class="form-row">
+                        <Label text="Game ID:" class="form-label" />
+                        <TextField name="game-id" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Game Token:" class="form-label" />
+                        <TextField name="game-token" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row" style="justify-content: flex-end;">
+                        <Button text="Setup Game" class="form-button" name="setup-game-button" />
+                        <Button text="Get Server Time" class="form-button" name="get-server-time-button" />
+                    </VisualElement>
+                </VisualElement>
+                
+                <VisualElement class="panel">
+                    <Label text="Game Information" class="section-header" />
+                    <VisualElement class="form-row">
+                        <Label text="Game Name:" class="form-label" />
+                        <Label text="Not loaded" name="game-name-label" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Description:" class="form-label" />
+                        <Label text="Not loaded" name="game-description-label" />
+                    </VisualElement>
+                    <VisualElement class="form-row" style="justify-content: flex-end;">
+                        <Button text="Fetch Game Variables" class="form-button" name="fetch-game-variables-button" />
+                        <Button text="Get Store Items" class="form-button" name="get-store-items-button" />
+                    </VisualElement>
+                </VisualElement>
+                
+                <VisualElement class="panel">
+                    <Label text="Game Variables" class="section-header" />
+                    <ScrollView class="scrollview" name="game-variables-scroll">
+                        <!-- Game variables will be populated here -->
+                    </ScrollView>
+                </VisualElement>
+                
+                <VisualElement class="panel">
+                    <Label text="Game Store Items" class="section-header" />
+                    <ScrollView class="scrollview" name="game-store-items-scroll">
+                        <!-- Store items will be populated here -->
+                    </ScrollView>
+                </VisualElement>
+            </VisualElement>
+            
+            <!-- Authentication Tab -->
+            <VisualElement name="content-authentication" style="display: none;">
+                <VisualElement style="flex-direction: row;">
+                    <VisualElement class="panel half-width" style="margin-right: 10px;">
+                        <Label text="Sign Up" class="section-header" />
+                        <VisualElement class="form-row">
+                            <Label text="Email:" class="form-label" />
+                            <TextField name="signup-email" class="form-field" />
+                        </VisualElement>
+                        <VisualElement class="form-row">
+                            <Label text="Username:" class="form-label" />
+                            <TextField name="signup-username" class="form-field" />
+                        </VisualElement>
+                        <VisualElement class="form-row">
+                            <Label text="Password:" class="form-label" />
+                            <TextField name="signup-password" class="form-field" password="true" />
+                        </VisualElement>
+                        <VisualElement class="form-row">
+                            <Label text="Confirm Password:" class="form-label" />
+                            <TextField name="signup-confirm-password" class="form-field" password="true" />
+                        </VisualElement>
+                        <VisualElement class="form-row" style="justify-content: flex-end;">
+                            <Button text="Sign Up" class="form-button" name="signup-button" />
+                        </VisualElement>
+                    </VisualElement>
+                    
+                    <VisualElement class="panel half-width">
+                        <Label text="Sign In" class="section-header" />
+                        <VisualElement class="form-row">
+                            <Label text="Email:" class="form-label" />
+                            <TextField name="signin-email" class="form-field" />
+                        </VisualElement>
+                        <VisualElement class="form-row">
+                            <Label text="Password:" class="form-label" />
+                            <TextField name="signin-password" class="form-field" password="true" />
+                        </VisualElement>
+                        <VisualElement class="form-row" style="justify-content: flex-end;">
+                            <Button text="Sign In" class="form-button" name="signin-button" />
+                            <Button text="Sign Out" class="form-button danger-button" name="signout-button" />
+                        </VisualElement>
+                        
+                        <Label text="Forgot Password" class="section-header" style="margin-top: 20px;" />
+                        <VisualElement class="form-row">
+                            <Label text="Email:" class="form-label" />
+                            <TextField name="forgot-password-email" class="form-field" />
+                        </VisualElement>
+                        <VisualElement class="form-row" style="justify-content: flex-end;">
+                            <Button text="Reset Password" class="form-button" name="reset-password-button" />
+                        </VisualElement>
+                    </VisualElement>
+                </VisualElement>
+                
+                <VisualElement class="panel">
+                    <Label text="Current User" class="section-header" />
+                    <ScrollView class="scrollview" name="current-user-info-scroll">
+                        <!-- Current user info will be populated here -->
+                    </ScrollView>
+                </VisualElement>
+            </VisualElement>
+            
+            <!-- User Management Tab -->
+            <VisualElement name="content-user-management" style="display: none;">
+                <VisualElement style="flex-direction: row;">
+                    <VisualElement class="panel half-width" style="margin-right: 10px;">
+                        <Label text="Credits Management" class="section-header" />
+                        <VisualElement class="form-row">
+                            <Label text="Amount:" class="form-label" />
+                            <TextField name="credits-amount" class="form-field" />
+                        </VisualElement>
+                        <VisualElement class="form-row" style="justify-content: flex-end;">
+                            <Button text="Add Credits" class="form-button" name="add-credits-button" />
+                            <Button text="Set Credits" class="form-button" name="set-credits-button" />
+                        </VisualElement>
+                        
+                        <Label text="Score Management" class="section-header" style="margin-top: 20px;" />
+                        <VisualElement class="form-row">
+                            <Label text="Amount:" class="form-label" />
+                            <TextField name="score-amount" class="form-field" />
+                        </VisualElement>
+                        <VisualElement class="form-row" style="justify-content: flex-end;">
+                            <Button text="Add Score" class="form-button" name="add-score-button" />
+                            <Button text="Set Score" class="form-button" name="set-score-button" />
+                        </VisualElement>
+                    </VisualElement>
+                    
+                    <VisualElement class="panel half-width">
+                        <Label text="Attributes Management" class="section-header" />
+                        <VisualElement class="form-row">
+                            <Label text="Key:" class="form-label" />
+                            <TextField name="attribute-key" class="form-field" />
+                        </VisualElement>
+                        <VisualElement class="form-row">
+                            <Label text="Value:" class="form-label" />
+                            <TextField name="attribute-value" class="form-field" />
+                        </VisualElement>
+                        <VisualElement class="form-row" style="justify-content: flex-end;">
+                            <Button text="Set Attribute" class="form-button" name="set-attribute-button" />
+                            <Button text="Remove Attribute" class="form-button danger-button" name="remove-attribute-button" />
+                        </VisualElement>
+                        
+                        <VisualElement class="form-row" style="margin-top: 10px;">
+                            <Label text="Multiple Attributes (JSON):" class="form-label" style="align-self: flex-start; margin-top: 5px;" />
+                            <TextField name="multiple-attributes" class="form-field" multiline="true" style="height: 60px;" />
+                        </VisualElement>
+                        <VisualElement class="form-row" style="justify-content: flex-end;">
+                            <Button text="Set Multiple Attributes" class="form-button" name="set-multiple-attributes-button" />
+                            <Button text="Get My Attributes" class="form-button" name="get-attributes-button" />
+                        </VisualElement>
+                    </VisualElement>
+                </VisualElement>
+                
+                <VisualElement class="panel">
+                    <Label text="User Attributes" class="section-header" />
+                    <ScrollView class="scrollview" name="user-attributes-scroll">
+                        <!-- User attributes will be populated here -->
+                    </ScrollView>
+                </VisualElement>
+            </VisualElement>
+            
+            <!-- Store Tab -->
+            <VisualElement name="content-store" style="display: none;">
+                <VisualElement class="panel">
+                    <Label text="Store Operations" class="section-header" />
+                    <VisualElement class="form-row">
+                        <Label text="Store Item ID:" class="form-label" />
+                        <TextField name="store-item-id" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Reimburse Credits:" class="form-label" />
+                        <Toggle name="reimburse-toggle" />
+                    </VisualElement>
+                    <VisualElement class="form-row" style="justify-content: flex-end;">
+                        <Button text="Purchase Store Item" class="form-button" name="purchase-store-item-button" />
+                        <Button text="Remove Store Item" class="form-button danger-button" name="remove-store-item-button" />
+                        <Button text="Get My Purchased Items" class="form-button" name="get-purchased-items-button" />
+                    </VisualElement>
+                </VisualElement>
+                
+                <VisualElement class="panel">
+                    <Label text="My Purchased Store Items" class="section-header" />
+                    <ScrollView class="scrollview" name="purchased-items-scroll">
+                        <!-- Purchased items will be populated here -->
+                    </ScrollView>
+                </VisualElement>
+            </VisualElement>
+            
+            <!-- Leaderboards Tab -->
+            <VisualElement name="content-leaderboards" style="display: none;">
+                <VisualElement class="panel">
+                    <Label text="Leaderboard Operations" class="section-header" />
+                    <VisualElement class="form-row">
+                        <Label text="Leaderboard Name:" class="form-label" />
+                        <TextField name="leaderboard-name" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Score:" class="form-label" />
+                        <TextField name="leaderboard-score" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Metadata (JSON):" class="form-label" />
+                        <TextField name="leaderboard-metadata" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="User ID (Optional):" class="form-label" />
+                        <TextField name="leaderboard-user-id" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Limit:" class="form-label" />
+                        <TextField name="leaderboard-limit" class="form-field" value="10" />
+                    </VisualElement>
+                    <VisualElement class="form-row" style="justify-content: flex-end;">
+                        <Button text="Add Entry" class="form-button" name="add-leaderboard-entry-button" />
+                        <Button text="Add Entry with Metadata" class="form-button" name="add-leaderboard-with-metadata-button" />
+                        <Button text="Clear My Entries" class="form-button danger-button" name="clear-leaderboard-entries-button" />
+                    </VisualElement>
+                    <VisualElement class="form-row" style="justify-content: flex-end; margin-top: 5px;">
+                        <Button text="Get My Entries" class="form-button" name="get-my-leaderboard-entries-button" />
+                        <Button text="Get User's Entries" class="form-button" name="get-user-leaderboard-entries-button" />
+                        <Button text="Get Game Entries" class="form-button" name="get-game-leaderboard-entries-button" />
+                    </VisualElement>
+                </VisualElement>
+                
+                <VisualElement class="panel">
+                    <Label text="Leaderboard Results" class="section-header" />
+                    <ScrollView class="scrollview" name="leaderboard-results-scroll">
+                        <!-- Leaderboard entries will be populated here -->
+                    </ScrollView>
+                </VisualElement>
+            </VisualElement>
+            
+            <!-- Game Rounds Tab -->
+            <VisualElement name="content-game-rounds" style="display: none;">
+                <VisualElement class="panel">
+                    <Label text="Game Round Operations" class="section-header" />
+                    <VisualElement style="flex-direction: row;">
+                        <VisualElement style="flex-grow: 1; margin-right: 10px;">
+                            <VisualElement class="form-row">
+                                <Label text="Game Round ID:" class="form-label" />
+                                <TextField name="game-round-id" class="form-field" />
+                            </VisualElement>
+                            <VisualElement class="form-row">
+                                <Label text="Game Type:" class="form-label" />
+                                <TextField name="game-round-type" class="form-field" />
+                            </VisualElement>
+                            <VisualElement class="form-row">
+                                <Label text="Score:" class="form-label" />
+                                <TextField name="game-round-score" class="form-field" />
+                            </VisualElement>
+                            <VisualElement class="form-row">
+                                <Label text="Place:" class="form-label" />
+                                <TextField name="game-round-place" class="form-field" />
+                            </VisualElement>
+                        </VisualElement>
+                        
+                        <VisualElement style="flex-grow: 1;">
+                            <VisualElement class="form-row">
+                                <Label text="Start Time:" class="form-label" />
+                                <TextField name="game-round-start-time" class="form-field" />
+                            </VisualElement>
+                            <VisualElement class="form-row">
+                                <Label text="End Time:" class="form-label" />
+                                <TextField name="game-round-end-time" class="form-field" />
+                            </VisualElement>
+                            <VisualElement class="form-row">
+                                <Label text="Metadata (JSON):" class="form-label" />
+                                <TextField name="game-round-metadata" class="form-field" />
+                            </VisualElement>
+                            <VisualElement class="form-row">
+                                <Label text="User ID (Optional):" class="form-label" />
+                                <TextField name="game-round-user-id" class="form-field" />
+                            </VisualElement>
+                        </VisualElement>
+                    </VisualElement>
+                    
+                    <VisualElement class="form-row">
+                        <Label text="Multiplayer Users:" class="form-label" />
+                        <TextField name="game-round-multiplayer-users" class="form-field" tooltip="Format: userId1,score1,place1;userId2,score2,place2" />
+                    </VisualElement>
+                    
+                    <VisualElement class="form-row" style="justify-content: flex-end;">
+                        <Button text="Create Basic Round" class="form-button" name="create-basic-game-round-button" />
+                        <Button text="Create Detailed Round" class="form-button" name="create-detailed-game-round-button" />
+                        <Button text="Create Multiplayer Round" class="form-button" name="create-multiplayer-game-round-button" />
+                    </VisualElement>
+                    <VisualElement class="form-row" style="justify-content: flex-end; margin-top: 5px;">
+                        <Button text="Update Round" class="form-button" name="update-game-round-button" />
+                        <Button text="Get Round" class="form-button" name="get-game-round-button" />
+                        <Button text="Get My Rounds" class="form-button" name="get-my-game-rounds-button" />
+                        <Button text="Get User's Rounds" class="form-button" name="get-user-game-rounds-button" />
+                        <Button text="Delete Round" class="form-button danger-button" name="delete-game-round-button" />
+                    </VisualElement>
+                </VisualElement>
+                
+                <VisualElement class="panel">
+                    <Label text="Game Rounds Results" class="section-header" />
+                    <ScrollView class="scrollview" name="game-rounds-results-scroll">
+                        <!-- Game rounds results will be populated here -->
+                    </ScrollView>
+                </VisualElement>
+            </VisualElement>
+            
+            <!-- Groups Tab -->
+            <VisualElement name="content-groups" style="display: none;">
+                <VisualElement class="panel">
+                    <Label text="Group Creation" class="section-header" />
+                    <VisualElement style="flex-direction: row;">
+                        <VisualElement style="flex-grow: 1; margin-right: 10px;">
+                            <VisualElement class="form-row">
+                                <Label text="Name:" class="form-label" />
+                                <TextField name="group-name" class="form-field" />
+                            </VisualElement>
+                            <VisualElement class="form-row">
+                                <Label text="Type:" class="form-label" />
+                                <TextField name="group-type" class="form-field" />
+                            </VisualElement>
+                            <VisualElement class="form-row">
+                                <Label text="Max Size:" class="form-label" />
+                                <TextField name="group-max-size" class="form-field" value="10" />
+                            </VisualElement>
+                        </VisualElement>
+                        
+                        <VisualElement style="flex-grow: 1;">
+                            <VisualElement class="form-row">
+                                <Label text="Auto-Join:" class="form-label" />
+                                <Toggle name="group-auto-join-toggle" />
+                            </VisualElement>
+                            <VisualElement class="form-row">
+                                <Label text="Invite-Only:" class="form-label" />
+                                <Toggle name="group-invite-only-toggle" />
+                            </VisualElement>
+                            <VisualElement class="form-row">
+                                <Label text="Searchable:" class="form-label" />
+                                <Toggle name="group-searchable-toggle" />
+                            </VisualElement>
+                        </VisualElement>
+                    </VisualElement>
+                    
+                    <VisualElement class="form-row" style="justify-content: flex-end;">
+                        <Button text="Create Group" class="form-button" name="create-group-button" />
+                        <Button text="Get All Groups" class="form-button" name="get-all-groups-button" />
+                    </VisualElement>
+                </VisualElement>
+                
+                <VisualElement class="panel">
+                    <Label text="Group Management" class="section-header" />
+                    <VisualElement class="form-row">
+                        <Label text="Group ID:" class="form-label" />
+                        <TextField name="group-id" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="User ID/Username:" class="form-label" />
+                        <TextField name="group-user-id" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Connection ID:" class="form-label" />
+                        <TextField name="group-connection-id" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row" style="justify-content: flex-end;">
+                        <Button text="Get Group Details" class="form-button" name="get-group-details-button" />
+                        <Button text="Send Connection Request" class="form-button" name="send-group-connection-request-button" />
+                        <Button text="Accept Connection Request" class="form-button" name="accept-group-connection-request-button" />
+                        <Button text="Decline Connection Request" class="form-button danger-button" name="decline-group-connection-request-button" />
+                    </VisualElement>
+                </VisualElement>
+                
+                <VisualElement class="panel">
+                    <Label text="Group Attributes" class="section-header" />
+                    <VisualElement class="form-row">
+                        <Label text="Group ID:" class="form-label" />
+                        <TextField name="group-attribute-group-id" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Attribute Key:" class="form-label" />
+                        <TextField name="group-attribute-key" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Attribute Value:" class="form-label" />
+                        <TextField name="group-attribute-value" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Multiple Attributes (JSON):" class="form-label" />
+                        <TextField name="group-multiple-attributes" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row" style="justify-content: flex-end;">
+                        <Button text="Get Group Attributes" class="form-button" name="get-group-attributes-button" />
+                        <Button text="Add Attribute" class="form-button" name="add-group-attribute-button" />
+                        <Button text="Add Multiple Attributes" class="form-button" name="add-group-multiple-attributes-button" />
+                        <Button text="Modify Attribute" class="form-button" name="modify-group-attribute-button" />
+                    </VisualElement>
+                </VisualElement>
+                
+                <VisualElement class="panel">
+                    <Label text="Group Results" class="section-header" />
+                    <ScrollView class="scrollview" name="groups-results-scroll">
+                        <!-- Group results will be populated here -->
+                    </ScrollView>
+                </VisualElement>
+            </VisualElement>
+            
+            <!-- Chats Tab -->
+            <VisualElement name="content-chats" style="display: none;">
+                <VisualElement class="panel">
+                    <Label text="Chat Operations" class="section-header" />
+                    <VisualElement class="form-row">
+                        <Label text="Usernames (comma-separated):" class="form-label" />
+                        <TextField name="chat-usernames" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Group ID:" class="form-label" />
+                        <TextField name="chat-group-id" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Chat ID:" class="form-label" />
+                        <TextField name="chat-id" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Page:" class="form-label" />
+                        <TextField name="chat-page" class="form-field" value="1" />
+                    </VisualElement>
+                    <VisualElement class="form-row" style="justify-content: flex-end;">
+                        <Button text="Get My Chats" class="form-button" name="get-my-chats-button" />
+                        <Button text="Create Direct Chat" class="form-button" name="create-direct-chat-button" />
+                        <Button text="Create Group Chat" class="form-button" name="create-group-chat-button" />
+                        <Button text="Get Messages" class="form-button" name="get-chat-messages-button" />
+                    </VisualElement>
+                </VisualElement>
+                
+                <VisualElement class="panel">
+                    <Label text="Send Message" class="section-header" />
+                    <VisualElement class="form-row">
+                        <Label text="Chat ID:" class="form-label" />
+                        <TextField name="message-chat-id" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Message:" class="form-label" />
+                        <TextField name="message-text" class="form-field" multiline="true" style="height: 60px;" />
+                    </VisualElement>
+                    <VisualElement class="form-row" style="justify-content: flex-end;">
+                        <Button text="Send Message" class="form-button" name="send-message-button" />
+                    </VisualElement>
+                </VisualElement>
+                
+                <VisualElement class="panel">
+                    <Label text="Mark Message As Read" class="section-header" />
+                    <VisualElement class="form-row">
+                        <Label text="Message ID:" class="form-label" />
+                        <TextField name="mark-read-message-id" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row" style="justify-content: flex-end;">
+                        <Button text="Mark As Read" class="form-button" name="mark-message-read-button" />
+                    </VisualElement>
+                </VisualElement>
+                
+                <VisualElement class="panel">
+                    <Label text="Chat Results" class="section-header" />
+                    <ScrollView class="scrollview" name="chat-results-scroll">
+                        <!-- Chat results will be populated here -->
+                    </ScrollView>
+                </VisualElement>
+            </VisualElement>
+            
+            <!-- Friends Tab -->
+            <VisualElement name="content-friends" style="display: none;">
+                <VisualElement class="panel">
+                    <Label text="Friend Operations" class="section-header" />
+                    <VisualElement class="form-row">
+                        <Label text="Username:" class="form-label" />
+                        <TextField name="friend-username" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="Friendship ID:" class="form-label" />
+                        <TextField name="friendship-id" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row">
+                        <Label text="User ID:" class="form-label" />
+                        <TextField name="friend-user-id" class="form-field" />
+                    </VisualElement>
+                    <VisualElement class="form-row" style="justify-content: flex-end;">
+                        <Button text="Get All Friend Data" class="form-button" name="get-all-friend-data-button" />
+                        <Button text="Send Friend Request" class="form-button" name="send-friend-request-button" />
+                    </VisualElement>
+                    <VisualElement class="form-row" style="justify-content: flex-end; margin-top: 5px;">
+                        <Button text="Accept Request" class="form-button" name="accept-friend-request-button" />
+                        <Button text="Decline Request" class="form-button danger-button" name="decline-friend-request-button" />
+                        <Button text="Cancel Request" class="form-button danger-button" name="cancel-friend-request-button" />
+                        <Button text="Unfriend" class="form-button danger-button" name="unfriend-button" />
+                    </VisualElement>
+                </VisualElement>
+                
+                <VisualElement style="flex-direction: row;">
+                    <VisualElement class="panel half-width" style="margin-right: 10px;">
+                        <Label text="Friends" class="section-header" />
+                        <ScrollView class="scrollview" name="friends-scroll">
+                            <!-- Friends list will be populated here -->
+                        </ScrollView>
+                    </VisualElement>
+                    
+                    <VisualElement class="panel half-width">
+                        <Label text="Friend Requests" class="section-header" />
+                        <VisualElement style="flex-direction: row;">
+                            <VisualElement style="flex-grow: 1; margin-right: 5px;">
+                                <Label text="Incoming Requests" style="font-size: 14px; -unity-font-style: bold; margin-bottom: 5px;" />
+                                <ScrollView class="scrollview" style="max-height: 140px;" name="incoming-requests-scroll">
+                                    <!-- Incoming requests will be populated here -->
+                                </ScrollView>
+                            </VisualElement>
+                            <VisualElement style="flex-grow: 1; margin-left: 5px;">
+                                <Label text="Outgoing Requests" style="font-size: 14px; -unity-font-style: bold; margin-bottom: 5px;" />
+                                <ScrollView class="scrollview" style="max-height: 140px;" name="outgoing-requests-scroll">
+                                    <!-- Outgoing requests will be populated here -->
+                                </ScrollView>
+                            </VisualElement>
+                        </VisualElement>
+                    </VisualElement>
+                </VisualElement>
+            </VisualElement>
+        </VisualElement>
+        
+        <!-- Log Panel -->
+        <VisualElement class="panel" style="margin-top: 10px;">
+            <Label text="Log" class="section-header" />
+            <ScrollView class="results-panel" name="log-scroll">
+                <!-- Log entries will be populated here -->
+            </ScrollView>
+        </VisualElement>
+        
+        <!-- Loading Overlay -->
+        <VisualElement name="loading-overlay" class="loading-overlay">
+            <VisualElement class="loading-spinner" />
+            <Label text="Loading..." class="loading-text" />
+        </VisualElement>
+    </VisualElement>
+</UXML>

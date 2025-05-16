@@ -1,0 +1,214 @@
+/* GameFuse Demo UI Stylesheet */
+
+.main-container {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    background-color: #2D2D2D;
+}
+
+.header {
+    font-size: 24px;
+    -unity-font-style: bold;
+    margin-bottom: 10px;
+    color: #E6E6E6;
+}
+
+.section-header {
+    font-size: 18px;
+    -unity-font-style: bold;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-bottom-width: 1px;
+    border-bottom-color: #666666;
+    padding-bottom: 3px;
+    color: #E6E6E6;
+}
+
+.tab-button {
+    flex-grow: 1;
+    margin: 2px;
+    padding: 5px;
+    font-size: 14px;
+    background-color: #454545;
+    border-width: 1px;
+    border-color: #666666;
+    border-radius: 3px;
+    color: #E6E6E6;
+}
+
+.tab-button:hover {
+    background-color: #555555;
+}
+
+.tab-button-selected {
+    background-color: #0F6CBD;
+    border-color: #0F6CBD;
+    color: #FFFFFF;
+}
+
+.tab-content {
+    margin-top: 10px;
+    flex-grow: 1;
+}
+
+.panel {
+    border-width: 1px;
+    border-color: #666666;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #383838;
+}
+
+.form-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.form-label {
+    width: 130px;
+    -unity-text-align: middle-left;
+    color: #E6E6E6;
+}
+
+.form-field {
+    flex-grow: 1;
+    height: 20px;
+}
+
+.form-button {
+    height: 25px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-right: 5px;
+    background-color: #0F6CBD;
+    border-width: 1px;
+    border-color: #0F6CBD;
+    border-radius: 3px;
+    color: #FFFFFF;
+}
+
+.form-button:hover {
+    background-color: #0D5AA9;
+}
+
+.danger-button {
+    background-color: #BD2E0F;
+    border-color: #BD2E0F;
+}
+
+.danger-button:hover {
+    background-color: #A9280D;
+}
+
+.unity-text-field {
+    height: 20px;
+}
+
+.unity-text-field__input {
+    background-color: #454545;
+    border-width: 1px;
+    border-color: #666666;
+    border-radius: 2px;
+    color: #E6E6E6;
+}
+
+.unity-toggle__input {
+    background-color: #454545;
+    border-width: 1px;
+    border-color: #666666;
+    border-radius: 2px;
+}
+
+.unity-popup-field__input {
+    background-color: #454545;
+    border-width: 1px;
+    border-color: #666666;
+    border-radius: 2px;
+    color: #E6E6E6;
+}
+
+.results-panel {
+    flex-grow: 1;
+    height: 200px;
+    border-width: 1px;
+    border-color: #666666;
+    border-radius: 3px;
+    padding: 5px;
+    background-color: #2D2D2D;
+}
+
+.log-entry {
+    margin-bottom: 2px;
+    white-space: normal;
+    color: #E6E6E6;
+}
+
+.success-message {
+    color: #4CAF50;
+}
+
+.error-message {
+    color: #F44336;
+}
+
+.list-item {
+    border-bottom-width: 1px;
+    border-bottom-color: #666666;
+    padding: 5px;
+    margin-bottom: 2px;
+}
+
+.list-item:hover {
+    background-color: #454545;
+}
+
+.list-item-label {
+    color: #E6E6E6;
+}
+
+.list-item-property {
+    margin-left: 10px;
+    color: #BBBBBB;
+}
+
+.loading-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    background-image: url("../Images/loading-spinner.png");
+}
+
+.loading-text {
+    margin-top: 10px;
+    color: #FFFFFF;
+    -unity-font-style: bold;
+}
+
+.half-width {
+    width: 49%;
+}
+
+.scrollview {
+    flex-grow: 1;
+    max-height: 300px;
+    border-width: 1px;
+    border-color: #666666;
+    border-radius: 3px;
+    background-color: #333333;
+}
+
+.scrollview .unity-scroll-view__content-container {
+    padding: 5px;
+}
