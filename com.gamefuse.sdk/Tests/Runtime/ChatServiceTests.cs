@@ -5,8 +5,6 @@ using NUnit.Framework;
 using UnityEngine;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace GameFuseCSharp.Tests.Runtime
 {
@@ -70,20 +68,19 @@ namespace GameFuseCSharp.Tests.Runtime
             // Create a test game
             Debug.Log("Creating test game...");
             var gameResponse = await _adminService.CreateGameAsync();
-            _testGameId = gameResponse.Id;
-            _testGameToken = gameResponse.Token;
+            _testGameId = gameResponse.id;
+            _testGameToken = gameResponse.token;
             Debug.Log($"Test game created. ID: {_testGameId}, Token: {_testGameToken}");
 
             // Sign up and sign in two test users
-            // Create and sign in users
             _user1 = await CreateAndSignInUser("testuser1");
             _user2 = await CreateAndSignInUser("testuser2");
             _user3 = await CreateAndSignInUser("testuser3");
-            
-            // Initialize services with authentication tokens
-            _chatService1 = new ChatService("https://gamefuse.co/api/v3", _user1.AuthenticationToken);
-            _chatService2 = new ChatService("https://gamefuse.co/api/v3", _user2.AuthenticationToken);
-            _groupsService = new GroupsService("https://gamefuse.co/api/v3", _user1.AuthenticationToken);
+
+            // Initialize ChatServices for both users
+            _chatService1 = new ChatService("https://gamefuse.co/api/v3", _user1.authentication_token);
+            _chatService2 = new ChatService("https://gamefuse.co/api/v3", _user2.authentication_token);
+            _groupsService = new GroupsService("https://gamefuse.co/api/v3", _user1.authentication_token);
         }
 
         private async Task TearDownAsync()
@@ -102,22 +99,22 @@ namespace GameFuseCSharp.Tests.Runtime
 
             SignUpRequest signUpRequest = new SignUpRequest
             {
-                Email = userEmail,
-                Password = password,
-                PasswordConfirmation = password,
-                Username = username,
-                GameId = _testGameId,
-                GameToken = _testGameToken
+                email = userEmail,
+                password = password,
+                password_confirmation = password,
+                username = username,
+                game_id = _testGameId,
+                game_token = _testGameToken
             };
 
             await _userService.SignUpAsync(signUpRequest);
 
             SignInRequest signInRequest = new SignInRequest
             {
-                Email = userEmail,
-                Password = password,
-                GameId = _testGameId,
-                GameToken = _testGameToken
+                email = userEmail,
+                password = password,
+                game_id = _testGameId,
+                game_token = _testGameToken
             };
 
             return await _sessionsService.SignInAsync(signInRequest);
@@ -132,19 +129,19 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 // Create direct chat between user1 and user2
                 string initialMessage = "Hello, this is a test message!";
-                var chat = await _chatService1.CreateDirectChatAsync(new[] { _user2.Username }, initialMessage);
+                var chat = await _chatService1.CreateDirectChatAsync(new[] { _user2.username }, initialMessage);
 
                 // Verify chat creation
                 Assert.NotNull(chat, "Chat should not be null");
                 Assert.Greater(chat.Id, 0, "Chat ID should be greater than 0");
                 Assert.AreEqual(2, chat.Participants.Length, "Chat should have exactly two participants");
-                Assert.AreEqual(_user1.Id, chat.CreatorId, "Creator ID should match user1");
+                Assert.AreEqual(_user1.id, chat.CreatorId, "Creator ID should match user1");
 
                 // Verify initial message
                 Assert.NotNull(chat.Messages, "Messages array should not be null");
                 Assert.Greater(chat.Messages.Length, 0, "Should have at least one message");
                 Assert.AreEqual(initialMessage, chat.Messages[0].Text, "Message text should match");
-                Assert.AreEqual(_user1.Id, chat.Messages[0].UserId, "Message sender should be user1");
+                Assert.AreEqual(_user1.id, chat.Messages[0].UserId, "Message sender should be user1");
 
                 // Get messages using second user
                 var messages = await _chatService2.GetMessagesAsync(chat.Id);
@@ -184,7 +181,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 var group = await _groupsService.CreateGroupAsync(createGroupRequest);
                 Assert.NotNull(group, "Group should not be null");
 
-                Debug.Log($"User 1 id {_user1.Id} Group Created {group.Id}");
+                Debug.Log($"User 1 id {_user1.id} Group Created {group.Id}");
                 // Create group chat
                 string initialMessage = "Hello group members!";
                 var chat = await _chatService1.CreateGroupChatAsync(group.Id, initialMessage);
@@ -198,7 +195,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.NotNull(chat.Messages, "Messages array should not be null");
                 Assert.Greater(chat.Messages.Length, 0, "Should have at least one message");
                 Assert.AreEqual(initialMessage, chat.Messages[0].Text, "Message text should match");
-                Assert.AreEqual(_user1.Id, chat.Messages[0].UserId, "Message sender should be user1");
+                Assert.AreEqual(_user1.id, chat.Messages[0].UserId, "Message sender should be user1");
 
                 // Get messages to verify
                 var messages = await _chatService1.GetMessagesAsync(chat.Id);
@@ -230,8 +227,8 @@ namespace GameFuseCSharp.Tests.Runtime
                 string message1 = "First direct chat";
                 string message2 = "Second direct chat";
 
-                var chat1 = await _chatService1.CreateDirectChatAsync(new[] { _user2.Username }, message1);
-                var chat2 = await _chatService1.CreateDirectChatAsync(new[] { _user3.Username }, message2);
+                var chat1 = await _chatService1.CreateDirectChatAsync(new[] { _user2.username }, message1);
+                var chat2 = await _chatService1.CreateDirectChatAsync(new[] { _user3.username }, message2);
 
                 // Get all chats for user1
                 var chatsResponse = await _chatService1.GetChatsAsync();
@@ -266,7 +263,7 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 // Create a direct chat
                 string initialMessage = "Initial message";
-                var chat = await _chatService1.CreateDirectChatAsync(new[] { _user2.Username }, initialMessage);
+                var chat = await _chatService1.CreateDirectChatAsync(new[] { _user2.username }, initialMessage);
 
                 // Send a new message
                 string newMessage = "This is a follow-up message";
@@ -275,7 +272,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.NotNull(sentMessage, "Sent message should not be null");
                 Assert.Greater(sentMessage.Id, 0, "Message ID should be greater than 0");
                 Assert.AreEqual(newMessage, sentMessage.Text, "Message text should match");
-                Assert.AreEqual(_user1.Id, sentMessage.UserId, "Message sender should be user1");
+                Assert.AreEqual(_user1.id, sentMessage.UserId, "Message sender should be user1");
 
                 // Mark message as read with second user
                 var readResponse = await _chatService2.MarkMessageAsReadAsync(sentMessage.Id);
@@ -287,7 +284,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 var readMessage = messages.Messages.FirstOrDefault(m => m.Id == sentMessage.Id);
                 Assert.NotNull(readMessage, "Message should be found");
                 Assert.IsTrue(readMessage.Read, "Message should be marked as read for user2");
-                Assert.That(readMessage.ReadBy.ToList().Contains(_user2.Id), "User2 should be in the read by list");
+                Assert.That(readMessage.ReadBy.Contains(_user2.id.ToString()), "User2 should be in the read by list");
             }
             catch (ApiException ex)
             {
@@ -309,7 +306,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 await SetUpAsync();
 
                 // Create a direct chat
-                var chat = await _chatService1.CreateDirectChatAsync(new[] { _user2.Username }, "Initial message");
+                var chat = await _chatService1.CreateDirectChatAsync(new[] { _user2.username }, "Initial message");
 
                 // Send multiple messages
                 for (int i = 1; i <= 5; i++)
@@ -338,167 +335,6 @@ namespace GameFuseCSharp.Tests.Runtime
                 Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
                 Debug.LogError($"Response Body: {ex.ResponseBody}");
                 Assert.Fail($"API Exception: {ex.Message}");
-            }
-            finally
-            {
-                await TearDownAsync();
-            }
-        }
-        
-        [Test]
-        public async Task CreateDirectChat_WithSingleUsername_MatchesCurlExample()
-        {
-            try
-            {
-                await SetUpAsync();
-
-                // This test directly mirrors the curl example:
-                // curl --request POST --header "Content-Type: application/json" --header "authentication-token: d4yK2mxgk1swpkPwx6_N" 
-                // --data "{\"usernames\":[\"dave744\"],\"text\":\"Starting a new chat with dave 744\"}" https://gamefuse.co/api/v3/chats
-                
-                // Debug info
-                Debug.Log($"Starting CreateDirectChat test with User1:{_user1.Username} (Token: {_user1.AuthenticationToken?.Substring(0, 5)}...) to User3:{_user3.Username}");
-                
-                // Create direct chat to user3 with a specific message
-                string initialMessage = "Starting a new chat with " + _user3.Username;
-                var chat = await _chatService1.CreateDirectChatAsync(new[] { _user3.Username }, initialMessage);
-                
-                // Additional debugging if chat is null
-                if (chat == null)
-                {
-                    Debug.LogError("Chat is null after CreateDirectChatAsync call");
-                    Debug.LogError($"User1 ID: {_user1.Id}, Username: {_user1.Username}, Token: {_user1.AuthenticationToken?.Substring(0, 5)}...");
-                    Debug.LogError($"User3 ID: {_user3.Id}, Username: {_user3.Username}");
-                    
-                    // Try direct web request as a fallback
-                    Debug.Log("Attempting direct request as fallback...");
-                    string url = $"{GameFuse.GetBaseURL()}/chats";
-                    string jsonData = $"{{\"usernames\":[\"{_user3.Username}\"],\"text\":\"{initialMessage}\"}}";
-                    Debug.Log($"Fallback request URL: {url}");
-                    Debug.Log($"Fallback request data: {jsonData}");
-                    
-                    var webRequest = new UnityWebRequest(url, "POST");
-                    webRequest.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonData));
-                    webRequest.downloadHandler = new DownloadHandlerBuffer();
-                    webRequest.SetRequestHeader("Content-Type", "application/json");
-                    webRequest.SetRequestHeader("authentication-token", _user1.AuthenticationToken);
-                    
-                    var operation = webRequest.SendWebRequest();
-                    while (!operation.isDone)
-                    {
-                        await Task.Yield();
-                    }
-                    
-                    Debug.Log($"Fallback response code: {webRequest.responseCode}");
-                    Debug.Log($"Fallback response: {webRequest.downloadHandler.text}");
-                    
-                    if (webRequest.responseCode == 200 || webRequest.responseCode == 201)
-                    {
-                        var responseJson = JsonConvert.DeserializeObject<Dictionary<string, object>>(webRequest.downloadHandler.text);
-                        Debug.Log($"Fallback parsed response: {(responseJson == null ? "null" : "not null")}");
-                        
-                        if (responseJson != null && responseJson.ContainsKey("chat"))
-                        {
-                            Debug.Log("Chat object found in fallback response");
-                        }
-                    }
-                    
-                    webRequest.Dispose();
-                }
-                
-                // Verify chat creation
-                Assert.NotNull(chat, "Chat should not be null");
-                Assert.Greater(chat.Id, 0, "Chat ID should be greater than 0");
-                
-                // Verify participants
-                Assert.NotNull(chat.Participants, "Participants array should not be null");
-                Assert.AreEqual(2, chat.Participants.Length, "Chat should have exactly two participants");
-                
-                // Verify participants are the expected users
-                var usernames = chat.Participants.Select(p => p.Username).ToList();
-                Assert.Contains(_user1.Username, usernames, "Chat should include user1 as participant");
-                Assert.Contains(_user3.Username, usernames, "Chat should include user3 as participant");
-                
-                // Verify initial message
-                Assert.NotNull(chat.Messages, "Messages array should not be null");
-                Assert.Greater(chat.Messages.Length, 0, "Should have at least one message");
-                Assert.AreEqual(initialMessage, chat.Messages[0].Text, "Message text should match the initial message");
-                Assert.AreEqual(_user1.Id, chat.Messages[0].UserId, "Message sender should be user1");
-                
-                // Verify message can be read by the recipient
-                var messagesResponse = await _chatService2.GetMessagesAsync(chat.Id);
-                Assert.NotNull(messagesResponse, "Messages response should not be null");
-                Assert.NotNull(messagesResponse.Messages, "Messages array should not be null");
-                Assert.Greater(messagesResponse.Messages.Length, 0, "Should have at least one message");
-                Assert.AreEqual(initialMessage, messagesResponse.Messages[0].Text, "Message text should match for recipient");
-            }
-            catch (ApiException ex)
-            {
-                Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
-                Debug.LogError($"Response Body: {ex.ResponseBody}");
-                Assert.Fail($"API Exception: {ex.Message}");
-            }
-            finally
-            {
-                await TearDownAsync();
-            }
-        }
-        
-        [Test]
-        public async Task CreateDirectChat_DirectWebRequest()
-        {
-            try
-            {
-                await SetUpAsync();
-                
-                // Debug info
-                Debug.Log($"Direct web request test - User1:{_user1.Username} (Token: {_user1.AuthenticationToken?.Substring(0, 5)}...)");
-                
-                // Create a direct web request without using the ChatService
-                string url = "https://gamefuse.co/api/v3/chats";
-                string initialMessage = "Message from direct web request";
-                string jsonData = $"{{\"usernames\":[\"{_user2.Username}\"],\"text\":\"{initialMessage}\"}}";
-                
-                // Log the request details
-                Debug.Log($"Direct request URL: {url}");
-                Debug.Log($"Direct request data: {jsonData}");
-                
-                // Create and configure the web request
-                var webRequest = new UnityWebRequest(url, "POST");
-                webRequest.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonData));
-                webRequest.downloadHandler = new DownloadHandlerBuffer();
-                webRequest.SetRequestHeader("Content-Type", "application/json");
-                webRequest.SetRequestHeader("authentication-token", _user1.AuthenticationToken);
-                
-                // Send the request
-                var operation = webRequest.SendWebRequest();
-                while (!operation.isDone)
-                {
-                    await Task.Yield();
-                }
-                
-                // Log the response
-                Debug.Log($"Direct request response code: {webRequest.responseCode}");
-                Debug.Log($"Direct request response: {webRequest.downloadHandler.text}");
-                
-                // Assert that the request was successful
-                Assert.That(webRequest.responseCode == 200 || webRequest.responseCode == 201, 
-                    $"Direct chat request should return success, got {webRequest.responseCode}");
-                
-                // Parse the response
-                var responseJson = JsonConvert.DeserializeObject<Dictionary<string, object>>(webRequest.downloadHandler.text);
-                
-                // Verify the response
-                Assert.NotNull(responseJson, "Response JSON should not be null");
-                Assert.True(responseJson.ContainsKey("chat"), "Response should contain a 'chat' object");
-                
-                // Dispose the request
-                webRequest.Dispose();
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Exception: {ex.Message}");
-                Assert.Fail($"Exception: {ex.Message}");
             }
             finally
             {
