@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace GameFuseCSharp
 {
@@ -26,6 +25,10 @@ namespace GameFuseCSharp
         /// <summary>
         /// Creates a new game round with detailed information for the current user.
         /// </summary>
+        /// <remarks>
+        /// To create a multiplayer game round, set the Multiplayer property to true.
+        /// To join an existing multiplayer game round, set the MultiplayerGameRoundId property.
+        /// </remarks>
         /// <param name="gameRound">Game round details. The GameUserId will be set to the current user's ID.</param>
         /// <returns>Response containing the created game round.</returns>
         /// <exception cref="ApiException">Thrown when request fails.</exception>
@@ -47,15 +50,52 @@ namespace GameFuseCSharp
         /// Creates a new multiplayer game round with the current user as creator.
         /// </summary>
         /// <param name="gameType">The type of game being played</param>
-        /// <param name="playerRounds">List of player game rounds to include in the multiplayer round</param>
-        /// <returns>The created multiplayer game round with rankings</returns>
+        /// <returns>The created game round object</returns>
         /// <exception cref="ApiException">Thrown when request fails.</exception>
-        public async Task<MultiplayerGameRoundResponse> CreateMultiplayerGameRoundAsync(string gameType, List<GameRoundObject> playerRounds)
+        public async Task<GameRoundObject> CreateMultiplayerGameRoundAsync(string gameType)
         {
             try
             {
+                var gameRound = new GameRoundObject
+                {
+                    GameUserId = this.id,
+                    GameType = gameType,
+                    Multiplayer = true
+                };
+                
                 IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await gameRoundsService.CreateMultiplayerGameRoundAsync(gameType, this.id, playerRounds);
+                return await gameRoundsService.CreateGameRoundAsync(gameRound);
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Adds the current user to an existing multiplayer game round.
+        /// </summary>
+        /// <param name="multiplayerGameRoundId">The ID of the multiplayer game round to join.</param>
+        /// <param name="gameType">The type of game being played.</param>
+        /// <param name="score">Optional score achieved in the game round.</param>
+        /// <param name="place">Optional place the user finished in (1st, 2nd, etc.).</param>
+        /// <returns>The created game round object.</returns>
+        /// <exception cref="ApiException">Thrown when request fails.</exception>
+        public async Task<GameRoundObject> JoinMultiplayerGameRoundAsync(int multiplayerGameRoundId, string gameType, double score = 0, int place = 0)
+        {
+            try
+            {
+                var gameRound = new GameRoundObject
+                {
+                    GameUserId = this.id,
+                    GameType = gameType,
+                    MultiplayerGameRoundId = multiplayerGameRoundId,
+                    Score = score,
+                    Place = place
+                };
+                
+                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
+                return await gameRoundsService.CreateGameRoundAsync(gameRound);
             }
             catch (ApiException)
             {
@@ -95,6 +135,25 @@ namespace GameFuseCSharp
             {
                 IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
                 return await gameRoundsService.GetGameRoundAsync(gameRoundId);
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a multiplayer game round by ID, including all player rankings.
+        /// </summary>
+        /// <param name="multiplayerGameRoundId">ID of the multiplayer game round to retrieve.</param>
+        /// <returns>Response containing the multiplayer game round with player rankings.</returns>
+        /// <exception cref="ApiException">Thrown when request fails.</exception>
+        public async Task<MultiplayerGameRoundResponse> GetMultiplayerGameRoundAsync(int multiplayerGameRoundId)
+        {
+            try
+            {
+                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
+                return await gameRoundsService.GetMultiplayerGameRoundAsync(multiplayerGameRoundId);
             }
             catch (ApiException)
             {

@@ -185,8 +185,8 @@ namespace GameFuseCSharp.Tests.Runtime
                 var secondUser = await CreateAndSignInUser("secondplayer");
                 var secondUserService = new GameRoundsService("https://gamefuse.co/api/v3", secondUser.AuthenticationToken);
 
-                // Step 1: Create a player round for the first user (creator)
-                var player1Round = new GameRoundObject
+                // Step 1: Create a multiplayer game round for the first user (creator)
+                var firstPlayerRound = new GameRoundObject
                 {
                     GameUserId = _user.Id,
                     StartTime = "2024-01-25T10:00:00Z",
@@ -197,26 +197,20 @@ namespace GameFuseCSharp.Tests.Runtime
                     Metadata = new System.Collections.Generic.Dictionary<string, string>
                     {
                         { "difficulty", "Hard" }
-                    }
-                };
-
-                // Step 2: Create the multiplayer game round container with the first player
-                var playerRounds = new System.Collections.Generic.List<GameRoundObject>
-                {
-                    player1Round
+                    },
+                    Multiplayer = true  // Set this flag to create a multiplayer game round
                 };
 
                 Debug.Log("Creating multiplayer game round for first player");
-                var multiplayerGameRound = await _gameRoundsService.CreateMultiplayerGameRoundAsync("multiplayer_battle", _user.Id, playerRounds);
-                Assert.NotNull(multiplayerGameRound, "Multiplayer game round response should not be null");
-                Assert.NotNull(multiplayerGameRound.MultiplayerGameRound, "Multiplayer game round should not be null");
+                var createdRound = await _gameRoundsService.CreateGameRoundAsync(firstPlayerRound);
+                Assert.NotNull(createdRound, "Created round should not be null");
+                Assert.NotNull(createdRound.MultiplayerGameRoundId, "Multiplayer game round ID should be assigned");
                 
-                // Extract the multiplayer game round ID
-                int multiplayerGameRoundId = multiplayerGameRound.MultiplayerGameRound.Id;
+                int multiplayerGameRoundId = createdRound.MultiplayerGameRoundId.Value;
                 Debug.Log($"Created multiplayer game round with ID: {multiplayerGameRoundId}");
                 
-                // Step 3: Create a player round for the second user
-                var player2Round = new GameRoundObject
+                // Step 2: Create a game round for the second user with the multiplayer ID
+                var secondPlayerRound = new GameRoundObject
                 {
                     GameUserId = secondUser.Id,
                     StartTime = "2024-01-25T10:00:00Z",
@@ -227,19 +221,20 @@ namespace GameFuseCSharp.Tests.Runtime
                     Metadata = new System.Collections.Generic.Dictionary<string, string>
                     {
                         { "difficulty", "Medium" }
-                    }
+                    },
+                    MultiplayerGameRoundId = multiplayerGameRoundId  // Set this property to join the multiplayer game
                 };
                 
-                // Step 4: Have the second user add themselves to the multiplayer game round
+                // Step 3: Have the second user add themselves to the multiplayer game round
                 Debug.Log($"Adding second player to multiplayer game round {multiplayerGameRoundId}");
-                var secondPlayerRound = await secondUserService.AddPlayerToMultiplayerGameRoundAsync(multiplayerGameRoundId, player2Round);
-                Assert.NotNull(secondPlayerRound, "Second player's round should not be null");
-                Assert.AreEqual(multiplayerGameRoundId, secondPlayerRound.MultiplayerGameRoundId, "Second player's round should be linked to the multiplayer game round");
+                var secondPlayerCreatedRound = await secondUserService.CreateGameRoundAsync(secondPlayerRound);
+                Assert.NotNull(secondPlayerCreatedRound, "Second player's round should not be null");
+                Assert.AreEqual(multiplayerGameRoundId, secondPlayerCreatedRound.MultiplayerGameRoundId, "Second player's round should be linked to the multiplayer game round");
                 
                 // Allow time for the server to process
                 await Task.Delay(1000);
                 
-                // Step 5: Get the updated multiplayer game round details
+                // Step 4: Get the updated multiplayer game round details
                 var retrievedMultiplayerRound = await _gameRoundsService.GetMultiplayerGameRoundAsync(multiplayerGameRoundId);
                 Assert.NotNull(retrievedMultiplayerRound, "Retrieved multiplayer round should not be null");
                 Assert.NotNull(retrievedMultiplayerRound.Rankings, "Rankings should not be null");
@@ -279,7 +274,6 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.NotNull(initialRound);
 
                 // Update the round
-
                 initialRound.Score = 2000;
                 initialRound.Place = 2;
 
@@ -320,8 +314,8 @@ namespace GameFuseCSharp.Tests.Runtime
                     {
                         { "difficulty", "Hard" }
                     },
-                    Multiplayer = true
-                    };
+                    Multiplayer = true  // Create a multiplayer game round
+                };
 
                 var firstPlayerCreatedRound = await _gameRoundsService.CreateGameRoundAsync(firstPlayerRound);
                 Assert.NotNull(firstPlayerCreatedRound, "First player's round should be created");
@@ -340,7 +334,7 @@ namespace GameFuseCSharp.Tests.Runtime
                     {
                         { "difficulty", "Hard" }
                     },
-                    MultiplayerGameRoundId = firstPlayerCreatedRound.MultiplayerGameRoundId
+                    MultiplayerGameRoundId = firstPlayerCreatedRound.MultiplayerGameRoundId  // Join the multiplayer round
                 };
 
                 var secondPlayerCreatedRound = await secondUserService.CreateGameRoundAsync(secondPlayerRound);
@@ -355,6 +349,16 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.AreEqual(1500.0, updatedRound.Score, "Score should be updated");
                 Assert.AreEqual(1, updatedRound.Place, "Place should be updated");
 
+                // Get the updated multiplayer round to verify rankings
+                var retrievedMultiplayerRound = await _gameRoundsService.GetMultiplayerGameRoundAsync(firstPlayerCreatedRound.MultiplayerGameRoundId.Value);
+                Assert.NotNull(retrievedMultiplayerRound, "Retrieved multiplayer round should not be null");
+                Assert.NotNull(retrievedMultiplayerRound.Rankings, "Rankings should not be null");
+                
+                // Verify player data in rankings
+                var player1Ranking = retrievedMultiplayerRound.Rankings.FirstOrDefault(r => r.User.Id == _user.Id);
+                Assert.NotNull(player1Ranking, "Player 1 ranking should exist");
+                Assert.AreEqual(1, player1Ranking.Place, "Player 1 place should be updated");
+                Assert.AreEqual(1500.0, player1Ranking.Score, "Player 1 score should be updated");
             }
             finally
             {
