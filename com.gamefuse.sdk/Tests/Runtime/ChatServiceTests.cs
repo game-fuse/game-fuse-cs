@@ -77,16 +77,6 @@ namespace GameFuseCSharp.Tests.Runtime
             _user1 = await CreateAndSignInUser("testuser1");
             _user2 = await CreateAndSignInUser("testuser2");
             _user3 = await CreateAndSignInUser("testuser3");
-
-            // Verify tokens are not null
-            Debug.Log($"User1 Auth Token: {(_user1.AuthenticationToken != null ? _user1.AuthenticationToken.Substring(0, Math.Min(10, _user1.AuthenticationToken.Length)) + "..." : "NULL")}");
-            Debug.Log($"User2 Auth Token: {(_user2.AuthenticationToken != null ? _user2.AuthenticationToken.Substring(0, Math.Min(10, _user2.AuthenticationToken.Length)) + "..." : "NULL")}");
-            Debug.Log($"User1 ID: {_user1.Id}, Username: {_user1.Username}");
-            
-            if (string.IsNullOrEmpty(_user1.AuthenticationToken))
-            {
-                throw new System.Exception("Authentication token for user1 is null or empty - cannot proceed with tests");
-            }
             
             // Initialize services with authentication tokens
             _chatService1 = new ChatService("https://gamefuse.co/api/v3", _user1.AuthenticationToken);
@@ -140,8 +130,6 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 // Create direct chat between user1 and user2
                 string initialMessage = "Hello, this is a test message!";
-                Debug.Log($"Creating direct chat from {_user1.Username} to {_user2.Username} with message: {initialMessage}");
-                Debug.Log($"User1 auth token: {_user1.AuthenticationToken?.Substring(0, Math.Min(5, _user1.AuthenticationToken?.Length ?? 0))}...");
                 var chat = await _chatService1.CreateDirectChatAsync(new[] { _user2.Username }, initialMessage);
 
                 // Verify chat creation

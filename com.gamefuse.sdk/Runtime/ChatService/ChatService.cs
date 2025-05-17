@@ -12,21 +12,6 @@ namespace GameFuseCSharp
             _token = token;
             Debug.Log($"ChatService created with baseUrl: {baseUrl}, token: {(string.IsNullOrEmpty(token) ? "NULL" : token.Substring(0, Mathf.Min(5, token.Length)) + "...")}");
         }
-        
-        protected override void SetRequestHeaders(UnityWebRequest webRequest)
-        {
-            if (!string.IsNullOrEmpty(_token))
-            {
-                webRequest.SetRequestHeader("authentication_token", _token);
-                Debug.Log($"ChatService setting auth token header: {_token.Substring(0, Mathf.Min(5, _token.Length))}...");
-            }
-            else
-            {
-                Debug.LogWarning("ChatService has no authentication token to set in request header");
-            }
-            
-            webRequest.SetRequestHeader("Content-Type", "application/json");
-        }
 
         public async Task<GetChatsResponse> GetChatsAsync(int page = 1)
         {
@@ -42,41 +27,21 @@ namespace GameFuseCSharp
         {
             string url = $"{_baseUrl}/chats";
 
+            // Create the request with usernames array and text
             var request = new CreateDirectChatRequest
             {
                 Usernames = usernames,
                 Text = text
             };
 
+            // Serialize the request to JSON
             string jsonBody = SerializeRequest(request);
-            Debug.Log($"CreateDirectChatAsync - Request Body: {jsonBody}");
-            Debug.Log($"CreateDirectChatAsync - Usernames: [{string.Join(", ", usernames)}], Text: {text}");
-            Debug.Log($"CreateDirectChatAsync - Token: {_token?.Substring(0, Math.Min(5, _token?.Length ?? 0))}...");
 
-            // Create the web request with authentication
+            // Create and send the request
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
             {
-                // Double-check that auth header is set
-                string existingToken = webRequest.GetRequestHeader("authentication_token");
-                if (string.IsNullOrEmpty(existingToken) || !existingToken.Equals(_token))
-                {
-                    Debug.LogWarning("Authentication token header missing or mismatch - explicitly setting it");
-                    webRequest.SetRequestHeader("authentication_token", _token);
-                }
-                
-                try
-                {
-                    var response = await SendRequestAsync<CreateChatResponse>(webRequest, true);
-                    Debug.Log($"CreateDirectChatAsync - Response received: {(response == null ? "null" : "not null")}");
-                    Debug.Log($"CreateDirectChatAsync - Chat: {(response?.Chat == null ? "null" : "not null")}");
-                    return response?.Chat;
-                }
-                catch (ApiException ex)
-                {
-                    Debug.LogError($"CreateDirectChatAsync - API Exception: {ex.StatusCode}, {ex.Message}");
-                    Debug.LogError($"CreateDirectChatAsync - Response Body: {ex.ResponseBody}");
-                    throw;
-                }
+                var response = await SendRequestAsync<CreateChatResponse>(webRequest);
+                return response.Chat;
             }
         }
 

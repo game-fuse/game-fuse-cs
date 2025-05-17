@@ -61,17 +61,10 @@ namespace GameFuseCSharp
 
         protected virtual void SetRequestHeaders(UnityWebRequest webRequest)
         {
-            // The header should use underscore instead of hyphen based on API requirements
             if (!string.IsNullOrEmpty(_token))
             {
                 webRequest.SetRequestHeader("authentication_token", _token);
-                Debug.Log($"Setting authentication_token header: {_token.Substring(0, Math.Min(5, _token.Length))}...");
             }
-            else
-            {
-                Debug.LogWarning("No authentication token available to set in request header");
-            }
-            
             webRequest.SetRequestHeader("Content-Type", "application/json");
         }
 
