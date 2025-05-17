@@ -68,8 +68,8 @@ namespace GameFuseCSharp.Tests.Runtime
             // Create a test game
             Debug.Log("Creating test game...");
             var gameResponse = await _adminService.CreateGameAsync();
-            _testGameId = gameResponse.id;
-            _testGameToken = gameResponse.token;
+            _testGameId = gameResponse.Id;
+            _testGameToken = gameResponse.Token;
             Debug.Log($"Test game created. ID: {_testGameId}, Token: {_testGameToken}");
 
             // Sign up and sign in two test users
@@ -78,9 +78,9 @@ namespace GameFuseCSharp.Tests.Runtime
             _user3 = await CreateAndSignInUser("testuser3");
 
             // Initialize ChatServices for both users
-            _chatService1 = new ChatService("https://gamefuse.co/api/v3", _user1.authentication_token);
-            _chatService2 = new ChatService("https://gamefuse.co/api/v3", _user2.authentication_token);
-            _groupsService = new GroupsService("https://gamefuse.co/api/v3", _user1.authentication_token);
+            _chatService1 = new ChatService("https://gamefuse.co/api/v3", _user1.AuthenticationToken);
+            _chatService2 = new ChatService("https://gamefuse.co/api/v3", _user2.AuthenticationToken);
+            _groupsService = new GroupsService("https://gamefuse.co/api/v3", _user1.AuthenticationToken);
         }
 
         private async Task TearDownAsync()
@@ -99,22 +99,22 @@ namespace GameFuseCSharp.Tests.Runtime
 
             SignUpRequest signUpRequest = new SignUpRequest
             {
-                email = userEmail,
-                password = password,
-                password_confirmation = password,
-                username = username,
-                game_id = _testGameId,
-                game_token = _testGameToken
+                Email = userEmail,
+                Password = password,
+                PasswordConfirmation = password,
+                Username = username,
+                GameId = _testGameId,
+                GameToken = _testGameToken
             };
 
             await _userService.SignUpAsync(signUpRequest);
 
             SignInRequest signInRequest = new SignInRequest
             {
-                email = userEmail,
-                password = password,
-                game_id = _testGameId,
-                game_token = _testGameToken
+                Email = userEmail,
+                Password = password,
+                GameId = _testGameId,
+                GameToken = _testGameToken
             };
 
             return await _sessionsService.SignInAsync(signInRequest);
@@ -129,19 +129,19 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 // Create direct chat between user1 and user2
                 string initialMessage = "Hello, this is a test message!";
-                var chat = await _chatService1.CreateDirectChatAsync(new[] { _user2.username }, initialMessage);
+                var chat = await _chatService1.CreateDirectChatAsync(new[] { _user2.Username }, initialMessage);
 
                 // Verify chat creation
                 Assert.NotNull(chat, "Chat should not be null");
                 Assert.Greater(chat.Id, 0, "Chat ID should be greater than 0");
                 Assert.AreEqual(2, chat.Participants.Length, "Chat should have exactly two participants");
-                Assert.AreEqual(_user1.id, chat.CreatorId, "Creator ID should match user1");
+                Assert.AreEqual(_user1.Id, chat.CreatorId, "Creator ID should match user1");
 
                 // Verify initial message
                 Assert.NotNull(chat.Messages, "Messages array should not be null");
                 Assert.Greater(chat.Messages.Length, 0, "Should have at least one message");
                 Assert.AreEqual(initialMessage, chat.Messages[0].Text, "Message text should match");
-                Assert.AreEqual(_user1.id, chat.Messages[0].UserId, "Message sender should be user1");
+                Assert.AreEqual(_user1.Id, chat.Messages[0].UserId, "Message sender should be user1");
 
                 // Get messages using second user
                 var messages = await _chatService2.GetMessagesAsync(chat.Id);
@@ -181,7 +181,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 var group = await _groupsService.CreateGroupAsync(createGroupRequest);
                 Assert.NotNull(group, "Group should not be null");
 
-                Debug.Log($"User 1 id {_user1.id} Group Created {group.Id}");
+                Debug.Log($"User 1 id {_user1.Id} Group Created {group.Id}");
                 // Create group chat
                 string initialMessage = "Hello group members!";
                 var chat = await _chatService1.CreateGroupChatAsync(group.Id, initialMessage);
@@ -195,7 +195,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.NotNull(chat.Messages, "Messages array should not be null");
                 Assert.Greater(chat.Messages.Length, 0, "Should have at least one message");
                 Assert.AreEqual(initialMessage, chat.Messages[0].Text, "Message text should match");
-                Assert.AreEqual(_user1.id, chat.Messages[0].UserId, "Message sender should be user1");
+                Assert.AreEqual(_user1.Id, chat.Messages[0].UserId, "Message sender should be user1");
 
                 // Get messages to verify
                 var messages = await _chatService1.GetMessagesAsync(chat.Id);
@@ -227,8 +227,8 @@ namespace GameFuseCSharp.Tests.Runtime
                 string message1 = "First direct chat";
                 string message2 = "Second direct chat";
 
-                var chat1 = await _chatService1.CreateDirectChatAsync(new[] { _user2.username }, message1);
-                var chat2 = await _chatService1.CreateDirectChatAsync(new[] { _user3.username }, message2);
+                var chat1 = await _chatService1.CreateDirectChatAsync(new[] { _user2.Username }, message1);
+                var chat2 = await _chatService1.CreateDirectChatAsync(new[] { _user3.Username }, message2);
 
                 // Get all chats for user1
                 var chatsResponse = await _chatService1.GetChatsAsync();
@@ -263,7 +263,7 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 // Create a direct chat
                 string initialMessage = "Initial message";
-                var chat = await _chatService1.CreateDirectChatAsync(new[] { _user2.username }, initialMessage);
+                var chat = await _chatService1.CreateDirectChatAsync(new[] { _user2.Username }, initialMessage);
 
                 // Send a new message
                 string newMessage = "This is a follow-up message";
@@ -272,7 +272,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 Assert.NotNull(sentMessage, "Sent message should not be null");
                 Assert.Greater(sentMessage.Id, 0, "Message ID should be greater than 0");
                 Assert.AreEqual(newMessage, sentMessage.Text, "Message text should match");
-                Assert.AreEqual(_user1.id, sentMessage.UserId, "Message sender should be user1");
+                Assert.AreEqual(_user1.Id, sentMessage.UserId, "Message sender should be user1");
 
                 // Mark message as read with second user
                 var readResponse = await _chatService2.MarkMessageAsReadAsync(sentMessage.Id);
@@ -284,7 +284,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 var readMessage = messages.Messages.FirstOrDefault(m => m.Id == sentMessage.Id);
                 Assert.NotNull(readMessage, "Message should be found");
                 Assert.IsTrue(readMessage.Read, "Message should be marked as read for user2");
-                Assert.That(readMessage.ReadBy.Contains(_user2.id.ToString()), "User2 should be in the read by list");
+                Assert.That(readMessage.ReadBy.Contains(_user2.Id.ToString()), "User2 should be in the read by list");
             }
             catch (ApiException ex)
             {
@@ -306,7 +306,7 @@ namespace GameFuseCSharp.Tests.Runtime
                 await SetUpAsync();
 
                 // Create a direct chat
-                var chat = await _chatService1.CreateDirectChatAsync(new[] { _user2.username }, "Initial message");
+                var chat = await _chatService1.CreateDirectChatAsync(new[] { _user2.Username }, "Initial message");
 
                 // Send multiple messages
                 for (int i = 1; i <= 5; i++)
