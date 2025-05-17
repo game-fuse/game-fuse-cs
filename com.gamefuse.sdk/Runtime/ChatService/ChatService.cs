@@ -36,12 +36,34 @@ namespace GameFuseCSharp
 
             // Serialize the request to JSON
             string jsonBody = SerializeRequest(request);
+            Debug.Log($"CreateDirectChatAsync - Request URL: {url}");
+            Debug.Log($"CreateDirectChatAsync - Request Body: {jsonBody}");
+            Debug.Log($"CreateDirectChatAsync - AuthToken: {(_token?.Length > 5 ? _token.Substring(0, 5) + "..." : _token)}");
 
             // Create and send the request
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
             {
-                var response = await SendRequestAsync<CreateChatResponse>(webRequest);
-                return response.Chat;
+                // Debug headers
+                Debug.Log($"CreateDirectChatAsync - Headers: Content-Type={webRequest.GetRequestHeader("Content-Type")}, Auth-Token={webRequest.GetRequestHeader("authentication-token")?.Substring(0, 5)}...");
+                
+                try
+                {
+                    var response = await SendRequestAsync<CreateChatResponse>(webRequest, true);
+                    if (response == null)
+                    {
+                        Debug.LogError("CreateDirectChatAsync - Response is null");
+                        return null;
+                    }
+                    
+                    Debug.Log($"CreateDirectChatAsync - Response received with Chat: {(response.Chat == null ? "null" : "not null")}");
+                    return response.Chat;
+                }
+                catch (ApiException ex)
+                {
+                    Debug.LogError($"CreateDirectChatAsync - API Exception: {ex.StatusCode}, {ex.Message}");
+                    Debug.LogError($"CreateDirectChatAsync - Response Body: {ex.ResponseBody}");
+                    throw;
+                }
             }
         }
 

@@ -354,9 +354,55 @@ namespace GameFuseCSharp.Tests.Runtime
                 // curl --request POST --header "Content-Type: application/json" --header "authentication-token: d4yK2mxgk1swpkPwx6_N" 
                 // --data "{\"usernames\":[\"dave744\"],\"text\":\"Starting a new chat with dave 744\"}" https://gamefuse.co/api/v3/chats
                 
+                // Debug info
+                Debug.Log($"Starting CreateDirectChat test with User1:{_user1.Username} (Token: {_user1.AuthenticationToken?.Substring(0, 5)}...) to User3:{_user3.Username}");
+                
                 // Create direct chat to user3 with a specific message
                 string initialMessage = "Starting a new chat with " + _user3.Username;
                 var chat = await _chatService1.CreateDirectChatAsync(new[] { _user3.Username }, initialMessage);
+                
+                // Additional debugging if chat is null
+                if (chat == null)
+                {
+                    Debug.LogError("Chat is null after CreateDirectChatAsync call");
+                    Debug.LogError($"User1 ID: {_user1.Id}, Username: {_user1.Username}, Token: {_user1.AuthenticationToken?.Substring(0, 5)}...");
+                    Debug.LogError($"User3 ID: {_user3.Id}, Username: {_user3.Username}");
+                    
+                    // Try direct web request as a fallback
+                    Debug.Log("Attempting direct request as fallback...");
+                    string url = $"{GameFuse.GetBaseURL()}/chats";
+                    string jsonData = $"{{\"usernames\":[\"{_user3.Username}\"],\"text\":\"{initialMessage}\"}}";
+                    Debug.Log($"Fallback request URL: {url}");
+                    Debug.Log($"Fallback request data: {jsonData}");
+                    
+                    var webRequest = new UnityWebRequest(url, "POST");
+                    webRequest.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonData));
+                    webRequest.downloadHandler = new DownloadHandlerBuffer();
+                    webRequest.SetRequestHeader("Content-Type", "application/json");
+                    webRequest.SetRequestHeader("authentication-token", _user1.AuthenticationToken);
+                    
+                    var operation = webRequest.SendWebRequest();
+                    while (!operation.isDone)
+                    {
+                        await Task.Yield();
+                    }
+                    
+                    Debug.Log($"Fallback response code: {webRequest.responseCode}");
+                    Debug.Log($"Fallback response: {webRequest.downloadHandler.text}");
+                    
+                    if (webRequest.responseCode == 200 || webRequest.responseCode == 201)
+                    {
+                        var responseJson = JsonConvert.DeserializeObject<Dictionary<string, object>>(webRequest.downloadHandler.text);
+                        Debug.Log($"Fallback parsed response: {(responseJson == null ? "null" : "not null")}");
+                        
+                        if (responseJson != null && responseJson.ContainsKey("chat"))
+                        {
+                            Debug.Log("Chat object found in fallback response");
+                        }
+                    }
+                    
+                    webRequest.Dispose();
+                }
                 
                 // Verify chat creation
                 Assert.NotNull(chat, "Chat should not be null");
@@ -389,6 +435,68 @@ namespace GameFuseCSharp.Tests.Runtime
                 Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
                 Debug.LogError($"Response Body: {ex.ResponseBody}");
                 Assert.Fail($"API Exception: {ex.Message}");
+            }
+            finally
+            {
+                await TearDownAsync();
+            }
+        }
+        
+        [Test]
+        public async Task CreateDirectChat_DirectWebRequest()
+        {
+            try
+            {
+                await SetUpAsync();
+                
+                // Debug info
+                Debug.Log($"Direct web request test - User1:{_user1.Username} (Token: {_user1.AuthenticationToken?.Substring(0, 5)}...)");
+                
+                // Create a direct web request without using the ChatService
+                string url = "https://gamefuse.co/api/v3/chats";
+                string initialMessage = "Message from direct web request";
+                string jsonData = $"{{\"usernames\":[\"{_user2.Username}\"],\"text\":\"{initialMessage}\"}}";
+                
+                // Log the request details
+                Debug.Log($"Direct request URL: {url}");
+                Debug.Log($"Direct request data: {jsonData}");
+                
+                // Create and configure the web request
+                var webRequest = new UnityWebRequest(url, "POST");
+                webRequest.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonData));
+                webRequest.downloadHandler = new DownloadHandlerBuffer();
+                webRequest.SetRequestHeader("Content-Type", "application/json");
+                webRequest.SetRequestHeader("authentication-token", _user1.AuthenticationToken);
+                
+                // Send the request
+                var operation = webRequest.SendWebRequest();
+                while (!operation.isDone)
+                {
+                    await Task.Yield();
+                }
+                
+                // Log the response
+                Debug.Log($"Direct request response code: {webRequest.responseCode}");
+                Debug.Log($"Direct request response: {webRequest.downloadHandler.text}");
+                
+                // Assert that the request was successful
+                Assert.That(webRequest.responseCode == 200 || webRequest.responseCode == 201, 
+                    $"Direct chat request should return success, got {webRequest.responseCode}");
+                
+                // Parse the response
+                var responseJson = JsonConvert.DeserializeObject<Dictionary<string, object>>(webRequest.downloadHandler.text);
+                
+                // Verify the response
+                Assert.NotNull(responseJson, "Response JSON should not be null");
+                Assert.True(responseJson.ContainsKey("chat"), "Response should contain a 'chat' object");
+                
+                // Dispose the request
+                webRequest.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Exception: {ex.Message}");
+                Assert.Fail($"Exception: {ex.Message}");
             }
             finally
             {

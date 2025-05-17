@@ -96,10 +96,15 @@ namespace GameFuseCSharp
                             if (logRequest) Debug.Log(jsonResponse);
                             try
                             {
-                                return JsonConvert.DeserializeObject<T>(jsonResponse, JsonSettings);
+                                Debug.Log($"Raw response JSON for {typeof(T).Name}: {jsonResponse}");
+                                var response = JsonConvert.DeserializeObject<T>(jsonResponse, JsonSettings);
+                                Debug.Log($"Deserialized {typeof(T).Name} response: {(response == null ? "null" : "not null")}");
+                                return response;
                             }
                             catch (JsonException ex)
                             {
+                                Debug.LogError($"JSON Parse Error: {ex.Message}");
+                                Debug.LogError($"JSON content: {jsonResponse}");
                                 throw new ApiException(
                                     0,
                                     $"Failed to deserialize response: {ex.Message}",
