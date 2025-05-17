@@ -10,7 +10,7 @@ namespace GameFuseCSharp
         {
             _baseUrl = baseUrl;
             _token = token;
-            Debug.Log($"ChatService created with baseUrl: {baseUrl}, token: {token?.Substring(0, Math.Min(5, token?.Length ?? 0))}...");
+            Debug.Log($"ChatService created with baseUrl: {baseUrl}, token: {token?.Substring(0, Mathf.Min(5, token?.Length ?? 0))}...");
         }
 
         public async Task<GetChatsResponse> GetChatsAsync(int page = 1)
