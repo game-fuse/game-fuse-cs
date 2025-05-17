@@ -73,11 +73,22 @@ namespace GameFuseCSharp.Tests.Runtime
             Debug.Log($"Test game created. ID: {_testGameId}, Token: {_testGameToken}");
 
             // Sign up and sign in two test users
+            // Create and sign in users
             _user1 = await CreateAndSignInUser("testuser1");
             _user2 = await CreateAndSignInUser("testuser2");
             _user3 = await CreateAndSignInUser("testuser3");
 
-            // Initialize ChatServices for both users
+            // Verify tokens are not null
+            Debug.Log($"User1 Auth Token: {(_user1.AuthenticationToken != null ? _user1.AuthenticationToken.Substring(0, Math.Min(10, _user1.AuthenticationToken.Length)) + "..." : "NULL")}");
+            Debug.Log($"User2 Auth Token: {(_user2.AuthenticationToken != null ? _user2.AuthenticationToken.Substring(0, Math.Min(10, _user2.AuthenticationToken.Length)) + "..." : "NULL")}");
+            Debug.Log($"User1 ID: {_user1.Id}, Username: {_user1.Username}");
+            
+            if (string.IsNullOrEmpty(_user1.AuthenticationToken))
+            {
+                throw new System.Exception("Authentication token for user1 is null or empty - cannot proceed with tests");
+            }
+            
+            // Initialize services with authentication tokens
             _chatService1 = new ChatService("https://gamefuse.co/api/v3", _user1.AuthenticationToken);
             _chatService2 = new ChatService("https://gamefuse.co/api/v3", _user2.AuthenticationToken);
             _groupsService = new GroupsService("https://gamefuse.co/api/v3", _user1.AuthenticationToken);

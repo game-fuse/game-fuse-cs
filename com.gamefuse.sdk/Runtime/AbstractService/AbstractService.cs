@@ -52,7 +52,7 @@ namespace GameFuseCSharp
                 _ => throw new ArgumentException($"Unsupported HTTP method: {method}")
             };
             
-            UnityWebRequest webRequest = new UnityWebRequest(url,httpMethod);
+            UnityWebRequest webRequest = new UnityWebRequest(url, httpMethod);
             SetRequestHeaders(webRequest);
             webRequest.downloadHandler = new DownloadHandlerBuffer();
             webRequest.timeout = TimeoutSeconds;
@@ -62,11 +62,17 @@ namespace GameFuseCSharp
         protected virtual void SetRequestHeaders(UnityWebRequest webRequest)
         {
             // The header should use underscore instead of hyphen based on API requirements
-            webRequest.SetRequestHeader("authentication_token", _token);
-            webRequest.SetRequestHeader("Content-Type", "application/json");
+            if (!string.IsNullOrEmpty(_token))
+            {
+                webRequest.SetRequestHeader("authentication_token", _token);
+                Debug.Log($"Setting authentication_token header: {_token.Substring(0, Math.Min(5, _token.Length))}...");
+            }
+            else
+            {
+                Debug.LogWarning("No authentication token available to set in request header");
+            }
             
-            // Debug header information
-            Debug.Log($"Setting authentication_token header: {_token?.Substring(0, Math.Min(5, _token?.Length ?? 0))}...");
+            webRequest.SetRequestHeader("Content-Type", "application/json");
         }
 
         protected void SetRequestBody(UnityWebRequest webRequest, string jsonBody)
