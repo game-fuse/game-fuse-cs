@@ -8,10 +8,10 @@ namespace GameFuseCSharp
     public class CreateGroupChatRequest
     {
         [JsonProperty("usernames")]
-        public List<string> Usernames { get; set; }
+        public string[] Usernames { get; set; }
 
         [JsonProperty("group_id")]
-        public int? GroupId { get; set; }
+        public int GroupId { get; set; }
 
         [JsonProperty("text")]
         public string Text { get; set; }

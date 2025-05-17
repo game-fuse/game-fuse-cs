@@ -10,6 +10,7 @@ namespace GameFuseCSharp
         {
             _baseUrl = baseUrl;
             _token = token;
+            Debug.Log($"ChatService created with baseUrl: {baseUrl}, token: {token?.Substring(0, Math.Min(5, token?.Length ?? 0))}...");
         }
 
         public async Task<GetChatsResponse> GetChatsAsync(int page = 1)
@@ -33,11 +34,15 @@ namespace GameFuseCSharp
             };
 
             string jsonBody = SerializeRequest(request);
+            Debug.Log($"CreateDirectChatAsync - Request Body: {jsonBody}");
+            Debug.Log($"CreateDirectChatAsync - Usernames: [{string.Join(", ", usernames)}], Text: {text}");
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
             {
-                var response = await SendRequestAsync<CreateChatResponse>(webRequest);
-                return response.Chat;
+                var response = await SendRequestAsync<CreateChatResponse>(webRequest, true);
+                Debug.Log($"CreateDirectChatAsync - Response received: {(response == null ? "null" : "not null")}");
+                Debug.Log($"CreateDirectChatAsync - Chat: {(response?.Chat == null ? "null" : "not null")}");
+                return response?.Chat;
             }
         }
 

@@ -61,8 +61,12 @@ namespace GameFuseCSharp
 
         protected virtual void SetRequestHeaders(UnityWebRequest webRequest)
         {
-            webRequest.SetRequestHeader("authentication-token", _token);
+            // The header should use underscore instead of hyphen based on API requirements
+            webRequest.SetRequestHeader("authentication_token", _token);
             webRequest.SetRequestHeader("Content-Type", "application/json");
+            
+            // Debug header information
+            Debug.Log($"Setting authentication_token header: {_token?.Substring(0, Math.Min(5, _token?.Length ?? 0))}...");
         }
 
         protected void SetRequestBody(UnityWebRequest webRequest, string jsonBody)
@@ -168,10 +172,10 @@ namespace GameFuseCSharp
                 requestInfo.AppendLine($"Content-Type: {headers}");
             }
 
-            var authToken = request.GetRequestHeader("authentication-token");
+            var authToken = request.GetRequestHeader("authentication_token");
             if (!string.IsNullOrEmpty(authToken))
             {
-                requestInfo.AppendLine("authentication-token: [REDACTED]");
+                requestInfo.AppendLine("authentication_token: [REDACTED]");
             }
 
             // Request body (if exists)

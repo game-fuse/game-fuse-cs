@@ -129,6 +129,8 @@ namespace GameFuseCSharp.Tests.Runtime
 
                 // Create direct chat between user1 and user2
                 string initialMessage = "Hello, this is a test message!";
+                Debug.Log($"Creating direct chat from {_user1.Username} to {_user2.Username} with message: {initialMessage}");
+                Debug.Log($"User1 auth token: {_user1.AuthenticationToken?.Substring(0, Math.Min(5, _user1.AuthenticationToken?.Length ?? 0))}...");
                 var chat = await _chatService1.CreateDirectChatAsync(new[] { _user2.Username }, initialMessage);
 
                 // Verify chat creation
