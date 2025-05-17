@@ -5,6 +5,8 @@ using NUnit.Framework;
 using UnityEngine;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace GameFuseCSharp.Tests.Runtime
 {

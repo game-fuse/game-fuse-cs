@@ -25,65 +25,145 @@ namespace GameFuseCSharp
 
         public async Task<Chat> CreateDirectChatAsync(string[] usernames, string text)
         {
-            string url = $"{_baseUrl}/chats";
-
-            // Create the request with usernames array and text
-            var request = new CreateDirectChatRequest
+            try
             {
-                Usernames = usernames,
-                Text = text
-            };
-
-            // Serialize the request to JSON
-            string jsonBody = SerializeRequest(request);
-            Debug.Log($"CreateDirectChatAsync - Request URL: {url}");
-            Debug.Log($"CreateDirectChatAsync - Request Body: {jsonBody}");
-            Debug.Log($"CreateDirectChatAsync - AuthToken: {(_token?.Length > 5 ? _token.Substring(0, 5) + "..." : _token)}");
-
-            // Create and send the request
-            using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
-            {
-                // Debug headers
-                Debug.Log($"CreateDirectChatAsync - Headers: Content-Type={webRequest.GetRequestHeader("Content-Type")}, Auth-Token={webRequest.GetRequestHeader("authentication-token")?.Substring(0, 5)}...");
+                string url = $"{_baseUrl}/chats";
                 
-                try
+                // Create the JSON directly instead of using the serializer
+                string jsonBody = $"{{\"usernames\":[{string.Join(",", usernames.Select(u => $"\"{u}\""))}],\"text\":\"{text}\"}}";
+                Debug.Log($"CreateDirectChatAsync - Request URL: {url}");
+                Debug.Log($"CreateDirectChatAsync - Request Body: {jsonBody}");
+                
+                // Create a web request directly, bypassing the AbstractService methods that might be causing issues
+                var webRequest = new UnityWebRequest(url, "POST");
+                webRequest.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonBody));
+                webRequest.downloadHandler = new DownloadHandlerBuffer();
+                webRequest.SetRequestHeader("Content-Type", "application/json");
+                webRequest.SetRequestHeader("authentication-token", _token);
+                
+                // Send the request directly
+                var operation = webRequest.SendWebRequest();
+                while (!operation.isDone)
                 {
-                    var response = await SendRequestAsync<CreateChatResponse>(webRequest, true);
-                    if (response == null)
-                    {
-                        Debug.LogError("CreateDirectChatAsync - Response is null");
-                        return null;
-                    }
+                    await Task.Yield();
+                }
+                
+                if (webRequest.responseCode == 200 || webRequest.responseCode == 201)
+                {
+                    // Get the raw response text
+                    var responseText = webRequest.downloadHandler.text;
+                    Debug.Log($"Chat response: {responseText}");
                     
-                    Debug.Log($"CreateDirectChatAsync - Response received with Chat: {(response.Chat == null ? "null" : "not null")}");
-                    return response.Chat;
+                    // Parse the response using a simple approach
+                    var responseJson = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseText);
+                    if (responseJson != null && responseJson.ContainsKey("chat"))
+                    {
+                        // Extract the chat JSON
+                        var chatJson = JsonConvert.SerializeObject(responseJson["chat"]);
+                        // Deserialize to Chat object
+                        var chat = JsonConvert.DeserializeObject<Chat>(chatJson);
+                        
+                        // Get participants from chat_users if available
+                        if (responseJson.ContainsKey("chat_users"))
+                        {
+                            var participantsJson = JsonConvert.SerializeObject(responseJson["chat_users"]);
+                            var participants = JsonConvert.DeserializeObject<ChatParticipant[]>(participantsJson);
+                            chat.Participants = participants;
+                        }
+                        
+                        return chat;
+                    }
                 }
-                catch (ApiException ex)
+                
+                // Handle error
+                Debug.LogError($"Failed to create chat: {webRequest.responseCode}, {webRequest.error}");
+                if (!string.IsNullOrEmpty(webRequest.downloadHandler.text))
                 {
-                    Debug.LogError($"CreateDirectChatAsync - API Exception: {ex.StatusCode}, {ex.Message}");
-                    Debug.LogError($"CreateDirectChatAsync - Response Body: {ex.ResponseBody}");
-                    throw;
+                    Debug.LogError($"Response: {webRequest.downloadHandler.text}");
                 }
+                
+                throw new ApiException(
+                    webRequest.responseCode,
+                    $"Failed to create chat: {webRequest.error}",
+                    webRequest.downloadHandler.text
+                );
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Exception in CreateDirectChatAsync: {ex.Message}");
+                throw;
             }
         }
 
         public async Task<Chat> CreateGroupChatAsync(int groupId, string text)
         {
-            string url = $"{_baseUrl}/chats";
-
-            var request = new CreateGroupChatRequest
+            try
             {
-                GroupId = groupId,
-                Text = text,
-                Usernames = null // Not needed for group chat
-            };
-
-            string jsonBody = SerializeRequest(request);
-
-            using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.POST, jsonBody))
+                string url = $"{_baseUrl}/chats";
+                
+                // Create the JSON directly
+                string jsonBody = $"{{\"group_id\":{groupId},\"text\":\"{text}\"}}";
+                Debug.Log($"CreateGroupChatAsync - Request URL: {url}");
+                Debug.Log($"CreateGroupChatAsync - Request Body: {jsonBody}");
+                
+                // Create a web request directly
+                var webRequest = new UnityWebRequest(url, "POST");
+                webRequest.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonBody));
+                webRequest.downloadHandler = new DownloadHandlerBuffer();
+                webRequest.SetRequestHeader("Content-Type", "application/json");
+                webRequest.SetRequestHeader("authentication-token", _token);
+                
+                // Send the request directly
+                var operation = webRequest.SendWebRequest();
+                while (!operation.isDone)
+                {
+                    await Task.Yield();
+                }
+                
+                if (webRequest.responseCode == 200 || webRequest.responseCode == 201)
+                {
+                    // Get the raw response text
+                    var responseText = webRequest.downloadHandler.text;
+                    Debug.Log($"Group chat response: {responseText}");
+                    
+                    // Parse the response using a simple approach
+                    var responseJson = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseText);
+                    if (responseJson != null && responseJson.ContainsKey("chat"))
+                    {
+                        // Extract the chat JSON
+                        var chatJson = JsonConvert.SerializeObject(responseJson["chat"]);
+                        // Deserialize to Chat object
+                        var chat = JsonConvert.DeserializeObject<Chat>(chatJson);
+                        
+                        // Get participants from chat_users if available
+                        if (responseJson.ContainsKey("chat_users"))
+                        {
+                            var participantsJson = JsonConvert.SerializeObject(responseJson["chat_users"]);
+                            var participants = JsonConvert.DeserializeObject<ChatParticipant[]>(participantsJson);
+                            chat.Participants = participants;
+                        }
+                        
+                        return chat;
+                    }
+                }
+                
+                // Handle error
+                Debug.LogError($"Failed to create group chat: {webRequest.responseCode}, {webRequest.error}");
+                if (!string.IsNullOrEmpty(webRequest.downloadHandler.text))
+                {
+                    Debug.LogError($"Response: {webRequest.downloadHandler.text}");
+                }
+                
+                throw new ApiException(
+                    webRequest.responseCode,
+                    $"Failed to create group chat: {webRequest.error}",
+                    webRequest.downloadHandler.text
+                );
+            }
+            catch (Exception ex)
             {
-                var response = await SendRequestAsync<CreateChatResponse>(webRequest);
-                return response.Chat;
+                Debug.LogError($"Exception in CreateGroupChatAsync: {ex.Message}");
+                throw;
             }
         }
 
