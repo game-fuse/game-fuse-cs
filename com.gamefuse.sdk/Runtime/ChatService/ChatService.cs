@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -45,7 +46,7 @@ namespace GameFuseCSharp
                     // Log the request for debugging
                     Debug.Log($"CreateDirectChatAsync - URL: {url}");
                     Debug.Log($"CreateDirectChatAsync - Body: {jsonBody}");
-                    Debug.Log($"CreateDirectChatAsync - Auth: {_token?.Substring(0, Math.Min(5, _token?.Length ?? 0))}...");
+                    Debug.Log($"CreateDirectChatAsync - Auth: {_token?.Substring(0, Mathf.Min(5, _token?.Length ?? 0))}...");
                     
                     // Send the request using the AbstractService
                     var response = await SendRequestAsync<CreateChatResponse>(webRequest);
