@@ -481,12 +481,15 @@ namespace GameFuseCSharp
                 var data = request.downloadHandler.text;
                 
                 // Use Newtonsoft.Json to parse the response
-                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
                 
                 attributes.Clear();
-                foreach (var attribute in json.game_user_attributes)
+                var attributesRaw = JsonConvert.SerializeObject(json["game_user_attributes"]);
+                var attributesList = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(attributesRaw);
+                
+                foreach (var attribute in attributesList)
                 {
-                    attributes.Add((string)attribute.key, (string)attribute.value);
+                    attributes.Add(attribute["key"], attribute["value"]);
                 }
                 
                 DownloadStoreItems(chainedFromLogin, callback);
@@ -520,7 +523,7 @@ namespace GameFuseCSharp
                 
                 // Process the attributes
                 Dictionary<string, string> newAttributes = new Dictionary<string, string>();
-                foreach (var attribute in response.GameUserAttributes)
+                foreach (var attribute in response.Attributes)
                 {
                     newAttributes[attribute.Key] = attribute.Value;
                 }
@@ -649,7 +652,7 @@ namespace GameFuseCSharp
                 var data = request.downloadHandler.text;
                 
                 // Use Newtonsoft.Json to parse the response
-                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
                 
                 // Update local attributes
                 if (attributes.ContainsKey(key))
@@ -817,15 +820,18 @@ namespace GameFuseCSharp
                 var data = request.downloadHandler.text;
                 
                 // Use Newtonsoft.Json to parse the response
-                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
                 
                 print("ATTRIBUTES CLEARED DUE TO KEY REMOVAL:");
                 attributes.Clear();
-                foreach (var attribute in json.game_user_attributes)
+                var attributesRaw = JsonConvert.SerializeObject(json["game_user_attributes"]);
+                var attributesList = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(attributesRaw);
+                
+                foreach (var attribute in attributesList)
                 {
-                    string attrKey = (string)attribute.key;
+                    string attrKey = attribute["key"];
                     print("adding: " + attrKey);
-                    attributes.Add(attrKey, (string)attribute.value);
+                    attributes.Add(attrKey, attribute["value"]);
                 }
             }
 
@@ -864,18 +870,21 @@ namespace GameFuseCSharp
                 var data = request.downloadHandler.text;
                 
                 // Use Newtonsoft.Json to parse the response
-                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
                 
                 purchasedStoreItems.Clear();
-                foreach (var item in json.game_user_store_items)
+                var storeItemsRaw = JsonConvert.SerializeObject(json["game_user_store_items"]);
+                var storeItemsList = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(storeItemsRaw);
+                
+                foreach (var item in storeItemsList)
                 {
                     purchasedStoreItems.Add(new GameFuseStoreItem(
-                        (string)item.name,
-                        (string)item.category,
-                        (string)item.description,
-                        (int)item.cost,
-                        (int)item.id,
-                        (string)item.icon_url
+                        item["name"].ToString(),
+                        item["category"].ToString(),
+                        item["description"].ToString(),
+                        Convert.ToInt32(item["cost"]),
+                        Convert.ToInt32(item["id"]),
+                        item["icon_url"].ToString()
                     ));
                 }
             }
@@ -907,7 +916,7 @@ namespace GameFuseCSharp
                 
                 // Process the store items
                 purchasedStoreItems.Clear();
-                foreach (var item in response.GameUserStoreItems)
+                foreach (var item in response.StoreItems)
                 {
                     purchasedStoreItems.Add(new GameFuseStoreItem(
                         item.Name,
@@ -966,7 +975,7 @@ namespace GameFuseCSharp
                 
                 // Process the store items
                 purchasedStoreItems.Clear();
-                foreach (var item in response.GameUserStoreItems)
+                foreach (var item in response.StoreItems)
                 {
                     purchasedStoreItems.Add(new GameFuseStoreItem(
                         item.Name,
@@ -1010,22 +1019,25 @@ namespace GameFuseCSharp
                 var data = request.downloadHandler.text;
                 
                 // Use Newtonsoft.Json to parse the response
-                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
                 
                 // Update credits
-                CurrentUser.SetCreditsInternal((int)json.credits);
+                CurrentUser.SetCreditsInternal(Convert.ToInt32(json["credits"]));
                 
                 // Process store items
                 purchasedStoreItems.Clear();
-                foreach (var item in json.game_user_store_items)
+                var storeItemsRaw = JsonConvert.SerializeObject(json["game_user_store_items"]);
+                var storeItemsList = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(storeItemsRaw);
+                
+                foreach (var item in storeItemsList)
                 {
                     purchasedStoreItems.Add(new GameFuseStoreItem(
-                        (string)item.name,
-                        (string)item.category,
-                        (string)item.description,
-                        (int)item.cost,
-                        (int)item.id,
-                        (string)item.icon_url
+                        item["name"].ToString(),
+                        item["category"].ToString(),
+                        item["description"].ToString(),
+                        Convert.ToInt32(item["cost"]),
+                        Convert.ToInt32(item["id"]),
+                        item["icon_url"].ToString()
                     ));
                 }
             }
@@ -1069,7 +1081,7 @@ namespace GameFuseCSharp
                 
                 // Process the store items
                 purchasedStoreItems.Clear();
-                foreach (var item in response.GameUserStoreItems)
+                foreach (var item in response.StoreItems)
                 {
                     purchasedStoreItems.Add(new GameFuseStoreItem(
                         item.Name,
@@ -1114,22 +1126,25 @@ namespace GameFuseCSharp
                 var data = request.downloadHandler.text;
                 
                 // Use Newtonsoft.Json to parse the response
-                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
                 
                 // Update credits
-                CurrentUser.SetCreditsInternal((int)json.credits);
+                CurrentUser.SetCreditsInternal(Convert.ToInt32(json["credits"]));
                 
                 // Process store items
                 purchasedStoreItems.Clear();
-                foreach (var item in json.game_user_store_items)
+                var storeItemsRaw = JsonConvert.SerializeObject(json["game_user_store_items"]);
+                var storeItemsList = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(storeItemsRaw);
+                
+                foreach (var item in storeItemsList)
                 {
                     purchasedStoreItems.Add(new GameFuseStoreItem(
-                        (string)item.name,
-                        (string)item.category,
-                        (string)item.description,
-                        (int)item.cost,
-                        (int)item.id,
-                        (string)item.icon_url
+                        item["name"].ToString(),
+                        item["category"].ToString(),
+                        item["description"].ToString(),
+                        Convert.ToInt32(item["cost"]),
+                        Convert.ToInt32(item["id"]),
+                        item["icon_url"].ToString()
                     ));
                 }
             }

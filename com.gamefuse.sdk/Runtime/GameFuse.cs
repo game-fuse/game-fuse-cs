@@ -197,22 +197,23 @@ namespace GameFuseCSharp
                     
                     // Parse the response data
                     var data = webRequest.downloadHandler.text;
-                    JSONObject json = JSONObject.Parse(data);
+                    var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
                     
                     // Set the game data
-                    Instance.id = json.GetNumber("id").ToString();
-                    Instance._name = json.GetString("name");
-                    Instance.description = json.GetString("description");
-                    Instance.token = json.GetString("token");
+                    Instance.id = json["id"].ToString();
+                    Instance._name = json["name"].ToString();
+                    Instance.description = json["description"].ToString();
+                    Instance.token = json["token"].ToString();
                     
                     // Process game variables
                     Dictionary<string, string> gameVariables = new Dictionary<string, string>();
-                    JSONArray gameVariablesArray = json.GetArray("game_variables");
-                    for (int i = 0; i < gameVariablesArray.Length; i++) 
+                    var gameVariablesArray = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(
+                        JsonConvert.SerializeObject(json["game_variables"]));
+                    
+                    foreach (var item in gameVariablesArray) 
                     {
-                        JSONObject iterjson = JSONObject.Parse(gameVariablesArray[i].ToString());
-                        string key = iterjson.GetString("key");
-                        string value = iterjson.GetString("value");
+                        string key = item["key"];
+                        string value = item["value"];
                         gameVariables[key] = value;
                     }
                     Instance.gameVariables = gameVariables;
@@ -275,20 +276,22 @@ namespace GameFuseCSharp
                     
                     // Parse the response data
                     var data = webRequest.downloadHandler.text;
-                    JSONObject json = JSONObject.Parse(data);
+                    var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
                     
                     // Process store items
-                    var storeItems = json.GetArray("store_items");
+                    var storeItemsRaw = JsonConvert.SerializeObject(json["store_items"]);
+                    var storeItems = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(storeItemsRaw);
+                    
                     Instance.store.Clear();
                     foreach (var storeItem in storeItems)
                     {
                         Instance.store.Add(new GameFuseStoreItem(
-                            storeItem.Obj.GetString("name"),
-                            storeItem.Obj.GetString("category"),
-                            storeItem.Obj.GetString("description"),
-                            Convert.ToInt32(storeItem.Obj.GetNumber("cost")),
-                            Convert.ToInt32(storeItem.Obj.GetNumber("id")),
-                            storeItem.Obj.GetString("icon_url")
+                            storeItem["name"].ToString(),
+                            storeItem["category"].ToString(),
+                            storeItem["description"].ToString(),
+                            Convert.ToInt32(storeItem["cost"]),
+                            Convert.ToInt32(storeItem["id"]),
+                            storeItem["icon_url"].ToString()
                             )
                         );
                     }
@@ -396,21 +399,23 @@ namespace GameFuseCSharp
                     
                     // Parse the response data using Newtonsoft.Json instead of Boomlagoon
                     var data = webRequest.downloadHandler.text;
-                    dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                    var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
                     
                     // Set the game data
-                    Instance.id = ((int)json.id).ToString();
-                    Instance._name = (string)json.name;
-                    Instance.description = (string)json.description;
-                    Instance.token = (string)json.token;
+                    Instance.id = json["id"].ToString();
+                    Instance._name = json["name"].ToString();
+                    Instance.description = json["description"].ToString();
+                    Instance.token = json["token"].ToString();
                     
                     // Process game variables
                     Dictionary<string, string> gameVariables = new Dictionary<string, string>();
-                    var gameVariablesArray = json.game_variables;
+                    var gameVariablesArray = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(
+                        JsonConvert.SerializeObject(json["game_variables"]));
+                    
                     foreach (var item in gameVariablesArray) 
                     {
-                        string key = (string)item.key;
-                        string value = (string)item.value;
+                        string key = item["key"];
+                        string value = item["value"];
                         gameVariables[key] = value;
                     }
                     Instance.gameVariables = gameVariables;
