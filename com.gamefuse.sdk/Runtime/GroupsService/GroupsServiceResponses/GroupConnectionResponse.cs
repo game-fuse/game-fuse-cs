@@ -15,6 +15,12 @@ namespace GameFuseCSharp
         [JsonProperty("inviter_id")]
         public int InviterId { get; set; }
 
+        [JsonProperty("group_id")]
+        public int GroupId { get; set; }
+
+        [JsonProperty("created")]
+        public string Created { get; set; }
+
         [JsonProperty("user")]
         public UserInfo User { get; set; }
     }

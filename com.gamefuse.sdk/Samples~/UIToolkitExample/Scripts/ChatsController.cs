@@ -121,15 +121,19 @@ namespace GameFuse.UIToolkit
                 // Parse comma-separated usernames
                 string[] usernameArray = usernames.Split(',').Select(u => u.Trim()).ToArray();
                 
-                // Create request
-                var request = new CreateDirectChatRequest
+                // Create message text
+                string text = string.IsNullOrEmpty(messageTextField.value) ? "Hello!" : messageTextField.value;
+                
+                // Create direct chat with first username and text
+                string username = usernameArray.Length > 0 ? usernameArray[0] : "";
+                if (string.IsNullOrEmpty(username))
                 {
-                    Usernames = usernameArray,
-                    Text = string.IsNullOrEmpty(messageTextField.value) ? "Hello!" : messageTextField.value
-                };
+                    LogMessage("At least one username is required for direct chat", LogType.Error);
+                    return;
+                }
                 
                 // Create direct chat
-                var response = await GameFuseUser.CurrentUser.CreateDirectChatAsync(request);
+                var response = await GameFuseUser.CurrentUser.CreateDirectChatAsync(new[] { username }, text);
                 
                 // Display the chat
                 DisplayChat(response);
@@ -156,15 +160,17 @@ namespace GameFuse.UIToolkit
             
             await ExecuteAsync(async () =>
             {
-                // Create request
-                var request = new CreateGroupChatRequest
+                if (!int.TryParse(groupId, out int groupIdInt))
                 {
-                    GroupId = int.Parse(groupId),
-                    Text = string.IsNullOrEmpty(messageTextField.value) ? "Hello group!" : messageTextField.value
-                };
+                    LogMessage("Group ID must be a valid integer", LogType.Error);
+                    return;
+                }
+                
+                // Create message text
+                string text = string.IsNullOrEmpty(messageTextField.value) ? "Hello group!" : messageTextField.value;
                 
                 // Create group chat
-                var response = await GameFuseUser.CurrentUser.CreateGroupChatAsync(request);
+                var response = await GameFuseUser.CurrentUser.CreateGroupChatAsync(groupIdInt, text);
                 
                 // Display the chat
                 DisplayChat(response);
@@ -234,15 +240,14 @@ namespace GameFuse.UIToolkit
             
             await ExecuteAsync(async () =>
             {
-                // Create request
-                var request = new SendMessageRequest
+                if (!int.TryParse(chatId, out int chatIdInt))
                 {
-                    ChatId = int.Parse(chatId),
-                    Text = messageText
-                };
+                    LogMessage("Chat ID must be a valid integer", LogType.Error);
+                    return;
+                }
                 
                 // Send message
-                var response = await GameFuseUser.CurrentUser.SendMessageAsync(request);
+                var message = await GameFuseUser.CurrentUser.SendMessageAsync(chatIdInt, messageText);
                 
                 // Clear message field
                 messageTextField.value = string.Empty;
@@ -253,11 +258,11 @@ namespace GameFuse.UIToolkit
                 
                 var properties = new Dictionary<string, string>
                 {
-                    { "ID", response.Message.Id.ToString() },
-                    { "Text", response.Message.Text },
-                    { "Sender", response.Message.SenderId.ToString() },
-                    { "Time", response.Message.Created },
-                    { "Read", response.Message.Read.ToString() }
+                    { "ID", message.Id.ToString() },
+                    { "Text", message.Text },
+                    { "Sender", message.UserId.ToString() },
+                    { "Time", message.CreatedAt },
+                    { "Read", message.Read.ToString() }
                 };
                 
                 var messageItem = CreateListItem("Message", properties);
@@ -301,21 +306,39 @@ namespace GameFuse.UIToolkit
             // Clear current display
             ClearScrollView(chatResultsScrollView);
             
-            if (response != null && response.Chats != null && response.Chats.Length > 0)
+            if (response != null)
             {
-                chatResultsScrollView.Add(new Label($"Showing page {response.CurrentPage} of {response.TotalPages} ({response.TotalItems} total chats)") 
-                { style = { unityFontStyleAndWeight = FontStyle.Bold } });
+                int totalChats = 0;
                 
-                foreach (var chat in response.Chats)
+                // Display direct chats
+                if (response.DirectChats != null && response.DirectChats.Length > 0)
                 {
-                    if (chat.IsDirectChat)
+                    chatResultsScrollView.Add(new Label($"Direct Chats ({response.DirectChats.Length})") 
+                    { style = { unityFontStyleAndWeight = FontStyle.Bold } });
+                    
+                    foreach (var chat in response.DirectChats)
                     {
                         DisplayChatListItem(chat, "Direct");
+                        totalChats++;
                     }
-                    else
+                }
+                
+                // Display group chats
+                if (response.GroupChats != null && response.GroupChats.Length > 0)
+                {
+                    chatResultsScrollView.Add(new Label($"Group Chats ({response.GroupChats.Length})") 
+                    { style = { unityFontStyleAndWeight = FontStyle.Bold, marginTop = 10 } });
+                    
+                    foreach (var chat in response.GroupChats)
                     {
                         DisplayChatListItem(chat, "Group");
+                        totalChats++;
                     }
+                }
+                
+                if (totalChats == 0)
+                {
+                    chatResultsScrollView.Add(new Label("No chats available"));
                 }
             }
             else
@@ -331,13 +354,18 @@ namespace GameFuse.UIToolkit
             
             if (chat != null)
             {
-                string chatType = chat.IsDirectChat ? "Direct Chat" : "Group Chat";
+                // Determine chat type from creator type
+                string chatType = "Chat";
+                if (chat.CreatorType != null)
+                {
+                    chatType = chat.CreatorType.Contains("Group") ? "Group Chat" : "Direct Chat";
+                }
                 
                 var properties = new Dictionary<string, string>
                 {
                     { "ID", chat.Id.ToString() },
                     { "Type", chatType },
-                    { "Created", chat.Created }
+                    { "Creator ID", chat.CreatorId.ToString() }
                 };
                 
                 var chatItem = CreateListItem($"{chatType} #{chat.Id}", properties);
@@ -371,8 +399,8 @@ namespace GameFuse.UIToolkit
                         var messageProperties = new Dictionary<string, string>
                         {
                             { "ID", message.Id.ToString() },
-                            { "Sender", message.SenderId.ToString() },
-                            { "Created", message.Created },
+                            { "Sender", message.UserId.ToString() },
+                            { "Created", message.CreatedAt },
                             { "Read", message.Read.ToString() }
                         };
                         
@@ -400,15 +428,15 @@ namespace GameFuse.UIToolkit
             var properties = new Dictionary<string, string>
             {
                 { "ID", chat.Id.ToString() },
-                { "Created", chat.Created }
+                { "Creator", chat.CreatorId.ToString() }
             };
             
             if (chat.Messages != null && chat.Messages.Length > 0)
             {
                 var lastMessage = chat.Messages[0];
                 properties.Add("Last Message", lastMessage.Text);
-                properties.Add("From", lastMessage.SenderId.ToString());
-                properties.Add("At", lastMessage.Created);
+                properties.Add("From", lastMessage.UserId.ToString());
+                properties.Add("At", lastMessage.CreatedAt);
                 properties.Add("Read", lastMessage.Read.ToString());
             }
             
@@ -423,19 +451,24 @@ namespace GameFuse.UIToolkit
             
             if (response != null && response.Messages != null && response.Messages.Length > 0)
             {
-                chatResultsScrollView.Add(new Label($"Chat #{response.ChatId} - Page {response.CurrentPage} of {response.TotalPages} ({response.TotalItems} total messages)") 
+                chatResultsScrollView.Add(new Label($"Messages - Total: {response.Messages.Length}") 
                 { style = { unityFontStyleAndWeight = FontStyle.Bold } });
                 
                 foreach (var message in response.Messages)
                 {
-                    bool isCurrentUser = message.SenderId == GameFuseUser.CurrentUser.Id;
-                    string sender = isCurrentUser ? "You" : $"User {message.SenderId}";
+                    // Try to determine if this message is from current user
+                    bool isCurrentUser = false;
+                    if (GameFuseUser.CurrentUser != null) 
+                    {
+                        isCurrentUser = message.UserId == GameFuseUser.CurrentUser.GetID();
+                    }
+                    string sender = isCurrentUser ? "You" : $"User {message.UserId}";
                     
                     var properties = new Dictionary<string, string>
                     {
                         { "ID", message.Id.ToString() },
                         { "From", sender },
-                        { "Time", message.Created },
+                        { "Time", message.CreatedAt },
                         { "Read", message.Read.ToString() }
                     };
                     

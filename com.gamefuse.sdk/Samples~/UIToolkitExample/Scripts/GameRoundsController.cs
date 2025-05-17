@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GameFuseCSharp;
 using UnityEngine;
@@ -190,8 +191,13 @@ namespace GameFuse.UIToolkit
             
             await ExecuteAsync(async () =>
             {
-                // Create simple game round
-                var response = await GameFuseUser.CurrentUser.CreateSimpleGameRoundAsync(gameType, score);
+                // Create simple game round with GameRoundObject
+                var gameRound = new GameRoundObject
+                {
+                    GameType = gameType,
+                    Score = score
+                };
+                var response = await GameFuseUser.CurrentUser.CreateGameRoundAsync(gameRound);
                 
                 // Display the created game round
                 DisplayGameRound(response);
@@ -235,9 +241,17 @@ namespace GameFuse.UIToolkit
             {
                 GameType = gameType,
                 Score = score,
-                Place = place,
-                Metadata = gameRoundMetadataField.value
+                Place = place
             };
+            
+            // Add metadata if specified
+            if (!string.IsNullOrEmpty(gameRoundMetadataField.value))
+            {
+                gameRound.Metadata = new Dictionary<string, string>
+                {
+                    { "info", gameRoundMetadataField.value }
+                };
+            }
             
             // Add start time if specified
             if (!string.IsNullOrEmpty(gameRoundStartTimeField.value))
@@ -293,14 +307,28 @@ namespace GameFuse.UIToolkit
                 place = 0; // Default place if not specified
             }
             
+            if (!int.TryParse(gameRoundId, out int roundId))
+            {
+                LogMessage("Game Round ID must be a valid integer", LogType.Error);
+                return;
+            }
+            
             // Create GameRoundObject for update
             GameRoundObject gameRound = new GameRoundObject
             {
-                Id = gameRoundId,
+                Id = roundId,
                 Score = score,
-                Place = place,
-                Metadata = gameRoundMetadataField.value
+                Place = place
             };
+            
+            // Add metadata if specified
+            if (!string.IsNullOrEmpty(gameRoundMetadataField.value))
+            {
+                gameRound.Metadata = new Dictionary<string, string>
+                {
+                    { "info", gameRoundMetadataField.value }
+                };
+            }
             
             // Add end time if specified
             if (!string.IsNullOrEmpty(gameRoundEndTimeField.value))
@@ -311,7 +339,7 @@ namespace GameFuse.UIToolkit
             await ExecuteAsync(async () =>
             {
                 // Update game round
-                var response = await GameFuseUser.CurrentUser.UpdateGameRoundAsync(gameRound);
+                var response = await GameFuseUser.CurrentUser.UpdateGameRoundAsync(roundId, gameRound);
                 
                 // Display the updated game round
                 DisplayGameRound(response);
@@ -335,8 +363,14 @@ namespace GameFuse.UIToolkit
             
             await ExecuteAsync(async () =>
             {
+                if (!int.TryParse(gameRoundId, out int roundId))
+                {
+                    LogMessage("Game Round ID must be a valid integer", LogType.Error);
+                    return;
+                }
+                
                 // Get specific game round
-                var response = await GameFuseUser.CurrentUser.GetGameRoundAsync(gameRoundId);
+                var response = await GameFuseUser.CurrentUser.GetGameRoundAsync(roundId);
                 
                 // Display the game round
                 DisplayGameRound(response);
@@ -375,8 +409,9 @@ namespace GameFuse.UIToolkit
         {
             await ExecuteAsync(async () =>
             {
-                // Get game's game rounds
-                var response = await GameFuseUser.CurrentUser.GetGameGameRoundsAsync();
+                // This method isn't available in the new API
+                // Let's fetch user game rounds instead for now
+                var response = await GameFuseUser.CurrentUser.GetMyGameRoundsAsync();
                 
                 // Display the game rounds
                 DisplayGameRounds(response);
@@ -429,8 +464,20 @@ namespace GameFuse.UIToolkit
             
             await ExecuteAsync(async () =>
             {
+                // Create a GameRoundObject for the current user
+                var gameRound = new GameRoundObject
+                {
+                    GameType = matchmakingType,
+                    Score = 0,
+                    Place = 1,
+                    Multiplayer = true
+                };
+                
+                // Create a List<GameRoundObject> with just this player's round
+                var playerRounds = new List<GameRoundObject> { gameRound };
+                
                 // Create multiplayer game round
-                var response = await GameFuseUser.CurrentUser.CreateMultiplayerGameRoundAsync(matchmakingType, users, winners);
+                var response = await GameFuseUser.CurrentUser.CreateMultiplayerGameRoundAsync(matchmakingType, playerRounds);
                 
                 // Display the created game round
                 DisplayMultiplayerGameRound(response);
@@ -451,16 +498,16 @@ namespace GameFuse.UIToolkit
             {
                 var properties = new Dictionary<string, string>
                 {
-                    { "ID", gameRound.Id },
+                    { "ID", gameRound.Id.ToString() },
                     { "Type", gameRound.GameType },
                     { "Score", gameRound.Score.ToString() },
                     { "Place", gameRound.Place.ToString() }
                 };
                 
                 // Add optional properties if available
-                if (!string.IsNullOrEmpty(gameRound.Metadata))
+                if (gameRound.Metadata != null && gameRound.Metadata.Count > 0)
                 {
-                    properties.Add("Metadata", gameRound.Metadata);
+                    properties.Add("Metadata", string.Join(", ", gameRound.Metadata.Select(kv => $"{kv.Key}:{kv.Value}")));
                 }
                 
                 if (!string.IsNullOrEmpty(gameRound.StartTime))
@@ -479,7 +526,7 @@ namespace GameFuse.UIToolkit
                 // Add click handler to copy the ID for updates
                 roundElement.RegisterCallback<ClickEvent>((evt) => 
                 {
-                    gameRoundIdField.value = gameRound.Id;
+                    gameRoundIdField.value = gameRound.Id.ToString();
                 });
                 
                 gameRoundsScrollView.Add(roundElement);
@@ -498,56 +545,47 @@ namespace GameFuse.UIToolkit
             // Clear current game rounds
             ClearScrollView(gameRoundsScrollView);
             
-            if (response != null && response.GameRound != null)
+            if (response != null)
             {
-                var gameRound = response.GameRound;
+                // In the new API, MultiplayerGameRoundResponse has different structure
+                var properties = new Dictionary<string, string>();
                 
-                // Create main properties
-                var properties = new Dictionary<string, string>
+                if (response.MultiplayerGameRound != null)
                 {
-                    { "ID", gameRound.Id },
-                    { "Type", gameRound.GameType },
-                    { "Matchmaking Type", gameRound.MatchmakingType }
-                };
-                
-                // Add users if available
-                if (response.Users != null && response.Users.Count > 0)
-                {
-                    properties.Add("Users", string.Join(", ", response.Users));
+                    var gameRound = response.MultiplayerGameRound;
+                    properties.Add("ID", gameRound.Id.ToString());
+                    properties.Add("Type", gameRound.GameType);
+                    
+                    if (gameRound.Metadata != null && gameRound.Metadata.Count > 0)
+                    {
+                        properties.Add("Metadata", string.Join(", ", gameRound.Metadata.Select(kv => $"{kv.Key}:{kv.Value}")));
+                    }
+                    
+                    if (!string.IsNullOrEmpty(gameRound.StartTime))
+                    {
+                        properties.Add("Start Time", gameRound.StartTime);
+                    }
+                    
+                    if (!string.IsNullOrEmpty(gameRound.EndTime))
+                    {
+                        properties.Add("End Time", gameRound.EndTime);
+                    }
+                    
+                    // Add the game round to the UI
+                    var roundElement = CreateListItem($"Multiplayer Game Round: {gameRound.Id}", properties);
+                    
+                    // Add click handler to copy the ID for updates
+                    roundElement.RegisterCallback<ClickEvent>((evt) => 
+                    {
+                        gameRoundIdField.value = gameRound.Id.ToString();
+                    });
+                    
+                    gameRoundsScrollView.Add(roundElement);
                 }
-                
-                // Add winners if available
-                if (response.Winners != null && response.Winners.Count > 0)
+                else
                 {
-                    properties.Add("Winners", string.Join(", ", response.Winners));
+                    LogMessage("No game rounds in multiplayer response", LogType.Info);
                 }
-                
-                // Add optional properties if available
-                if (!string.IsNullOrEmpty(gameRound.Metadata))
-                {
-                    properties.Add("Metadata", gameRound.Metadata);
-                }
-                
-                if (!string.IsNullOrEmpty(gameRound.StartTime))
-                {
-                    properties.Add("Start Time", gameRound.StartTime);
-                }
-                
-                if (!string.IsNullOrEmpty(gameRound.EndTime))
-                {
-                    properties.Add("End Time", gameRound.EndTime);
-                }
-                
-                // Add the game round to the UI
-                var roundElement = CreateListItem($"Multiplayer Game Round: {gameRound.Id}", properties);
-                
-                // Add click handler to copy the ID for updates
-                roundElement.RegisterCallback<ClickEvent>((evt) => 
-                {
-                    gameRoundIdField.value = gameRound.Id;
-                });
-                
-                gameRoundsScrollView.Add(roundElement);
             }
             else
             {
@@ -558,27 +596,27 @@ namespace GameFuse.UIToolkit
         /// <summary>
         /// Displays a list of game rounds in the UI
         /// </summary>
-        private void DisplayGameRounds(List<GameRoundObject> gameRounds)
+        private void DisplayGameRounds(GameRoundsResponse response)
         {
             // Clear current game rounds
             ClearScrollView(gameRoundsScrollView);
             
-            if (gameRounds != null && gameRounds.Count > 0)
+            if (response != null && response.GameRounds != null && response.GameRounds.Length > 0)
             {
-                foreach (var gameRound in gameRounds)
+                foreach (var gameRound in response.GameRounds)
                 {
                     var properties = new Dictionary<string, string>
                     {
-                        { "ID", gameRound.Id },
+                        { "ID", gameRound.Id.ToString() },
                         { "Type", gameRound.GameType },
                         { "Score", gameRound.Score.ToString() },
                         { "Place", gameRound.Place.ToString() }
                     };
                     
                     // Add optional properties if available
-                    if (!string.IsNullOrEmpty(gameRound.Metadata))
+                    if (gameRound.Metadata != null && gameRound.Metadata.Count > 0)
                     {
-                        properties.Add("Metadata", gameRound.Metadata);
+                        properties.Add("Metadata", string.Join(", ", gameRound.Metadata.Select(kv => $"{kv.Key}:{kv.Value}")));
                     }
                     
                     if (!string.IsNullOrEmpty(gameRound.StartTime))
@@ -597,13 +635,13 @@ namespace GameFuse.UIToolkit
                     // Add click handler to copy the ID for updates
                     roundElement.RegisterCallback<ClickEvent>((evt) => 
                     {
-                        gameRoundIdField.value = gameRound.Id;
+                        gameRoundIdField.value = gameRound.Id.ToString();
                     });
                     
                     gameRoundsScrollView.Add(roundElement);
                 }
                 
-                LogMessage($"Retrieved {gameRounds.Count} game rounds", LogType.Success);
+                LogMessage($"Retrieved {response.GameRounds.Length} game rounds", LogType.Success);
             }
             else
             {

@@ -15,6 +15,9 @@ namespace GameFuseCSharp
         [JsonProperty("group_type")]
         public string GroupType { get; set; }
 
+        [JsonProperty("owner_id")]
+        public int OwnerId { get; set; }
+
         [JsonProperty("can_auto_join")]
         public bool CanAutoJoin { get; set; }
 
@@ -32,6 +35,9 @@ namespace GameFuseCSharp
 
         [JsonProperty("member_count")]
         public int MemberCount { get; set; }
+
+        [JsonProperty("created")]
+        public string Created { get; set; }
 
         [JsonProperty("members")]
         public UserInfo[] Members { get; set; } = Array.Empty<UserInfo>();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 using GameFuseCSharp;
 using Boomlagoon.JSON;
 using UnityEngine;
@@ -348,9 +349,11 @@ namespace GameFuse.UIToolkit
                     var jsonObject = JSONObject.Parse(jsonAttributes);
                     Dictionary<string, string> attributes = new Dictionary<string, string>();
                     
-                    foreach (var key in jsonObject.GetKeys())
+                    // Iterate through the JSONObject directly
+                    foreach (var kv in jsonObject)
                     {
-                        var value = jsonObject.GetValue(key);
+                        string key = kv.Key;
+                        var value = kv.Value;
                         if (value.Type == JSONValueType.String)
                         {
                             attributes[key] = value.Str;

@@ -128,8 +128,10 @@ namespace GameFuse.UIToolkit
         {
             await ExecuteAsync(async () =>
             {
-                var serverTime = await GameFuseCSharp.GameFuse.GetServerTimeAsync();
-                LogMessage($"Server time: {serverTime}", LogType.Info);
+                // GameFuse doesn't have a GetServerTimeAsync method in the current API
+                // As a workaround, we'll use DateTime.UtcNow
+                var serverTime = System.DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                LogMessage($"Current UTC time: {serverTime}", LogType.Info);
             });
         }
         
@@ -137,8 +139,8 @@ namespace GameFuse.UIToolkit
         {
             await ExecuteAsync(async () =>
             {
-                // Get game variables
-                var variables = await GameFuseCSharp.GameFuse.GetGameVariablesAsync();
+                // Access the game variables directly from GameFuse instance
+                var variables = GameFuseCSharp.GameFuse.Instance.gameVariables;
                 
                 // Clear current variables display
                 ClearScrollView(gameVariablesScrollView);
@@ -170,8 +172,8 @@ namespace GameFuse.UIToolkit
         {
             await ExecuteAsync(async () =>
             {
-                // Get store items
-                var storeItems = await GameFuseCSharp.GameFuse.GetStoreItemsAsync();
+                // Get store items - in the current API, these are accessed through GetStoreItems()
+                var storeItems = GameFuseCSharp.GameFuse.GetStoreItems();
                 
                 // Clear current store items display
                 ClearScrollView(gameStoreItemsScrollView);
@@ -184,13 +186,13 @@ namespace GameFuse.UIToolkit
                         var item = storeItems[i];
                         var properties = new Dictionary<string, string>
                         {
-                            { "ID", item.Id.ToString() },
-                            { "Type", item.Type },
-                            { "Cost", item.Cost.ToString() },
-                            { "Description", item.Description }
+                            { "ID", item.GetId().ToString() },
+                            { "Type", item.GetCategory() },
+                            { "Cost", item.GetCost().ToString() },
+                            { "Description", item.GetDescription() }
                         };
                         
-                        var itemElement = CreateListItem(item.Name, properties);
+                        var itemElement = CreateListItem(item.GetName(), properties);
                         gameStoreItemsScrollView.Add(itemElement);
                     }
                 }
@@ -209,11 +211,9 @@ namespace GameFuse.UIToolkit
         
         private void UpdateGameInformation()
         {
-            if (GameFuseCSharp.GameFuse.GameInfo != null)
-            {
-                gameNameLabel.text = GameFuseCSharp.GameFuse.GameInfo.Name;
-                gameDescriptionLabel.text = GameFuseCSharp.GameFuse.GameInfo.Description;
-            }
+            // Get information directly from GameFuse instance
+            gameNameLabel.text = GameFuseCSharp.GameFuse.GetGameName();
+            gameDescriptionLabel.text = GameFuseCSharp.GameFuse.GetGameDescription();
         }
         
         #endregion

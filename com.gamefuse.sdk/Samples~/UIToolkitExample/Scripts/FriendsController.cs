@@ -109,14 +109,8 @@ namespace GameFuse.UIToolkit
             
             await ExecuteAsync(async () =>
             {
-                // Create friend request data
-                var request = new FriendRequestData
-                {
-                    Username = username
-                };
-                
-                // Send friend request
-                var response = await GameFuseUser.CurrentUser.SendFriendRequestAsync(request);
+                // Send friend request directly with username
+                var response = await GameFuseUser.CurrentUser.SendFriendRequestAsync(username);
                 
                 // Clear username field
                 friendUsernameField.value = string.Empty;
@@ -231,7 +225,7 @@ namespace GameFuse.UIToolkit
             await ExecuteAsync(async () =>
             {
                 // Unfriend player
-                var response = await GameFuseUser.CurrentUser.UnfriendPlayerAsync(int.Parse(userId));
+                var response = await GameFuseUser.CurrentUser.UnFriendAsync(int.Parse(userId));
                 
                 // Refresh friend data
                 await OnGetAllFriendDataClicked();

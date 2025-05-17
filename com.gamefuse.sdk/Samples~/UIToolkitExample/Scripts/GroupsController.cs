@@ -4,6 +4,8 @@ using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using GameFuseCSharp;
+using GroupResponse = GameFuseCSharp.GroupResponse;
+using GroupConnectionResponse = GameFuseCSharp.GroupConnectionResponse;
 
 namespace GameFuse.UIToolkit
 {
@@ -301,7 +303,8 @@ namespace GameFuse.UIToolkit
                 // Display group attributes
                 DisplayGroupAttributes(response);
                 
-                LogMessage($"Retrieved {response.Attributes.Count} group attributes", LogType.Success);
+                int attrCount = response.Attributes != null ? response.Attributes.Length : 0;
+                LogMessage($"Retrieved {attrCount} group attributes", LogType.Success);
             });
         }
 
@@ -392,7 +395,7 @@ namespace GameFuse.UIToolkit
                     // Create request
                     var request = new GroupAttributesRequest
                     {
-                        Attributes = attributes
+                        Attributes = attributes.ToArray()
                     };
                     
                     // Add multiple attributes
@@ -550,9 +553,11 @@ namespace GameFuse.UIToolkit
             // Clear current display
             ClearScrollView(groupsResultsScrollView);
             
-            if (response != null && response.Attributes != null && response.Attributes.Count > 0)
+            if (response != null && response.Attributes != null && response.Attributes.Length > 0)
             {
-                groupsResultsScrollView.Add(new Label($"Group ID: {response.GroupId}") { style = { unityFontStyleAndWeight = FontStyle.Bold } });
+                // Use first attribute's GroupId since response doesn't have a direct GroupId property
+                int groupId = response.Attributes.Length > 0 ? response.Attributes[0].GroupId : 0;
+                groupsResultsScrollView.Add(new Label($"Group ID: {groupId}") { style = { unityFontStyleAndWeight = FontStyle.Bold } });
                 
                 foreach (var attribute in response.Attributes)
                 {

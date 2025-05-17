@@ -212,8 +212,8 @@ namespace GameFuse.UIToolkit
             
             await ExecuteAsync(async () =>
             {
-                // Clear leaderboard entries
-                await GameFuseUser.CurrentUser.ClearLeaderboardEntriesAsync(leaderboardName);
+                // Clear leaderboard entries - the method doesn't take parameters in the new API
+                await GameFuseUser.CurrentUser.ClearLeaderboardEntriesAsync();
                 
                 LogMessage("Leaderboard entries cleared successfully", LogType.Success);
             });
@@ -249,7 +249,7 @@ namespace GameFuse.UIToolkit
             await ExecuteAsync(async () =>
             {
                 // Get user's leaderboard entries
-                var entries = await GameFuseUser.CurrentUser.GetMyLeaderboardEntriesAsync(leaderboardName, limit);
+                var entries = await GameFuseUser.CurrentUser.GetMyLeaderboardEntriesAsync(limit, leaderboardName);
                 
                 // Display leaderboard entries
                 DisplayLeaderboardEntries(entries);
@@ -286,8 +286,14 @@ namespace GameFuse.UIToolkit
             
             await ExecuteAsync(async () =>
             {
+                if (!int.TryParse(userId, out int userIdInt))
+                {
+                    LogMessage("User ID must be a valid integer", LogType.Error);
+                    return;
+                }
+                
                 // Get specified user's leaderboard entries
-                var entries = await GameFuseUser.GetUserLeaderboardEntriesAsync(leaderboardName, userId, limit);
+                var entries = await GameFuseUser.CurrentUser.GetUserLeaderboardEntriesAsync(userIdInt, limit, leaderboardName);
                 
                 // Display leaderboard entries
                 DisplayLeaderboardEntries(entries);
@@ -317,8 +323,8 @@ namespace GameFuse.UIToolkit
             
             await ExecuteAsync(async () =>
             {
-                // Get game leaderboard entries
-                var entries = await GameFuseCSharp.LeaderboardService.GetGameLeaderboardEntriesAsync(leaderboardName, limit);
+                // Get game leaderboard entries using the GameFuseUser instance
+                var entries = await GameFuseUser.CurrentUser.GetGameLeaderboardEntriesAsync(leaderboardName, limit);
                 
                 // Display leaderboard entries
                 DisplayLeaderboardEntries(entries);
@@ -328,41 +334,42 @@ namespace GameFuse.UIToolkit
         /// <summary>
         /// Displays leaderboard entries in the UI
         /// </summary>
-        private void DisplayLeaderboardEntries(List<GameFuseCSharp.LeaderboardEntryObject> entries)
+        private void DisplayLeaderboardEntries(LeaderboardEntriesResponse entriesResponse)
         {
             // Clear current entries
             ClearScrollView(leaderboardResultsScrollView);
             
-            if (entries != null && entries.Count > 0)
+            if (entriesResponse != null && entriesResponse.LeaderboardEntries != null && entriesResponse.LeaderboardEntries.Length > 0)
             {
                 int rank = 1;
-                foreach (var entry in entries)
+                foreach (var entry in entriesResponse.LeaderboardEntries)
                 {
                     var properties = new Dictionary<string, string>
                     {
                         { "Rank", rank.ToString() },
-                        { "User ID", entry.UserId.ToString() },
+                        { "User ID", entry.GameUserId.ToString() },
                         { "Username", entry.Username },
                         { "Score", entry.Score.ToString() }
                     };
                     
                     // Add metadata if available
-                    if (!string.IsNullOrEmpty(entry.Metadata))
+                    if (entry.Metadata != null && entry.Metadata.Count > 0)
                     {
-                        properties.Add("Metadata", entry.Metadata);
+                        string metadataString = string.Join(", ", System.Linq.Enumerable.Select(entry.Metadata, kv => $"{kv.Key}:{kv.Value}"));
+                        properties.Add("Metadata", metadataString);
                     }
                     
                     // Add time if available
-                    if (!string.IsNullOrEmpty(entry.Time))
+                    if (!string.IsNullOrEmpty(entry.CreatedAt))
                     {
-                        properties.Add("Time", entry.Time);
+                        properties.Add("Time", entry.CreatedAt);
                     }
                     
                     leaderboardResultsScrollView.Add(CreateListItem($"Entry #{rank}", properties));
                     rank++;
                 }
                 
-                LogMessage($"Retrieved {entries.Count} leaderboard entries", LogType.Success);
+                LogMessage($"Retrieved {entriesResponse.LeaderboardEntries.Length} leaderboard entries", LogType.Success);
             }
             else
             {

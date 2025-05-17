@@ -91,8 +91,8 @@ namespace GameFuse.UIToolkit
         {
             await ExecuteAsync(async () =>
             {
-                // Get store items
-                var storeItems = GFuse.GetStoreItems();
+                // Get store items using GetStoreItems() method
+                var storeItems = GameFuseCSharp.GameFuse.GetStoreItems();
                 
                 // Clear current list
                 ClearScrollView(gameStoreItemsScrollView);
