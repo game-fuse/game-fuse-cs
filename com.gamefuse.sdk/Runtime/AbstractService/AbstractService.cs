@@ -63,7 +63,7 @@ namespace GameFuseCSharp
         {
             if (!string.IsNullOrEmpty(_token))
             {
-                webRequest.SetRequestHeader("authentication_token", _token);
+                webRequest.SetRequestHeader("authentication-token", _token);
             }
             webRequest.SetRequestHeader("Content-Type", "application/json");
         }
@@ -171,10 +171,10 @@ namespace GameFuseCSharp
                 requestInfo.AppendLine($"Content-Type: {headers}");
             }
 
-            var authToken = request.GetRequestHeader("authentication_token");
+            var authToken = request.GetRequestHeader("authentication-token");
             if (!string.IsNullOrEmpty(authToken))
             {
-                requestInfo.AppendLine("authentication_token: [REDACTED]");
+                requestInfo.AppendLine("authentication-token: [REDACTED]");
             }
 
             // Request body (if exists)

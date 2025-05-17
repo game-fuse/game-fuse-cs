@@ -201,7 +201,7 @@ namespace GameFuseCSharp
             form.AddField("authentication_token", GetAuthenticationToken());
             form.AddField("credits", credits);
             var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/add_credits", form);
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+            request.SetRequestHeader("authentication-token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
@@ -281,7 +281,7 @@ namespace GameFuseCSharp
             form.AddField("authentication_token", GetAuthenticationToken());
             form.AddField("credits", credits);
             var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/set_credits", form);
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+            request.SetRequestHeader("authentication-token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
@@ -360,7 +360,7 @@ namespace GameFuseCSharp
             form.AddField("score", score);
 
             var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/add_score", form);
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+            request.SetRequestHeader("authentication-token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
@@ -431,7 +431,7 @@ namespace GameFuseCSharp
             form.AddField("authentication_token", GetAuthenticationToken());
             form.AddField("score", score);
             var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/set_score", form);
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+            request.SetRequestHeader("authentication-token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
@@ -470,7 +470,7 @@ namespace GameFuseCSharp
             var parameters = "?authentication_token=" + GetAuthenticationToken();
 
             var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + this.id + "/game_user_attributes" + parameters);
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+            request.SetRequestHeader("authentication-token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
@@ -641,7 +641,7 @@ namespace GameFuseCSharp
             form.AddField("value", value);
 
             var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/add_game_user_attribute", form);
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+            request.SetRequestHeader("authentication-token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
@@ -711,7 +711,7 @@ namespace GameFuseCSharp
             };
 
             request.SetRequestHeader("Content-Type", "application/json");
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+            request.SetRequestHeader("authentication-token", GameFuseUser.CurrentUser.GetAuthenticationToken());
             
             yield return request.SendWebRequest();
 
@@ -809,7 +809,7 @@ namespace GameFuseCSharp
 
             var parameters = "?authentication_token=" + GetAuthenticationToken() + "&game_user_attribute_key=" + key;
             var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/remove_game_user_attributes" + parameters);
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+            request.SetRequestHeader("authentication-token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
@@ -859,7 +859,7 @@ namespace GameFuseCSharp
             var parameters = "?authentication_token=" + GetAuthenticationToken();
 
             var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/game_user_store_items" + parameters);
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+            request.SetRequestHeader("authentication-token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
@@ -1008,7 +1008,7 @@ namespace GameFuseCSharp
             form.AddField("store_item_id", storeItemId.ToString());
 
             var request = UnityWebRequest.Post(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/purchase_game_user_store_item", form);
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+            request.SetRequestHeader("authentication-token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
@@ -1115,7 +1115,7 @@ namespace GameFuseCSharp
 
             var parameters = "?authentication_token=" + GetAuthenticationToken() + "&store_item_id=" + storeItemID + "&reimburse=" + reimburseUser.ToString().ToLower();
             var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/remove_game_user_store_item" + parameters);
-            request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+            request.SetRequestHeader("authentication-token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 

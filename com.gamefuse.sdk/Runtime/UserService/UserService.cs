@@ -23,7 +23,7 @@ namespace GameFuseCSharp
         {
             if (!string.IsNullOrEmpty(_token))
             {
-                webRequest.SetRequestHeader("authentication_token", _token);
+                webRequest.SetRequestHeader("authentication-token", _token);
             }
             webRequest.SetRequestHeader("Content-Type", "application/json");
         }

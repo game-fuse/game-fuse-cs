@@ -464,7 +464,7 @@ namespace GameFuseCSharp
             var body = "game_id=" + id + "&game_token=" + token;
             var request = UnityWebRequest.Get(baseURL + "/games/store_items?" + body);
             if (GameFuseUser.CurrentUser.GetAuthenticationToken() != null)
-                request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+                request.SetRequestHeader("authentication-token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
             yield return request.SendWebRequest();
 
