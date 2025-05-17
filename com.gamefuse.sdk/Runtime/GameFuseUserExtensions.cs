@@ -20,6 +20,30 @@ namespace GameFuseCSharp
         }
         
         /// <summary>
+        /// Signs out the current user by resetting all user properties
+        /// </summary>
+        /// <param name="user">The GameFuseUser instance</param>
+        public static void SignOut(this GameFuseUser user)
+        {
+            GameFuse.Log("GameFuseUser SignOut");
+            
+            // Reset all user properties
+            user.SetSignedInInternal(false);
+            user.SetNumberOfLoginsInternal(0);
+            user.SetAuthenticationTokenInternal(null);
+            user.SetUsernameInternal(null);
+            user.SetScoreInternal(0);
+            user.SetCreditsInternal(0);
+            user.SetIDInternal(0);
+            
+            // Clear collections
+            user.ClearAttributes();
+            user.ClearStoreItems();
+            
+            GameFuse.Log("GameFuseUser SignOut Success");
+        }
+        
+        /// <summary>
         /// Adds credits to the current user asynchronously.
         /// </summary>
         /// <param name="user">The GameFuseUser instance</param>

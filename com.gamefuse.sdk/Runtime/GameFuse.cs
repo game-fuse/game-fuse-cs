@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using Boomlagoon.JSON;
+using System.Threading.Tasks;
 //using UnityEditor;
 
 namespace GameFuseCSharp
@@ -15,6 +16,19 @@ namespace GameFuseCSharp
     /// </summary>
     public class GameFuse : MonoBehaviour
     {
+        // Services
+        private static ISessionsService _sessionsService;
+        public static ISessionsService SessionsService 
+        { 
+            get 
+            {
+                if (_sessionsService == null)
+                {
+                    _sessionsService = new SessionsService(GetBaseURL());
+                }
+                return _sessionsService;
+            }
+        }
 
         static UnityWebRequestAsyncOperation request;
 
@@ -97,6 +111,9 @@ namespace GameFuseCSharp
 
 
         #region request: set up applicaton
+        /// <summary>
+        /// Sets up the game using the legacy callback-based API
+        /// </summary>
         public static void SetUpGame(string gameId, string token, Action<string, bool> callback = null, bool seedStore = false)
         {
             Log("GameFuse Setting Up Game: "+ gameId+": "+ token);
@@ -144,7 +161,152 @@ namespace GameFuseCSharp
                 Log("GameFuse Setting Up Game Recieved Request Failure: " + gameId + ": " + token);
                 GameFuseUtilities.HandleCallback(request, "Game has failed to set up!", callback);
             }
+        }
+        
+        /// <summary>
+        /// Sets up the game using modern async/await pattern
+        /// </summary>
+        public static async Task SetUpGameAsync(string gameId, string token, bool seedStore = false)
+        {
+            Log("GameFuse SetUpGameAsync: " + gameId + ": " + token);
 
+            try
+            {
+                // Create the URL with query parameters
+                string url = $"{baseURL}/games/verify?client_from_library=cs&game_id={gameId}&game_token={token}";
+                if (seedStore) url += "&seed_store=true";
+                
+                // Create a web request
+                UnityWebRequest webRequest = UnityWebRequest.Get(url);
+                
+                // Send the request
+                var operation = webRequest.SendWebRequest();
+                
+                // Wait for the operation to complete
+                while (!operation.isDone)
+                {
+                    await Task.Yield();
+                }
+                
+                if (GameFuseUtilities.RequestIsSuccessful(webRequest))
+                {
+                    Log("GameFuse SetUpGameAsync Success: " + gameId + ": " + token);
+                    
+                    // Parse the response data
+                    var data = webRequest.downloadHandler.text;
+                    JSONObject json = JSONObject.Parse(data);
+                    
+                    // Set the game data
+                    Instance.id = json.GetNumber("id").ToString();
+                    Instance._name = json.GetString("name");
+                    Instance.description = json.GetString("description");
+                    Instance.token = json.GetString("token");
+                    
+                    // Process game variables
+                    Dictionary<string, string> gameVariables = new Dictionary<string, string>();
+                    JSONArray gameVariablesArray = json.GetArray("game_variables");
+                    for (int i = 0; i < gameVariablesArray.Length; i++) 
+                    {
+                        JSONObject iterjson = JSONObject.Parse(gameVariablesArray[i].ToString());
+                        string key = iterjson.GetString("key");
+                        string value = iterjson.GetString("value");
+                        gameVariables[key] = value;
+                    }
+                    Instance.gameVariables = gameVariables;
+                    
+                    // Download store items
+                    await DownloadStoreItemsAsync();
+                }
+                else
+                {
+                    Log("GameFuse SetUpGameAsync Failure: " + gameId + ": " + token);
+                    throw new ApiException(
+                        webRequest.responseCode,
+                        "Game has failed to set up!",
+                        webRequest.downloadHandler.text
+                    );
+                }
+                
+                webRequest.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Log($"GameFuse SetUpGameAsync Error: {ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Downloads store items asynchronously
+        /// </summary>
+        private static async Task DownloadStoreItemsAsync()
+        {
+            Log("GameFuse DownloadStoreItemsAsync");
+            
+            try
+            {
+                // Create the URL with query parameters
+                string url = $"{baseURL}/games/store_items?game_id={GetGameId()}&game_token={GetGameToken()}";
+                
+                // Create a web request
+                UnityWebRequest webRequest = UnityWebRequest.Get(url);
+                
+                // Add authentication header if user is signed in
+                if (GameFuseUser.CurrentUser.GetAuthenticationToken() != null)
+                {
+                    webRequest.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
+                }
+                
+                // Send the request
+                var operation = webRequest.SendWebRequest();
+                
+                // Wait for the operation to complete
+                while (!operation.isDone)
+                {
+                    await Task.Yield();
+                }
+                
+                if (GameFuseUtilities.RequestIsSuccessful(webRequest))
+                {
+                    Log("GameFuse DownloadStoreItemsAsync Success");
+                    
+                    // Parse the response data
+                    var data = webRequest.downloadHandler.text;
+                    JSONObject json = JSONObject.Parse(data);
+                    
+                    // Process store items
+                    var storeItems = json.GetArray("store_items");
+                    Instance.store.Clear();
+                    foreach (var storeItem in storeItems)
+                    {
+                        Instance.store.Add(new GameFuseStoreItem(
+                            storeItem.Obj.GetString("name"),
+                            storeItem.Obj.GetString("category"),
+                            storeItem.Obj.GetString("description"),
+                            Convert.ToInt32(storeItem.Obj.GetNumber("cost")),
+                            Convert.ToInt32(storeItem.Obj.GetNumber("id")),
+                            storeItem.Obj.GetString("icon_url")
+                            )
+                        );
+                    }
+                }
+                else
+                {
+                    Log("GameFuse DownloadStoreItemsAsync Failure");
+                    throw new ApiException(
+                        webRequest.responseCode,
+                        "Failed to download store items!",
+                        webRequest.downloadHandler.text
+                    );
+                }
+                
+                webRequest.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Log($"GameFuse DownloadStoreItemsAsync Error: {ex.Message}");
+                throw;
+            }
         }
 
         public static void FetchGameVariables(string gameId, string token, Action<string, bool> callback = null)
@@ -263,6 +425,9 @@ namespace GameFuseCSharp
 
 
         #region request: sign in
+        /// <summary>
+        /// Signs in a user with the legacy callback-based API
+        /// </summary>
         public static void SignIn(string email, string password, Action<string, bool> callback = null)
         {
             Instance.SignInPrivate(email, password, callback);
@@ -314,12 +479,61 @@ namespace GameFuseCSharp
                 GameFuseUtilities.HandleCallback(request, "User has been signed in successfully", callback);
             }
             request.Dispose();
-
         }
+        
+        /// <summary>
+        /// Signs in a user using modern async/await pattern
+        /// </summary>
+        public static async Task<SignInResponse> SignInAsync(string email, string password)
+        {
+            Log("GameFuse SignInAsync: " + email);
 
+            if (GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before signing in users");
+
+            try
+            {
+                // Create the sign in request
+                var request = new SignInRequest
+                {
+                    Email = email,
+                    Password = password,
+                    GameId = int.Parse(GetGameId()),
+                    GameToken = GetGameToken()
+                };
+
+                // Send the request through the SessionsService
+                var response = await SessionsService.SignInAsync(request);
+                
+                // Update the current user
+                GameFuseUser.CurrentUser.SetSignedInInternal();
+                GameFuseUser.CurrentUser.SetScoreInternal(response.Score);
+                GameFuseUser.CurrentUser.SetCreditsInternal(response.Credits);
+                GameFuseUser.CurrentUser.SetUsernameInternal(response.Username);
+                GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse(response.LastLogin));
+                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal(response.NumberOfLogins);
+                GameFuseUser.CurrentUser.SetAuthenticationTokenInternal(response.AuthenticationToken);
+                GameFuseUser.CurrentUser.SetIDInternal(response.Id);
+                
+                // Download user attributes asynchronously
+                await GameFuseUser.CurrentUser.GetAttributesAsync();
+                
+                Log("GameFuse SignInAsync Success: " + email);
+                
+                return response;
+            }
+            catch (ApiException ex)
+            {
+                Log($"GameFuse SignInAsync Failure: {ex.Message}");
+                throw;
+            }
+        }
         #endregion
 
         #region request: sign up
+        /// <summary>
+        /// Signs up a new user with the legacy callback-based API
+        /// </summary>
         public static void SignUp(string email, string password, string password_confirmation, string username, Action<string, bool> callback = null)
         {
             Instance.SignUpPrivate(email, password, password_confirmation, username, callback);
@@ -374,12 +588,57 @@ namespace GameFuseCSharp
                 GameFuseUtilities.HandleCallback(request, "User could not sign up: " + request.error, callback);
             }
             request.Dispose();
-
-
         }
 
+        /// <summary>
+        /// Signs up a new user using modern async/await pattern
+        /// </summary>
+        public static async Task<SignInResponse> SignUpAsync(string email, string password, string passwordConfirmation, string username)
+        {
+            Log("GameFuse SignUpAsync: " + email);
 
+            if (GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before signing up users");
 
+            try
+            {
+                // Create the sign up request
+                var request = new SignUpRequest
+                {
+                    Email = email,
+                    Password = password,
+                    PasswordConfirmation = passwordConfirmation,
+                    Username = username,
+                    GameId = int.Parse(GetGameId()),
+                    GameToken = GetGameToken()
+                };
+
+                // Send the request through the SessionsService
+                var response = await SessionsService.SignUpAsync(request);
+                
+                // Update the current user
+                GameFuseUser.CurrentUser.SetSignedInInternal();
+                GameFuseUser.CurrentUser.SetScoreInternal(response.Score);
+                GameFuseUser.CurrentUser.SetCreditsInternal(response.Credits);
+                GameFuseUser.CurrentUser.SetUsernameInternal(response.Username);
+                GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse(response.LastLogin));
+                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal(response.NumberOfLogins);
+                GameFuseUser.CurrentUser.SetAuthenticationTokenInternal(response.AuthenticationToken);
+                GameFuseUser.CurrentUser.SetIDInternal(response.Id);
+                
+                // Download user attributes asynchronously
+                await GameFuseUser.CurrentUser.GetAttributesAsync();
+                
+                Log("GameFuse SignUpAsync Success: " + email);
+                
+                return response;
+            }
+            catch (ApiException ex)
+            {
+                Log($"GameFuse SignUpAsync Failure: {ex.Message}");
+                throw;
+            }
+        }
         #endregion
 
         // Leaderboard functionality has been moved to LeaderboardService.
@@ -388,7 +647,9 @@ namespace GameFuseCSharp
 
 
         #region Forgot Password
-
+        /// <summary>
+        /// Sends a password reset email using the legacy callback-based API
+        /// </summary>
         public void SendPasswordResetEmail(string email, Action<string, bool> callback = null)
         {
             StartCoroutine(SendPasswordResetEmailRoutine(email, callback));
@@ -415,9 +676,32 @@ namespace GameFuseCSharp
                 GameFuseUtilities.HandleCallback(request, "Forgot password email failed to send!", callback);
             }
             request.Dispose();
+        }
+        
+        /// <summary>
+        /// Sends a password reset email using modern async/await pattern
+        /// </summary>
+        public static async Task<bool> SendPasswordResetEmailAsync(string email)
+        {
+            Log("GameFuse SendPasswordResetEmailAsync: " + email);
 
+            if (GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before sending password resets");
 
-            
+            try
+            {
+                // Send the request through the SessionsService
+                bool success = await SessionsService.SendPasswordResetEmailAsync(email, GetGameId(), GetGameToken());
+                
+                Log("GameFuse SendPasswordResetEmailAsync Success: " + email);
+                
+                return success;
+            }
+            catch (ApiException ex)
+            {
+                Log($"GameFuse SendPasswordResetEmailAsync Failure: {ex.Message}");
+                throw;
+            }
         }
         #endregion
 

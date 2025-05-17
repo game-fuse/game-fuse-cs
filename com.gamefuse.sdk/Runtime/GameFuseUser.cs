@@ -28,10 +28,9 @@ namespace GameFuseCSharp
 
 
         #region instance setters
-        internal void SetSignedInInternal()
+        internal void SetSignedInInternal(bool signedIn = true)
         {
-            this.signedIn = true;
-
+            this.signedIn = signedIn;
         }
         internal void SetNumberOfLoginsInternal(int numberOfLogins)
         {
@@ -103,6 +102,18 @@ namespace GameFuseCSharp
 
         #endregion
 
+        #region utility methods
+        internal void ClearAttributes()
+        {
+            attributes.Clear();
+            dirtyAttributes.Clear();
+        }
+
+        internal void ClearStoreItems()
+        {
+            purchasedStoreItems.Clear();
+        }
+        #endregion
 
         #region singleton management
         private static GameFuseUser _instance;
