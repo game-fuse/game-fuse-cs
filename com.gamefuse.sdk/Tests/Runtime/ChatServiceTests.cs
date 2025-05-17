@@ -342,5 +342,58 @@ namespace GameFuseCSharp.Tests.Runtime
                 await TearDownAsync();
             }
         }
+        
+        [Test]
+        public async Task CreateDirectChat_WithSingleUsername_MatchesCurlExample()
+        {
+            try
+            {
+                await SetUpAsync();
+
+                // This test directly mirrors the curl example:
+                // curl --request POST --header "Content-Type: application/json" --header "authentication-token: d4yK2mxgk1swpkPwx6_N" 
+                // --data "{\"usernames\":[\"dave744\"],\"text\":\"Starting a new chat with dave 744\"}" https://gamefuse.co/api/v3/chats
+                
+                // Create direct chat to user3 with a specific message
+                string initialMessage = "Starting a new chat with " + _user3.Username;
+                var chat = await _chatService1.CreateDirectChatAsync(new[] { _user3.Username }, initialMessage);
+                
+                // Verify chat creation
+                Assert.NotNull(chat, "Chat should not be null");
+                Assert.Greater(chat.Id, 0, "Chat ID should be greater than 0");
+                
+                // Verify participants
+                Assert.NotNull(chat.Participants, "Participants array should not be null");
+                Assert.AreEqual(2, chat.Participants.Length, "Chat should have exactly two participants");
+                
+                // Verify participants are the expected users
+                var usernames = chat.Participants.Select(p => p.Username).ToList();
+                Assert.Contains(_user1.Username, usernames, "Chat should include user1 as participant");
+                Assert.Contains(_user3.Username, usernames, "Chat should include user3 as participant");
+                
+                // Verify initial message
+                Assert.NotNull(chat.Messages, "Messages array should not be null");
+                Assert.Greater(chat.Messages.Length, 0, "Should have at least one message");
+                Assert.AreEqual(initialMessage, chat.Messages[0].Text, "Message text should match the initial message");
+                Assert.AreEqual(_user1.Id, chat.Messages[0].UserId, "Message sender should be user1");
+                
+                // Verify message can be read by the recipient
+                var messagesResponse = await _chatService2.GetMessagesAsync(chat.Id);
+                Assert.NotNull(messagesResponse, "Messages response should not be null");
+                Assert.NotNull(messagesResponse.Messages, "Messages array should not be null");
+                Assert.Greater(messagesResponse.Messages.Length, 0, "Should have at least one message");
+                Assert.AreEqual(initialMessage, messagesResponse.Messages[0].Text, "Message text should match for recipient");
+            }
+            catch (ApiException ex)
+            {
+                Debug.LogError($"API Exception: Status Code: {ex.StatusCode}, Message: {ex.Message}");
+                Debug.LogError($"Response Body: {ex.ResponseBody}");
+                Assert.Fail($"API Exception: {ex.Message}");
+            }
+            finally
+            {
+                await TearDownAsync();
+            }
+        }
     }
 }
