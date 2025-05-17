@@ -28,7 +28,7 @@ namespace GameFuseCSharp
 
             var request = new CreateDirectChatRequest
             {
-                Username = usernames.Length > 0 ? usernames[0] : null,
+                Usernames = usernames,
                 Text = text
             };
 

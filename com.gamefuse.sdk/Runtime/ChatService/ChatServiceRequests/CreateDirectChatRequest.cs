@@ -7,8 +7,8 @@ namespace GameFuseCSharp
     [Serializable]
     public class CreateDirectChatRequest
     {
-        [JsonProperty("username")]
-        public string Username { get; set; }
+        [JsonProperty("usernames")]
+        public string[] Usernames { get; set; }
 
         [JsonProperty("text")]
         public string Text { get; set; }
