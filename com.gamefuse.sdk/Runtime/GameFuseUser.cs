@@ -6,6 +6,7 @@ using UnityEngine;
 using Boomlagoon.JSON;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace GameFuseCSharp
 {
@@ -152,6 +153,41 @@ namespace GameFuseCSharp
         {
             StartCoroutine(AddCreditsRoutine(credits, callback));
         }
+        
+        /// <summary>
+        /// Adds credits to the user using modern async/await pattern
+        /// </summary>
+        /// <param name="credits">Number of credits to add</param>
+        /// <returns>The updated user credits</returns>
+        public async Task<int> AddCreditsAsync(int credits)
+        {
+            GameFuse.Log($"GameFuseUser AddCreditsAsync: {credits}");
+            
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying user credits");
+                
+            try
+            {
+                // Create the add credits request
+                var request = new AddCreditsRequest
+                {
+                    Credits = credits
+                };
+                
+                // Use the user service to add credits
+                var response = await userService.AddCreditsAsync(id, request);
+                
+                // Update local credits
+                SetCreditsInternal(response.Credits);
+                
+                return this.credits;
+            }
+            catch (ApiException ex)
+            {
+                GameFuse.Log($"GameFuseUser AddCreditsAsync Failure: {ex.Message}");
+                throw;
+            }
+        }
 
         private IEnumerator AddCreditsRoutine(int credits, Action<string, bool> callback = null)
         {
@@ -196,6 +232,41 @@ namespace GameFuseCSharp
         {
             StartCoroutine(SetCreditsRoutine(credits, callback));
         }
+        
+        /// <summary>
+        /// Sets credits for the user using modern async/await pattern
+        /// </summary>
+        /// <param name="credits">Number of credits to set</param>
+        /// <returns>The updated user credits</returns>
+        public async Task<int> SetCreditsAsync(int credits)
+        {
+            GameFuse.Log($"GameFuseUser SetCreditsAsync: {credits}");
+            
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying user credits");
+                
+            try
+            {
+                // Create the set credits request
+                var request = new SetCreditsRequest
+                {
+                    Credits = credits
+                };
+                
+                // Use the user service to set credits
+                var response = await userService.SetCreditsAsync(id, request);
+                
+                // Update local credits
+                SetCreditsInternal(response.Credits);
+                
+                return this.credits;
+            }
+            catch (ApiException ex)
+            {
+                GameFuse.Log($"GameFuseUser SetCreditsAsync Failure: {ex.Message}");
+                throw;
+            }
+        }
 
         private IEnumerator SetCreditsRoutine(int credits, Action<string, bool> callback = null)
         {
@@ -235,9 +306,44 @@ namespace GameFuseCSharp
         #endregion
 
         #region request: add score
-        public void AddScore(int credits, Action<string, bool> callback = null)
+        public void AddScore(int score, Action<string, bool> callback = null)
         {
-            StartCoroutine(AddScoreRoutine(credits, callback));
+            StartCoroutine(AddScoreRoutine(score, callback));
+        }
+        
+        /// <summary>
+        /// Adds score to the user using modern async/await pattern
+        /// </summary>
+        /// <param name="score">Number of score points to add</param>
+        /// <returns>The updated user score</returns>
+        public async Task<int> AddScoreAsync(int score)
+        {
+            GameFuse.Log($"GameFuseUser AddScoreAsync: {score}");
+            
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying user score");
+                
+            try
+            {
+                // Create the add score request
+                var request = new AddScoreRequest
+                {
+                    Score = score
+                };
+                
+                // Use the user service to add score
+                var response = await userService.AddScoreAsync(id, request);
+                
+                // Update local score
+                SetScoreInternal(response.Score);
+                
+                return this.score;
+            }
+            catch (ApiException ex)
+            {
+                GameFuse.Log($"GameFuseUser AddScoreAsync Failure: {ex.Message}");
+                throw;
+            }
         }
 
         private IEnumerator AddScoreRoutine(int score, Action<string, bool> callback = null)
@@ -277,6 +383,41 @@ namespace GameFuseCSharp
         public void SetScore(int score, Action<string, bool> callback = null)
         {
             StartCoroutine(SetScoreRoutine(score, callback));
+        }
+        
+        /// <summary>
+        /// Sets score for the user using modern async/await pattern
+        /// </summary>
+        /// <param name="score">Number of score points to set</param>
+        /// <returns>The updated user score</returns>
+        public async Task<int> SetScoreAsync(int score)
+        {
+            GameFuse.Log($"GameFuseUser SetScoreAsync: {score}");
+            
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying user score");
+                
+            try
+            {
+                // Create the set score request
+                var request = new SetScoreRequest
+                {
+                    Score = score
+                };
+                
+                // Use the user service to set score
+                var response = await userService.SetScoreAsync(id, request);
+                
+                // Update local score
+                SetScoreInternal(response.Score);
+                
+                return this.score;
+            }
+            catch (ApiException ex)
+            {
+                GameFuse.Log($"GameFuseUser SetScoreAsync Failure: {ex.Message}");
+                throw;
+            }
         }
 
         private IEnumerator SetScoreRoutine(int score, Action<string, bool> callback = null)
@@ -328,7 +469,6 @@ namespace GameFuseCSharp
 
             var parameters = "?authentication_token=" + GetAuthenticationToken();
 
-
             var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + this.id + "/game_user_attributes" + parameters);
             request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
@@ -339,26 +479,65 @@ namespace GameFuseCSharp
                 GameFuse.Log("GameFuseUser Get Attributes Success");
 
                 var data = request.downloadHandler.text;
-                JSONObject json = JSONObject.Parse(data);
-                var game_user_attributes = json.GetArray("game_user_attributes");
-
+                
+                // Use Newtonsoft.Json to parse the response
+                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                
                 attributes.Clear();
-                foreach (var attribute in game_user_attributes)
+                foreach (var attribute in json.game_user_attributes)
                 {
-                    attributes.Add(attribute.Obj.GetString("key"), attribute.Obj.GetString("value"));
+                    attributes.Add((string)attribute.key, (string)attribute.value);
                 }
+                
                 DownloadStoreItems(chainedFromLogin, callback);
             }
             else
                 GameFuseUtilities.HandleCallback(request, chainedFromLogin ? "Users has been signed in successfully" : "Users attributes have been downloaded", callback);
+            
             request.Dispose();
-
-
         }
 
         public Dictionary<string, string> GetAttributes()
         {
             return attributes;
+        }
+        
+        /// <summary>
+        /// Gets user attributes using modern async/await pattern
+        /// </summary>
+        /// <returns>A dictionary containing all user attributes</returns>
+        public async Task<Dictionary<string, string>> GetAttributesAsync()
+        {
+            GameFuse.Log("GameFuseUser GetAttributesAsync");
+            
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before accessing user attributes");
+                
+            try
+            {
+                // Use the user service to get attributes
+                var response = await userService.GetAttributesAsync(id);
+                
+                // Process the attributes
+                Dictionary<string, string> newAttributes = new Dictionary<string, string>();
+                foreach (var attribute in response.GameUserAttributes)
+                {
+                    newAttributes[attribute.Key] = attribute.Value;
+                }
+                
+                // Update the cached attributes
+                attributes = newAttributes;
+                
+                // Download store items asynchronously
+                await GetStoreItemsAsync();
+                
+                return attributes;
+            }
+            catch (ApiException ex)
+            {
+                GameFuse.Log($"GameFuseUser GetAttributesAsync Failure: {ex.Message}");
+                throw;
+            }
         }
 
         public Dictionary<string, string>.KeyCollection GetAttributesKeys()
@@ -404,6 +583,47 @@ namespace GameFuseCSharp
         {
             StartCoroutine(SetAttributeRoutine(key, value, callback));
         }
+        
+        /// <summary>
+        /// Sets a single attribute using modern async/await pattern
+        /// </summary>
+        /// <param name="key">The attribute key</param>
+        /// <param name="value">The attribute value</param>
+        /// <returns>Dictionary of updated user attributes</returns>
+        public async Task<Dictionary<string, string>> SetAttributeAsync(string key, string value)
+        {
+            GameFuse.Log($"GameFuseUser SetAttributeAsync: {key}");
+            
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying user attributes");
+                
+            try
+            {
+                // Create the set attribute request
+                var request = new SetAttributeRequest
+                {
+                    Key = key,
+                    Value = value
+                };
+                
+                // Use the user service to set the attribute
+                var response = await userService.SetAttributeAsync(id, request);
+                
+                // Update local attributes
+                if (attributes.ContainsKey(key))
+                {
+                    attributes.Remove(key);
+                }
+                attributes.Add(key, value);
+                
+                return attributes;
+            }
+            catch (ApiException ex)
+            {
+                GameFuse.Log($"GameFuseUser SetAttributeAsync Failure: {ex.Message}");
+                throw;
+            }
+        }
 
         private IEnumerator SetAttributeRoutine(string key, string value, Action<string, bool> callback = null)
         {
@@ -427,12 +647,17 @@ namespace GameFuseCSharp
                 GameFuse.Log("GameFuseUser Set Attributes Success: " + key);
 
                 var data = request.downloadHandler.text;
-                JSONObject json = JSONObject.Parse(data);
+                
+                // Use Newtonsoft.Json to parse the response
+                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                
+                // Update local attributes
                 if (attributes.ContainsKey(key))
                 {
                     attributes.Remove(key);
                 }
                 attributes.Add(key, value);
+                
                 foreach (var attribute in attributes)
                 {
                     print(attribute.Key + "," + attribute.Value);
@@ -441,7 +666,6 @@ namespace GameFuseCSharp
 
             GameFuseUtilities.HandleCallback(request, "Attribute has been added to user", callback);
             request.Dispose();
-
         }
 
         public void SetAttributes(Dictionary<string, string> newAttributes, Action<string, bool> callback = null, bool isFromSync = false)
@@ -539,6 +763,39 @@ namespace GameFuseCSharp
         {
             StartCoroutine(RemoveAttributeRoutine(key, callback));
         }
+        
+        /// <summary>
+        /// Removes an attribute using modern async/await pattern
+        /// </summary>
+        /// <param name="key">The attribute key to remove</param>
+        /// <returns>Dictionary of updated user attributes</returns>
+        public async Task<Dictionary<string, string>> RemoveAttributeAsync(string key)
+        {
+            GameFuse.Log($"GameFuseUser RemoveAttributeAsync: {key}");
+            
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying user attributes");
+                
+            try
+            {
+                // Use the user service to remove the attribute
+                var response = await userService.RemoveAttributeAsync(id, key);
+                
+                // Update the cached attributes
+                attributes.Clear();
+                foreach (var attribute in response.GameUserAttributes)
+                {
+                    attributes[attribute.Key] = attribute.Value;
+                }
+                
+                return attributes;
+            }
+            catch (ApiException ex)
+            {
+                GameFuse.Log($"GameFuseUser RemoveAttributeAsync Failure: {ex.Message}");
+                throw;
+            }
+        }
 
         private IEnumerator RemoveAttributeRoutine(string key, Action<string, bool> callback = null)
         {
@@ -558,21 +815,22 @@ namespace GameFuseCSharp
                 GameFuse.Log("GameFuseUser Remove Attributes Success: " + key);
 
                 var data = request.downloadHandler.text;
-                JSONObject json = JSONObject.Parse(data);
-                var game_user_attributes = json.GetArray("game_user_attributes");
-
+                
+                // Use Newtonsoft.Json to parse the response
+                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                
                 print("ATTRIBUTES CLEARED DUE TO KEY REMOVAL:");
                 attributes.Clear();
-                foreach (var attribute in game_user_attributes)
+                foreach (var attribute in json.game_user_attributes)
                 {
-                    print("adding: " + attribute.Obj.GetString("key"));
-                    attributes.Add(attribute.Obj.GetString("key"), attribute.Obj.GetString("value"));
+                    string attrKey = (string)attribute.key;
+                    print("adding: " + attrKey);
+                    attributes.Add(attrKey, (string)attribute.value);
                 }
             }
 
             GameFuseUtilities.HandleCallback(request, "Attribute has been removed", callback);
             request.Dispose();
-
         }
 
 
@@ -594,7 +852,6 @@ namespace GameFuseCSharp
 
             var parameters = "?authentication_token=" + GetAuthenticationToken();
 
-
             var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/game_user_store_items" + parameters);
             request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
@@ -605,35 +862,70 @@ namespace GameFuseCSharp
                 GameFuse.Log("GameFuseUser Download Store Items Success: ");
 
                 var data = request.downloadHandler.text;
-                JSONObject json = JSONObject.Parse(data);
-                var game_user_store_items = json.GetArray("game_user_store_items");
+                
+                // Use Newtonsoft.Json to parse the response
+                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                
                 purchasedStoreItems.Clear();
-
-                foreach (var item in game_user_store_items)
+                foreach (var item in json.game_user_store_items)
                 {
                     purchasedStoreItems.Add(new GameFuseStoreItem(
-                        item.Obj.GetString("name"),
-                        item.Obj.GetString("category"),
-                        item.Obj.GetString("description"),
-                        Convert.ToInt32(item.Obj.GetNumber("cost")),
-                        Convert.ToInt32(item.Obj.GetNumber("id")),
-                        item.Obj.GetString("icon_url")
-                        )
-                    );
+                        (string)item.name,
+                        (string)item.category,
+                        (string)item.description,
+                        (int)item.cost,
+                        (int)item.id,
+                        (string)item.icon_url
+                    ));
                 }
-
-
             }
 
             GameFuseUtilities.HandleCallback(request, chainedFromLogin ? "Users has been signed in successfully" : "Users store items have been downloaded", callback);
             request.Dispose();
-
-
         }
 
         public List<GameFuseStoreItem> GetPurchasedStoreItems()
         {
             return purchasedStoreItems;
+        }
+        
+        /// <summary>
+        /// Gets user purchased store items using modern async/await pattern
+        /// </summary>
+        /// <returns>A list of store items purchased by the user</returns>
+        public async Task<List<GameFuseStoreItem>> GetStoreItemsAsync()
+        {
+            GameFuse.Log("GameFuseUser GetStoreItemsAsync");
+            
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before accessing user store items");
+                
+            try
+            {
+                // Use the user service to get store items
+                var response = await userService.GetStoreItemsAsync(id);
+                
+                // Process the store items
+                purchasedStoreItems.Clear();
+                foreach (var item in response.GameUserStoreItems)
+                {
+                    purchasedStoreItems.Add(new GameFuseStoreItem(
+                        item.Name,
+                        item.Category,
+                        item.Description,
+                        item.Cost,
+                        item.Id,
+                        item.IconUrl
+                    ));
+                }
+                
+                return purchasedStoreItems;
+            }
+            catch (ApiException ex)
+            {
+                GameFuse.Log($"GameFuseUser GetStoreItemsAsync Failure: {ex.Message}");
+                throw;
+            }
         }
 
         public void PurchaseStoreItem(GameFuseStoreItem storeItem, Action<string, bool> callback = null)
@@ -645,10 +937,58 @@ namespace GameFuseCSharp
         {
             StartCoroutine(PurchaseStoreItemRoutine(storeItemId, callback));
         }
+        
+        /// <summary>
+        /// Purchases a store item using modern async/await pattern
+        /// </summary>
+        /// <param name="storeItemId">ID of the store item to purchase</param>
+        /// <returns>Updated list of store items purchased by the user</returns>
+        public async Task<List<GameFuseStoreItem>> PurchaseStoreItemAsync(int storeItemId)
+        {
+            GameFuse.Log("GameFuseUser PurchaseStoreItemAsync: " + storeItemId);
+            
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before purchasing store items");
+                
+            try
+            {
+                // Create the purchase request
+                var request = new PurchaseStoreItemRequest
+                {
+                    StoreItemId = storeItemId
+                };
+                
+                // Use the user service to purchase the store item
+                var response = await userService.PurchaseStoreItemAsync(id, request);
+                
+                // Update credits
+                SetCreditsInternal(response.Credits);
+                
+                // Process the store items
+                purchasedStoreItems.Clear();
+                foreach (var item in response.GameUserStoreItems)
+                {
+                    purchasedStoreItems.Add(new GameFuseStoreItem(
+                        item.Name,
+                        item.Category,
+                        item.Description,
+                        item.Cost,
+                        item.Id,
+                        item.IconUrl
+                    ));
+                }
+                
+                return purchasedStoreItems;
+            }
+            catch (ApiException ex)
+            {
+                GameFuse.Log($"GameFuseUser PurchaseStoreItemAsync Failure: {ex.Message}");
+                throw;
+            }
+        }
 
         private IEnumerator PurchaseStoreItemRoutine(int storeItemId, Action<string, bool> callback = null)
         {
-
             GameFuse.Log("GameFuseUser Purchase Store Items: ");
 
             if (GameFuse.GetGameId() == null)
@@ -668,33 +1008,86 @@ namespace GameFuseCSharp
                 GameFuse.Log("GameFuseUser Purchase Store Items Success: ");
 
                 var data = request.downloadHandler.text;
-                JSONObject json = JSONObject.Parse(data);
-                var game_user_store_items = json.GetArray("game_user_store_items");
-                CurrentUser.SetCreditsInternal(Convert.ToInt32(json.GetNumber("credits")));
+                
+                // Use Newtonsoft.Json to parse the response
+                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                
+                // Update credits
+                CurrentUser.SetCreditsInternal((int)json.credits);
+                
+                // Process store items
                 purchasedStoreItems.Clear();
-
-                foreach (var item in game_user_store_items)
+                foreach (var item in json.game_user_store_items)
                 {
                     purchasedStoreItems.Add(new GameFuseStoreItem(
-                        item.Obj.GetString("name"),
-                        item.Obj.GetString("category"),
-                        item.Obj.GetString("description"),
-                        Convert.ToInt32(item.Obj.GetNumber("cost")),
-                        Convert.ToInt32(item.Obj.GetNumber("id")),
-                        item.Obj.GetString("icon_url")
-                        )
-                    );
+                        (string)item.name,
+                        (string)item.category,
+                        (string)item.description,
+                        (int)item.cost,
+                        (int)item.id,
+                        (string)item.icon_url
+                    ));
                 }
             }
 
             GameFuseUtilities.HandleCallback(request, "Store Item has been purchased by user", callback);
             request.Dispose();
-
         }
 
         public void RemoveStoreItem(int storeItemID, bool reimburseUser, Action<string, bool> callback = null)
         {
             StartCoroutine(RemoveStoreItemRoutine(storeItemID, reimburseUser, callback));
+        }
+        
+        /// <summary>
+        /// Removes a store item from the user using modern async/await pattern
+        /// </summary>
+        /// <param name="storeItemId">ID of the store item to remove</param>
+        /// <param name="reimburse">Whether to reimburse the user with credits</param>
+        /// <returns>Updated list of store items owned by the user</returns>
+        public async Task<List<GameFuseStoreItem>> RemoveStoreItemAsync(int storeItemId, bool reimburse)
+        {
+            GameFuse.Log($"GameFuseUser RemoveStoreItemAsync: {storeItemId}, Reimburse: {reimburse}");
+            
+            if (GameFuse.GetGameId() == null)
+                throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying user store items");
+                
+            try
+            {
+                // Create the remove store item request
+                var request = new RemoveStoreItemRequest
+                {
+                    StoreItemId = storeItemId,
+                    Reimburse = reimburse
+                };
+                
+                // Use the user service to remove the store item
+                var response = await userService.RemoveStoreItemAsync(id, request);
+                
+                // Update credits
+                SetCreditsInternal(response.Credits);
+                
+                // Process the store items
+                purchasedStoreItems.Clear();
+                foreach (var item in response.GameUserStoreItems)
+                {
+                    purchasedStoreItems.Add(new GameFuseStoreItem(
+                        item.Name,
+                        item.Category,
+                        item.Description,
+                        item.Cost,
+                        item.Id,
+                        item.IconUrl
+                    ));
+                }
+                
+                return purchasedStoreItems;
+            }
+            catch (ApiException ex)
+            {
+                GameFuse.Log($"GameFuseUser RemoveStoreItemAsync Failure: {ex.Message}");
+                throw;
+            }
         }
         public void RemoveStoreItem(GameFuseStoreItem storeItem, bool reimburseUser, Action<string, bool> callback = null)
         {
@@ -708,7 +1101,7 @@ namespace GameFuseCSharp
             if (GameFuse.GetGameId() == null)
                 throw new GameFuseException("Please set up your game with GameFuse.SetUpGame before modifying users");
 
-            var parameters = "?authentication_token=" + GetAuthenticationToken() + "&store_item_id=" + storeItemID + "&reimburse=" + reimburseUser.ToString();
+            var parameters = "?authentication_token=" + GetAuthenticationToken() + "&store_item_id=" + storeItemID + "&reimburse=" + reimburseUser.ToString().ToLower();
             var request = UnityWebRequest.Get(GameFuse.GetBaseURL() + "/users/" + CurrentUser.id + "/remove_game_user_store_item" + parameters);
             request.SetRequestHeader("authentication_token", GameFuseUser.CurrentUser.GetAuthenticationToken());
 
@@ -719,28 +1112,30 @@ namespace GameFuseCSharp
                 GameFuse.Log("GameFuseUser Remove Store Item Success: " + storeItemID);
 
                 var data = request.downloadHandler.text;
-                JSONObject json = JSONObject.Parse(data);
-                CurrentUser.SetCreditsInternal(Convert.ToInt32(json.GetNumber("credits")));
-                var game_user_store_items = json.GetArray("game_user_store_items");
+                
+                // Use Newtonsoft.Json to parse the response
+                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                
+                // Update credits
+                CurrentUser.SetCreditsInternal((int)json.credits);
+                
+                // Process store items
                 purchasedStoreItems.Clear();
-
-                foreach (var item in game_user_store_items)
+                foreach (var item in json.game_user_store_items)
                 {
                     purchasedStoreItems.Add(new GameFuseStoreItem(
-                        item.Obj.GetString("name"),
-                        item.Obj.GetString("category"),
-                        item.Obj.GetString("description"),
-                        Convert.ToInt32(item.Obj.GetNumber("cost")),
-                        Convert.ToInt32(item.Obj.GetNumber("id")),
-                        item.Obj.GetString("icon_url")
-                        )
-                    );
+                        (string)item.name,
+                        (string)item.category,
+                        (string)item.description,
+                        (int)item.cost,
+                        (int)item.id,
+                        (string)item.icon_url
+                    ));
                 }
             }
 
             GameFuseUtilities.HandleCallback(request, "Store Item has been removed", callback);
             request.Dispose();
-
         }
 
         #endregion

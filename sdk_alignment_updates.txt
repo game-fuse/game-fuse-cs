@@ -16,8 +16,34 @@ Chat Service
 
 Sessions Service (Sign In)
 ------------------------
+• Runtime/SessionsService/SessionsServiceRequest/SignInRequest.cs - Added proper XML documentation to match API docs
+• Runtime/SessionsService/SessionsServiceResponse/SignInResponse.cs - Added proper XML documentation for all fields and classes
 • Runtime/SessionsService/SessionsServiceResponse/SignInResponse.cs - Added missing fields to SignInResponse (display_email, game_user_attributes, game_user_store_items, friends, outgoing_friend_requests, incoming_friend_requests, groups, group_join_requests, group_invites)
 • Runtime/SessionsService/SessionsServiceResponse/SignInResponse.cs - Added supporting classes for new fields (UserAttribute, StoreItem, GroupInvite, JoinRequest)
+
+Game Rounds Service
+-----------------
+• Runtime/GameRoundsService/DataClasses/GameRoundObject.cs - Updated class with proper documentation and added Id property to match API schema
+• Runtime/GameRoundsService/DataClasses/RankingsObject.cs - Updated class with proper documentation and added Id property
+• Runtime/GameRoundsService/ResponseObjects/GameRoundsResponse.cs - Added proper documentation
+• Runtime/GameRoundsService/ResponseObjects/MultiplayerGameRoundResponse.cs - Added proper documentation
+• Runtime/GameRoundsService/IGameRoundsService.cs - Updated interface with proper documentation
+• Runtime/GameRoundsService/GameRoundsService.cs - Added parameter validation and improved error handling
+
+Friendship Service
+----------------
+• Runtime/FriendshipService/DataClasses/UserInfo.cs - Updated class with proper documentation
+• Runtime/FriendshipService/DataClasses/FriendRequest.cs - Updated class with proper documentation
+• Runtime/FriendshipService/FriendRequestStatus.cs - Added proper documentation
+• Runtime/FriendshipService/FriendshipServiceRequestData/FriendRequestData.cs - Added proper documentation
+• Runtime/FriendshipService/FriendshipServiceRequestData/FriendshipStatusData.cs - Added proper documentation
+• Runtime/FriendshipService/FriendshipServiceResponseObjects/FriendRequestResponse.cs - Added proper documentation
+• Runtime/FriendshipService/FriendshipServiceResponseObjects/FriendshipStatusResponse.cs - Added proper documentation
+• Runtime/FriendshipService/FriendshipServiceResponseObjects/FriendsResponse.cs - Added proper documentation
+• Runtime/FriendshipService/FriendshipServiceResponseObjects/IncomingFriendRequestsResponse.cs - Added proper documentation
+• Runtime/FriendshipService/FriendshipServiceResponseObjects/OutgoingFriendRequestsResponse.cs - Added proper documentation
+• Runtime/FriendshipService/IFriendshipService.cs - Updated interface with proper documentation
+• Runtime/FriendshipService/FriendshipService.cs - Added parameter validation and improved error handling
 
 Groups Service
 ------------
@@ -25,8 +51,44 @@ Groups Service
 • Runtime/GroupsService/IGroupsService.cs - Added missing methods (AddGroupAttributeAsync, RemoveGroupMemberAsync, PromoteToGroupAdminAsync, LeaveGroupAsync)
 • Runtime/GroupsService/GroupsService.cs - Implemented missing methods
 
+JSON Objects
+-----------
+• Runtime/JsonObjects/MessageResponse.cs - Added proper documentation
+
 Tests
 -----
 • Tests/Runtime/GroupServiceTests.cs - Added tests for new group functionality (RemoveGroupMember, PromoteToGroupAdmin, LeaveGroup)
 
 All models have been updated with proper JSON property attributes to ensure consistent serialization between snake_case API fields and PascalCase C# properties.
+
+Modern SDK Improvements
+======================
+
+This section lists all modernization improvements made to the SDK.
+
+Async/Await Implementation
+-------------------------
+• Runtime/GameFuse.cs - Added SetUpGameAsync as async alternative to SetUpGame
+• Runtime/GameFuse.cs - Added FetchGameVariablesAsync as async alternative to FetchGameVariables
+• Runtime/GameFuse.cs - Added DownloadStoreItemsAsync as internal async method
+• Runtime/GameFuse.cs - Added SignInAsync as async alternative to SignIn
+• Runtime/GameFuse.cs - Added SignUpAsync as async alternative to SignUp
+• Runtime/GameFuse.cs - Added SendPasswordResetEmailAsync as async alternative to SendPasswordResetEmail
+• Runtime/GameFuseUser.cs - Added GetAttributesAsync as async alternative to GetAttributes/DownloadAttributes
+• Runtime/GameFuseUser.cs - Added GetStoreItemsAsync as async alternative to GetPurchasedStoreItems/DownloadStoreItems
+• Runtime/GameFuseUser.cs - Added PurchaseStoreItemAsync as async alternative to PurchaseStoreItem
+
+Newtonsoft.Json Migration
+------------------------
+• Runtime/GameFuse.cs - Updated SetUpGameRoutine to use Newtonsoft.Json instead of Boomlagoon.JSON
+• Runtime/GameFuse.cs - Updated DownloadStoreItemsRoutine to use Newtonsoft.Json instead of Boomlagoon.JSON
+• Runtime/GameFuse.cs - Updated FetchGameVariablesRoutine to use Newtonsoft.Json instead of Boomlagoon.JSON
+• Runtime/GameFuse.cs - Updated SignInRoutine to use Newtonsoft.Json instead of Boomlagoon.JSON
+• Runtime/GameFuse.cs - Updated SignUpRoutine to use Newtonsoft.Json instead of Boomlagoon.JSON
+
+AbstractService Pattern
+---------------------
+• Created consistent AbstractService implementation for all services
+• Enhanced error handling with proper ApiException propagation
+• Added standardized JsonSerializerSettings to ensure consistent serialization
+• Provided strongly-typed request and response objects for all API endpoints

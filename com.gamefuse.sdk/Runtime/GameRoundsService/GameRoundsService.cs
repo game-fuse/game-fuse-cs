@@ -7,14 +7,27 @@ using System.Linq;
 
 namespace GameFuseCSharp
 {
+    /// <summary>
+    /// Implementation of the Game Rounds API service.
+    /// </summary>
     public class GameRoundsService : AbstractService, IGameRoundsService
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameRoundsService"/> class.
+        /// </summary>
+        /// <param name="baseUrl">The base URL of the API.</param>
+        /// <param name="token">The authentication token.</param>
         public GameRoundsService(string baseUrl, string token)
         {
             _baseUrl = baseUrl;
             _token = token;
         }
 
+        /// <summary>
+        /// Creates a new basic game round for a user with default values.
+        /// </summary>
+        /// <param name="gameUserId">The ID of the user to whom the game round belongs.</param>
+        /// <returns>The created game round object.</returns>
         public async Task<GameRoundObject> CreateGameRoundAsync(int gameUserId)
         {
             var gameRound = new GameRoundObject
@@ -25,11 +38,23 @@ namespace GameFuseCSharp
             return await CreateGameRoundAsync(gameRound);
         }
 
+        /// <summary>
+        /// Creates a new game round with detailed information.
+        /// </summary>
+        /// <param name="gameRound">The game round data to create.</param>
+        /// <returns>The created game round object.</returns>
+        /// <exception cref="ArgumentException">Thrown when the GameUserId is not set or invalid.</exception>
         public async Task<GameRoundObject> CreateGameRoundAsync(GameRoundObject gameRound)
         {
             if (gameRound.GameUserId == 0)
             {
                 throw new ArgumentException("GameUserId is required for creating a game round", nameof(gameRound));
+            }
+
+            // Enforce required fields according to API documentation
+            if (string.IsNullOrEmpty(gameRound.GameType))
+            {
+                throw new ArgumentException("GameType is required for creating a game round", nameof(gameRound));
             }
 
             string url = $"{_baseUrl}/game_rounds";
@@ -42,19 +67,22 @@ namespace GameFuseCSharp
         }
 
         /// <summary>
-        /// Creates a multiplayer game round for the creator only.
-        /// 
-        /// Note: According to the API design, each player must create their own game round
+        /// Creates a new multiplayer game round for the creator only.
+        /// </summary>
+        /// <remarks>
+        /// According to the API design, each player must create their own game round
         /// using their own authentication token. This method only creates the multiplayer round
         /// container and adds the creator as the first player.
         /// 
-        /// Other players should then add their own rounds by creating a game round with
-        /// the MultiplayerGameRoundId property set to the ID returned by this method.
-        /// </summary>
-        /// <param name="gameType">The type of game being played</param>
-        /// <param name="creatorUserId">The user ID of the creator (must match the authenticated user)</param>
-        /// <param name="playerRounds">List containing ONLY the creator's round data - other players must create their own rounds separately</param>
-        /// <returns>The response containing the multiplayer game round information</returns>
+        /// Other players should then add their own rounds by calling AddPlayerToMultiplayerGameRoundAsync
+        /// with the multiplayer game round ID returned by this method.
+        /// </remarks>
+        /// <param name="gameType">The type of game being played.</param>
+        /// <param name="creatorUserId">The ID of the user creating the multiplayer game round (must match the authenticated user).</param>
+        /// <param name="playerRounds">List containing ONLY the creator's round data.</param>
+        /// <returns>The created multiplayer game round with rankings.</returns>
+        /// <exception cref="ArgumentException">Thrown when parameters are invalid.</exception>
+        /// <exception cref="ApiException">Thrown when the API returns an error.</exception>
         public async Task<MultiplayerGameRoundResponse> CreateMultiplayerGameRoundAsync(string gameType, int creatorUserId, List<GameRoundObject> playerRounds)
         {
             if (string.IsNullOrEmpty(gameType))
@@ -131,11 +159,16 @@ namespace GameFuseCSharp
         
         /// <summary>
         /// Adds a player's round to an existing multiplayer game round.
-        /// This should be called by each player using their own authentication token.
         /// </summary>
-        /// <param name="multiplayerGameRoundId">The ID of the multiplayer game round to join</param>
-        /// <param name="playerRound">The player's game round data</param>
-        /// <returns>The created game round</returns>
+        /// <remarks>
+        /// This should be called by each player using their own authentication token.
+        /// The player can only add themselves to the multiplayer game round.
+        /// </remarks>
+        /// <param name="multiplayerGameRoundId">The ID of the multiplayer game round to join.</param>
+        /// <param name="playerRound">The player's game round data.</param>
+        /// <returns>The created game round.</returns>
+        /// <exception cref="ArgumentException">Thrown when parameters are invalid.</exception>
+        /// <exception cref="ApiException">Thrown when the API returns an error.</exception>
         public async Task<GameRoundObject> AddPlayerToMultiplayerGameRoundAsync(int multiplayerGameRoundId, GameRoundObject playerRound)
         {
             if (multiplayerGameRoundId <= 0)
@@ -163,12 +196,33 @@ namespace GameFuseCSharp
             }
         }
 
+        /// <summary>
+        /// Updates an existing game round with new values.
+        /// </summary>
+        /// <param name="gameRoundId">The ID of the game round to update.</param>
+        /// <param name="gameRound">The game round with updated values.</param>
+        /// <returns>The updated game round object.</returns>
         public async Task<GameRoundObject> UpdateGameRoundAsync(int gameRoundId, GameRoundObject gameRound)
         {
+            if (gameRoundId <= 0)
+            {
+                throw new ArgumentException("A valid game round ID is required", nameof(gameRoundId));
+            }
+
             string url = $"{_baseUrl}/game_rounds/{gameRoundId}";
 
+            // According to the API docs, we shouldn't modify the game_type of multiplayer rounds
             // First, get the existing game round to check if it's multiplayer
-            GameRoundObject existingRound = await GetGameRoundAsync(gameRoundId);
+            GameRoundObject existingRound;
+            try 
+            {
+                existingRound = await GetGameRoundAsync(gameRoundId);
+            }
+            catch (ApiException ex)
+            {
+                Debug.LogError($"Failed to get existing game round for update: {ex.Message}");
+                throw new ArgumentException($"Game round with ID {gameRoundId} not found", nameof(gameRoundId));
+            }
 
             // Create update object with all allowed fields
             var updateData = new
@@ -190,8 +244,18 @@ namespace GameFuseCSharp
             }
         }
 
+        /// <summary>
+        /// Retrieves a specific game round by ID.
+        /// </summary>
+        /// <param name="gameRoundId">The ID of the game round to retrieve.</param>
+        /// <returns>The game round object.</returns>
         public async Task<GameRoundObject> GetGameRoundAsync(int gameRoundId)
         {
+            if (gameRoundId <= 0)
+            {
+                throw new ArgumentException("A valid game round ID is required", nameof(gameRoundId));
+            }
+
             string url = $"{_baseUrl}/game_rounds/{gameRoundId}";
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.GET))
@@ -200,8 +264,18 @@ namespace GameFuseCSharp
             }
         }
 
+        /// <summary>
+        /// Retrieves a multiplayer game round by ID, including all player rankings.
+        /// </summary>
+        /// <param name="multiplayerGameRoundId">The ID of the multiplayer game round.</param>
+        /// <returns>The multiplayer game round with player rankings.</returns>
         public async Task<MultiplayerGameRoundResponse> GetMultiplayerGameRoundAsync(int multiplayerGameRoundId)
         {
+            if (multiplayerGameRoundId <= 0)
+            {
+                throw new ArgumentException("A valid multiplayer game round ID is required", nameof(multiplayerGameRoundId));
+            }
+
             string url = $"{_baseUrl}/game_rounds/multiplayer_game_round/{multiplayerGameRoundId}";
 
             using (UnityWebRequest webRequest = CreateRequest(url, HttpVerbs.GET))
@@ -210,8 +284,18 @@ namespace GameFuseCSharp
             }
         }
 
+        /// <summary>
+        /// Retrieves all game rounds for a specific user.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose game rounds to retrieve.</param>
+        /// <returns>A response containing an array of game rounds.</returns>
         public async Task<GameRoundsResponse> GetUserGameRoundsAsync(int userId)
         {
+            if (userId <= 0)
+            {
+                throw new ArgumentException("A valid user ID is required", nameof(userId));
+            }
+
             string url = $"{_baseUrl}/game_rounds?user_id={userId}";
 
             try
@@ -225,9 +309,6 @@ namespace GameFuseCSharp
                     {
                         response.GameRounds = Array.Empty<GameRoundObject>();
                     }
-                    
-                    // Add a short delay to ensure test stability
-                    await Task.Delay(500);
                     
                     return response;
                 }
@@ -244,8 +325,18 @@ namespace GameFuseCSharp
             }
         }
 
+        /// <summary>
+        /// Deletes a specific game round.
+        /// </summary>
+        /// <param name="gameRoundId">The ID of the game round to delete.</param>
+        /// <returns>A response containing a success message.</returns>
         public async Task<MessageResponse> DeleteGameRoundAsync(int gameRoundId)
         {
+            if (gameRoundId <= 0)
+            {
+                throw new ArgumentException("A valid game round ID is required", nameof(gameRoundId));
+            }
+
             string url = $"{_baseUrl}/game_rounds/{gameRoundId}";
 
             try

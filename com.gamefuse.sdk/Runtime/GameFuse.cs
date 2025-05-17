@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Boomlagoon.JSON;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 //using UnityEditor;
 
 namespace GameFuseCSharp
@@ -135,30 +136,32 @@ namespace GameFuseCSharp
 
             if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                Log("GameFuse Setting Up Game Recieved Request Success: " + gameId + ": " + token);
+                Log("GameFuse Setting Up Game Received Request Success: " + gameId + ": " + token);
                 var data = request.downloadHandler.text;
-                JSONObject json = JSONObject.Parse(data);
-                Instance.id = json.GetNumber("id").ToString();
-                Instance._name = json.GetString("name");
-                Instance.description = json.GetString("description");
-                Instance.token = json.GetString("token");
+                
+                // Use Newtonsoft.Json to parse the response
+                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                
+                // Set the game data
+                Instance.id = ((int)json.id).ToString();
+                Instance._name = (string)json.name;
+                Instance.description = (string)json.description;
+                Instance.token = (string)json.token;
 
+                // Process game variables
                 Dictionary<string, string> gameVariables = new Dictionary<string, string>();
-                JSONArray gameVariablesArray = json.GetArray("game_variables");
-                for (int i = 0; i < gameVariablesArray.Length; i++) 
+                foreach (var item in json.game_variables) 
                 {
-                    JSONObject iterjson = JSONObject.Parse(gameVariablesArray[i].ToString());
-                    string key = iterjson.GetString("key");
-                    string value = iterjson.GetString("value");
+                    string key = (string)item.key;
+                    string value = (string)item.value;
                     gameVariables[key] = value;
                 }
                 Instance.gameVariables = gameVariables;
                 DownloadStoreItemsPrivate(callback);
-
             }
             else
             {
-                Log("GameFuse Setting Up Game Recieved Request Failure: " + gameId + ": " + token);
+                Log("GameFuse Setting Up Game Received Request Failure: " + gameId + ": " + token);
                 GameFuseUtilities.HandleCallback(request, "Game has failed to set up!", callback);
             }
         }
@@ -309,6 +312,9 @@ namespace GameFuseCSharp
             }
         }
 
+        /// <summary>
+        /// Fetches game variables using the legacy callback-based API.
+        /// </summary>
         public static void FetchGameVariables(string gameId, string token, Action<string, bool> callback = null)
         {
             Log("GameFuse Fetch Game Variables: "+ gameId+": "+ token);
@@ -329,35 +335,106 @@ namespace GameFuseCSharp
 
             if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-                Log("GameFuse Fetch Game Variables Recieved Request Success: " + gameId + ": " + token);
+                Log("GameFuse Fetch Game Variables Received Request Success: " + gameId + ": " + token);
                 var data = request.downloadHandler.text;
-                JSONObject json = JSONObject.Parse(data);
-                Instance.id = json.GetNumber("id").ToString();
-                Instance._name = json.GetString("name");
-                Instance.description = json.GetString("description");
-                Instance.token = json.GetString("token");
+                
+                // Use Newtonsoft.Json to parse the response
+                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                
+                // Set the game data
+                Instance.id = ((int)json.id).ToString();
+                Instance._name = (string)json.name;
+                Instance.description = (string)json.description;
+                Instance.token = (string)json.token;
 
+                // Process game variables
                 Dictionary<string, string> gameVariables = new Dictionary<string, string>();
-                JSONArray gameVariablesArray = json.GetArray("game_variables");
-                for (int i = 0; i < gameVariablesArray.Length; i++) 
+                foreach (var item in json.game_variables) 
                 {
-                    JSONObject iterjson = JSONObject.Parse(gameVariablesArray[i].ToString());
-                    string key = iterjson.GetString("key");
-                    string value = iterjson.GetString("value");
+                    string key = (string)item.key;
+                    string value = (string)item.value;
                     gameVariables[key] = value;
                 }
                 Instance.gameVariables = gameVariables;
                 DownloadStoreItemsPrivate(callback);
-
             }
             else
             {
-                Log("GameFuse Fetch Game Variables Recieved Request Failure: " + gameId + ": " + token);
+                Log("GameFuse Fetch Game Variables Received Request Failure: " + gameId + ": " + token);
                 GameFuseUtilities.HandleCallback(request, "Game has failed to set up!", callback);
             }
             request.Dispose();
+        }
+        
+        /// <summary>
+        /// Fetches game variables using the modern async/await pattern.
+        /// </summary>
+        public static async Task FetchGameVariablesAsync(string gameId, string token)
+        {
+            Log("GameFuse FetchGameVariablesAsync: " + gameId + ": " + token);
 
-
+            try
+            {
+                // Create the URL with query parameters
+                string url = $"{baseURL}/games/fetch_game_variables?game_id={gameId}&game_token={token}";
+                
+                // Create a web request
+                UnityWebRequest webRequest = UnityWebRequest.Get(url);
+                
+                // Send the request
+                var operation = webRequest.SendWebRequest();
+                
+                // Wait for the operation to complete
+                while (!operation.isDone)
+                {
+                    await Task.Yield();
+                }
+                
+                if (GameFuseUtilities.RequestIsSuccessful(webRequest))
+                {
+                    Log("GameFuse FetchGameVariablesAsync Success: " + gameId + ": " + token);
+                    
+                    // Parse the response data using Newtonsoft.Json instead of Boomlagoon
+                    var data = webRequest.downloadHandler.text;
+                    dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                    
+                    // Set the game data
+                    Instance.id = ((int)json.id).ToString();
+                    Instance._name = (string)json.name;
+                    Instance.description = (string)json.description;
+                    Instance.token = (string)json.token;
+                    
+                    // Process game variables
+                    Dictionary<string, string> gameVariables = new Dictionary<string, string>();
+                    var gameVariablesArray = json.game_variables;
+                    foreach (var item in gameVariablesArray) 
+                    {
+                        string key = (string)item.key;
+                        string value = (string)item.value;
+                        gameVariables[key] = value;
+                    }
+                    Instance.gameVariables = gameVariables;
+                    
+                    // Download store items
+                    await DownloadStoreItemsAsync();
+                }
+                else
+                {
+                    Log("GameFuse FetchGameVariablesAsync Failure: " + gameId + ": " + token);
+                    throw new ApiException(
+                        webRequest.responseCode,
+                        "Failed to fetch game variables!",
+                        webRequest.downloadHandler.text
+                    );
+                }
+                
+                webRequest.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Log($"GameFuse FetchGameVariablesAsync Error: {ex.Message}");
+                throw;
+            }
         }
 
         public static string GetGameVariable(string key)
@@ -385,35 +462,33 @@ namespace GameFuseCSharp
                 Log("GameFuse Downloading Store Items Success");
 
                 var data = request.downloadHandler.text;
-                JSONObject json = JSONObject.Parse(data);
-                var storeItems = json.GetArray("store_items");
+                
+                // Use Newtonsoft.Json to parse the response
+                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
                 store.Clear();
-                foreach (var storeItem in storeItems)
+                
+                // Process store items using Newtonsoft.Json
+                foreach (var storeItem in json.store_items)
                 {
                     store.Add(new GameFuseStoreItem(
-                        storeItem.Obj.GetString("name"),
-                        storeItem.Obj.GetString("category"),
-                        storeItem.Obj.GetString("description"),
-                        Convert.ToInt32(storeItem.Obj.GetNumber("cost")),
-                        Convert.ToInt32(storeItem.Obj.GetNumber("id")),
-                        storeItem.Obj.GetString("icon_url")
+                        (string)storeItem.name,
+                        (string)storeItem.category,
+                        (string)storeItem.description,
+                        (int)storeItem.cost,
+                        (int)storeItem.id,
+                        (string)storeItem.icon_url
                         )
                     );
                 }
-
-
             }
             else
             {
                 GameFuseUtilities.HandleCallback(request, "Game has failed to set up!", callback);
-                Log("GameFuse Downloading Store Items FAiled");
-
+                Log("GameFuse Downloading Store Items Failed");
             }
 
             GameFuseUtilities.HandleCallback(request, "Game has been set up!", callback);
             request.Dispose();
-
-
         }
 
         public static List<GameFuseStoreItem> GetStoreItems()
@@ -440,7 +515,6 @@ namespace GameFuseCSharp
 
         private IEnumerator SignInRoutine(string email, string password, Action<string, bool> callback = null)
         {
-
             Log("GameFuse Sign In: " + email );
 
             if (GetGameId() == null)
@@ -460,22 +534,26 @@ namespace GameFuseCSharp
                 Log("GameFuse Sign In Success: " + email);
 
                 var data = request.downloadHandler.text;
-                JSONObject json = JSONObject.Parse(data);
+                
+                // Use Newtonsoft.Json to parse the response
+                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                
+                // Update the current user
                 GameFuseUser.CurrentUser.SetSignedInInternal();
-                GameFuseUser.CurrentUser.SetScoreInternal(Convert.ToInt32(json.GetNumber("score")));
-                GameFuseUser.CurrentUser.SetCreditsInternal(Convert.ToInt32(json.GetNumber("credits")));
-                GameFuseUser.CurrentUser.SetUsernameInternal(json.GetString("username"));
-                GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse(json.GetString("last_login")));
-                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal(Convert.ToInt32(json.GetNumber("number_of_logins")));
-                GameFuseUser.CurrentUser.SetAuthenticationTokenInternal(json.GetString("authentication_token"));
-                GameFuseUser.CurrentUser.SetIDInternal(Convert.ToInt32(json.GetNumber("id")));
-                GameFuseUser.CurrentUser.DownloadAttributes(true, callback); // Chain next request - download users attributes
-
+                GameFuseUser.CurrentUser.SetScoreInternal((int)json.score);
+                GameFuseUser.CurrentUser.SetCreditsInternal((int)json.credits);
+                GameFuseUser.CurrentUser.SetUsernameInternal((string)json.username);
+                GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse((string)json.last_login));
+                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal((int)json.number_of_logins);
+                GameFuseUser.CurrentUser.SetAuthenticationTokenInternal((string)json.authentication_token);
+                GameFuseUser.CurrentUser.SetIDInternal((int)json.id);
+                
+                // Chain next request - download users attributes
+                GameFuseUser.CurrentUser.DownloadAttributes(true, callback);
             }
             else
             {
                 Log("GameFuse Sign In Failure: " + email);
-
                 GameFuseUtilities.HandleCallback(request, "User has been signed in successfully", callback);
             }
             request.Dispose();
@@ -566,21 +644,25 @@ namespace GameFuseCSharp
 
             if (GameFuseUtilities.RequestIsSuccessful(request))
             {
-
                 Log("GameFuse Sign Up Success: " + email);
                 var data = request.downloadHandler.text;
-                JSONObject json = JSONObject.Parse(data);
+                
+                // Use Newtonsoft.Json to parse the response
+                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                
+                // Update the current user
                 GameFuseUser.CurrentUser.SetSignedInInternal();
-                GameFuseUser.CurrentUser.SetScoreInternal(Convert.ToInt32(json.GetNumber("score")));
-                GameFuseUser.CurrentUser.SetCreditsInternal(Convert.ToInt32(json.GetNumber("credits")));
-                GameFuseUser.CurrentUser.SetUsernameInternal(json.GetString("username"));
-                GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse(json.GetString("last_login")));
-                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal(Convert.ToInt32(json.GetNumber("number_of_logins"))); 
-                GameFuseUser.CurrentUser.SetAuthenticationTokenInternal(json.GetString("authentication_token"));
-                GameFuseUser.CurrentUser.SetIDInternal(Convert.ToInt32(json.GetNumber("id")));
-                GameFuseUser.CurrentUser.DownloadAttributes(true, callback); // Chain next request - download users attributes  
+                GameFuseUser.CurrentUser.SetScoreInternal((int)json.score);
+                GameFuseUser.CurrentUser.SetCreditsInternal((int)json.credits);
+                GameFuseUser.CurrentUser.SetUsernameInternal((string)json.username);
+                GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse((string)json.last_login));
+                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal((int)json.number_of_logins); 
+                GameFuseUser.CurrentUser.SetAuthenticationTokenInternal((string)json.authentication_token);
+                GameFuseUser.CurrentUser.SetIDInternal((int)json.id);
+                
+                // Chain next request - download users attributes
+                GameFuseUser.CurrentUser.DownloadAttributes(true, callback);
                 GameFuseUtilities.HandleCallback(request, "User Signed Up Successfully", callback);
-
             }
             else
             {
