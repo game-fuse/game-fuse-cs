@@ -140,20 +140,23 @@ namespace GameFuseCSharp
                 var data = request.downloadHandler.text;
                 
                 // Use Newtonsoft.Json to parse the response
-                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
                 
                 // Set the game data
-                Instance.id = ((int)json.id).ToString();
-                Instance._name = (string)json.name;
-                Instance.description = (string)json.description;
-                Instance.token = (string)json.token;
+                Instance.id = json["id"].ToString();
+                Instance._name = json["name"].ToString();
+                Instance.description = json["description"].ToString();
+                Instance.token = json["token"].ToString();
 
                 // Process game variables
                 Dictionary<string, string> gameVariables = new Dictionary<string, string>();
-                foreach (var item in json.game_variables) 
+                var gameVariablesArray = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(
+                    JsonConvert.SerializeObject(json["game_variables"]));
+                    
+                foreach (var item in gameVariablesArray) 
                 {
-                    string key = (string)item.key;
-                    string value = (string)item.value;
+                    string key = item["key"];
+                    string value = item["value"];
                     gameVariables[key] = value;
                 }
                 Instance.gameVariables = gameVariables;
@@ -342,20 +345,23 @@ namespace GameFuseCSharp
                 var data = request.downloadHandler.text;
                 
                 // Use Newtonsoft.Json to parse the response
-                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
                 
                 // Set the game data
-                Instance.id = ((int)json.id).ToString();
-                Instance._name = (string)json.name;
-                Instance.description = (string)json.description;
-                Instance.token = (string)json.token;
+                Instance.id = json["id"].ToString();
+                Instance._name = json["name"].ToString();
+                Instance.description = json["description"].ToString();
+                Instance.token = json["token"].ToString();
 
                 // Process game variables
                 Dictionary<string, string> gameVariables = new Dictionary<string, string>();
-                foreach (var item in json.game_variables) 
+                var gameVariablesArray = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(
+                    JsonConvert.SerializeObject(json["game_variables"]));
+                    
+                foreach (var item in gameVariablesArray) 
                 {
-                    string key = (string)item.key;
-                    string value = (string)item.value;
+                    string key = item["key"];
+                    string value = item["value"];
                     gameVariables[key] = value;
                 }
                 Instance.gameVariables = gameVariables;
@@ -469,19 +475,22 @@ namespace GameFuseCSharp
                 var data = request.downloadHandler.text;
                 
                 // Use Newtonsoft.Json to parse the response
-                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
                 store.Clear();
                 
                 // Process store items using Newtonsoft.Json
-                foreach (var storeItem in json.store_items)
+                var storeItemsRaw = JsonConvert.SerializeObject(json["store_items"]);
+                var storeItemsList = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(storeItemsRaw);
+                
+                foreach (var storeItem in storeItemsList)
                 {
                     store.Add(new GameFuseStoreItem(
-                        (string)storeItem.name,
-                        (string)storeItem.category,
-                        (string)storeItem.description,
-                        (int)storeItem.cost,
-                        (int)storeItem.id,
-                        (string)storeItem.icon_url
+                        storeItem["name"].ToString(),
+                        storeItem["category"].ToString(),
+                        storeItem["description"].ToString(),
+                        Convert.ToInt32(storeItem["cost"]),
+                        Convert.ToInt32(storeItem["id"]),
+                        storeItem["icon_url"].ToString()
                         )
                     );
                 }
@@ -541,17 +550,17 @@ namespace GameFuseCSharp
                 var data = request.downloadHandler.text;
                 
                 // Use Newtonsoft.Json to parse the response
-                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
                 
                 // Update the current user
                 GameFuseUser.CurrentUser.SetSignedInInternal();
-                GameFuseUser.CurrentUser.SetScoreInternal((int)json.score);
-                GameFuseUser.CurrentUser.SetCreditsInternal((int)json.credits);
-                GameFuseUser.CurrentUser.SetUsernameInternal((string)json.username);
-                GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse((string)json.last_login));
-                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal((int)json.number_of_logins);
-                GameFuseUser.CurrentUser.SetAuthenticationTokenInternal((string)json.authentication_token);
-                GameFuseUser.CurrentUser.SetIDInternal((int)json.id);
+                GameFuseUser.CurrentUser.SetScoreInternal(Convert.ToInt32(json["score"]));
+                GameFuseUser.CurrentUser.SetCreditsInternal(Convert.ToInt32(json["credits"]));
+                GameFuseUser.CurrentUser.SetUsernameInternal(json["username"].ToString());
+                GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse(json["last_login"].ToString()));
+                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal(Convert.ToInt32(json["number_of_logins"]));
+                GameFuseUser.CurrentUser.SetAuthenticationTokenInternal(json["authentication_token"].ToString());
+                GameFuseUser.CurrentUser.SetIDInternal(Convert.ToInt32(json["id"]));
                 
                 // Chain next request - download users attributes
                 GameFuseUser.CurrentUser.DownloadAttributes(true, callback);
@@ -653,17 +662,17 @@ namespace GameFuseCSharp
                 var data = request.downloadHandler.text;
                 
                 // Use Newtonsoft.Json to parse the response
-                dynamic json = JsonConvert.DeserializeObject<dynamic>(data);
+                var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
                 
                 // Update the current user
                 GameFuseUser.CurrentUser.SetSignedInInternal();
-                GameFuseUser.CurrentUser.SetScoreInternal((int)json.score);
-                GameFuseUser.CurrentUser.SetCreditsInternal((int)json.credits);
-                GameFuseUser.CurrentUser.SetUsernameInternal((string)json.username);
-                GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse((string)json.last_login));
-                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal((int)json.number_of_logins); 
-                GameFuseUser.CurrentUser.SetAuthenticationTokenInternal((string)json.authentication_token);
-                GameFuseUser.CurrentUser.SetIDInternal((int)json.id);
+                GameFuseUser.CurrentUser.SetScoreInternal(Convert.ToInt32(json["score"]));
+                GameFuseUser.CurrentUser.SetCreditsInternal(Convert.ToInt32(json["credits"]));
+                GameFuseUser.CurrentUser.SetUsernameInternal(json["username"].ToString());
+                GameFuseUser.CurrentUser.SetLastLoginInternal(DateTime.Parse(json["last_login"].ToString()));
+                GameFuseUser.CurrentUser.SetNumberOfLoginsInternal(Convert.ToInt32(json["number_of_logins"])); 
+                GameFuseUser.CurrentUser.SetAuthenticationTokenInternal(json["authentication_token"].ToString());
+                GameFuseUser.CurrentUser.SetIDInternal(Convert.ToInt32(json["id"]));
                 
                 // Chain next request - download users attributes
                 GameFuseUser.CurrentUser.DownloadAttributes(true, callback);

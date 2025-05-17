@@ -786,7 +786,7 @@ namespace GameFuseCSharp
                 
                 // Update the cached attributes
                 attributes.Clear();
-                foreach (var attribute in response.GameUserAttributes)
+                foreach (var attribute in response.Attributes)
                 {
                     attributes[attribute.Key] = attribute.Value;
                 }
