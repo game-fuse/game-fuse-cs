@@ -1,0 +1,100 @@
+using Newtonsoft.Json;
+
+namespace GameFuse.Models
+{
+    /// <summary>
+    /// Represents an item in the GameFuse store.
+    /// </summary>
+    public class StoreItem
+    {
+        /// <summary>
+        /// The item's unique identifier.
+        /// </summary>
+        [JsonProperty("id")]
+        public int Id { get; internal set; }
+
+        /// <summary>
+        /// The item's name.
+        /// </summary>
+        [JsonProperty("name")]
+        public string Name { get; internal set; }
+
+        /// <summary>
+        /// The cost of the item in credits.
+        /// </summary>
+        [JsonProperty("cost")]
+        public int Cost { get; internal set; }
+
+        /// <summary>
+        /// A description of the item.
+        /// </summary>
+        [JsonProperty("description")]
+        public string Description { get; internal set; }
+
+        /// <summary>
+        /// The category the item belongs to.
+        /// </summary>
+        [JsonProperty("category")]
+        public string Category { get; internal set; }
+
+        /// <summary>
+        /// The URL to the item's icon, if available.
+        /// </summary>
+        [JsonProperty("icon_url")]
+        public string IconUrl { get; internal set; }
+    }
+
+    /// <summary>
+    /// Represents a credit transaction in GameFuse.
+    /// </summary>
+    public class CreditTransaction
+    {
+        /// <summary>
+        /// The transaction's unique identifier.
+        /// </summary>
+        [JsonProperty("id")]
+        public int Id { get; internal set; }
+
+        /// <summary>
+        /// The number of credits involved in the transaction.
+        /// </summary>
+        [JsonProperty("credits_amount")]
+        public int CreditsAmount { get; internal set; }
+
+        /// <summary>
+        /// The type of transaction (e.g., "purchase", "reward").
+        /// </summary>
+        [JsonProperty("transaction_type")]
+        public string TransactionType { get; internal set; }
+
+        /// <summary>
+        /// A description of the transaction.
+        /// </summary>
+        [JsonProperty("description")]
+        public string Description { get; internal set; }
+
+        /// <summary>
+        /// When the transaction occurred.
+        /// </summary>
+        [JsonProperty("created_at")]
+        public string CreatedAt { get; internal set; }
+    }
+
+    /// <summary>
+    /// Represents a user's credit balance.
+    /// </summary>
+    public class CreditBalance
+    {
+        /// <summary>
+        /// The user's current credit balance.
+        /// </summary>
+        [JsonProperty("credits")]
+        public int Credits { get; internal set; }
+
+        /// <summary>
+        /// The user's ID.
+        /// </summary>
+        [JsonProperty("user_id")]
+        public int UserId { get; internal set; }
+    }
+}

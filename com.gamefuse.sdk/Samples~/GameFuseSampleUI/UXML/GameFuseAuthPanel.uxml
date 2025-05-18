@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xmlns="UnityEngine.UIElements" 
+      xsi:schemaLocation="UnityEngine.UIElements ../UIElementsSchema/UnityEngine.UIElements.xsd">
+  <VisualElement name="auth-panel" class="panel">
+    <Label text="GameFuse Authentication" class="title" />
+    
+    <VisualElement name="sign-in-panel" class="form-panel">
+      <Label text="Sign In" class="subtitle" />
+      <TextField name="username-input" label="Email or Username" class="form-field" />
+      <TextField name="password-input" label="Password" password="true" class="form-field" />
+      <VisualElement class="row">
+        <Button name="sign-in-button" text="Sign In" class="button primary" />
+        <Button name="sign-up-toggle-button" text="Create Account" class="button secondary" />
+      </VisualElement>
+      <Button name="forgot-password-button" text="Forgot Password?" class="button text" />
+    </VisualElement>
+    
+    <VisualElement name="sign-up-panel" class="form-panel" style="display: none;">
+      <Label text="Create Account" class="subtitle" />
+      <TextField name="sign-up-email-input" label="Email" class="form-field" />
+      <TextField name="sign-up-username-input" label="Username" class="form-field" />
+      <TextField name="sign-up-password-input" label="Password" password="true" class="form-field" />
+      <TextField name="sign-up-confirm-password-input" label="Confirm Password" password="true" class="form-field" />
+      <VisualElement class="row">
+        <Button name="sign-up-button" text="Sign Up" class="button primary" />
+        <Button name="sign-in-toggle-button" text="Back to Sign In" class="button secondary" />
+      </VisualElement>
+    </VisualElement>
+    
+    <VisualElement name="forgot-password-panel" class="form-panel" style="display: none;">
+      <Label text="Forgot Password" class="subtitle" />
+      <TextField name="forgot-password-email-input" label="Email" class="form-field" />
+      <VisualElement class="row">
+        <Button name="reset-password-button" text="Reset Password" class="button primary" />
+        <Button name="forgot-password-cancel-button" text="Cancel" class="button secondary" />
+      </VisualElement>
+    </VisualElement>
+    
+    <VisualElement name="message-panel" class="message-panel" style="display: none;">
+      <Label name="message-text" text="" />
+    </VisualElement>
+  </VisualElement>
+</UXML>

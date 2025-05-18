@@ -1,204 +1,210 @@
+using GameFuse.Models;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace GameFuseCSharp
+namespace GameFuse
 {
     public partial class GameFuseUser
     {
         /// <summary>
-        /// Creates a new group with the current user as admin.
+        /// Creates a new group.
         /// </summary>
-        /// <param name="request">Group creation parameters</param>
-        /// <returns>Response containing the created group details</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<GroupResponse> CreateGroupAsync(CreateGroupRequest request)
+        /// <param name="name">The name of the group.</param>
+        /// <param name="groupType">The type of group (e.g., "Public", "Private").</param>
+        /// <param name="canAutoJoin">Whether users can automatically join the group.</param>
+        /// <param name="isInviteOnly">Whether the group is invite-only.</param>
+        /// <param name="maxGroupSize">The maximum number of members allowed in the group.</param>
+        /// <param name="searchable">Whether the group can be found in searches.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The created group.</returns>
+        public Task<Group> CreateGroupAsync(string name, string groupType, bool canAutoJoin, bool isInviteOnly, int maxGroupSize, bool searchable, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGroupsService groupsService = new GroupsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await groupsService.CreateGroupAsync(request);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _groupService.CreateGroupAsync(Id, name, groupType, canAutoJoin, isInviteOnly, maxGroupSize, searchable, cancellationToken);
         }
 
         /// <summary>
-        /// Gets a list of all available groups.
+        /// Gets a group by ID.
         /// </summary>
-        /// <param name="withFullData">If true, includes complete group details including members and admins</param>
-        /// <returns>Response containing array of groups</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<GroupResponse[]> GetAllGroupsAsync(bool withFullData = false)
+        /// <param name="groupId">The ID of the group.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The group.</returns>
+        public Task<Group> GetGroupAsync(int groupId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGroupsService groupsService = new GroupsService(GameFuse.GetBaseURL(), authenticationToken);
-                GroupsResponse response = await groupsService.GetAllGroupsAsync(withFullData);
-                return response.Groups;
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _groupService.GetGroupAsync(groupId, cancellationToken);
         }
 
         /// <summary>
-        /// Gets detailed information about a specific group.
+        /// Gets all groups for the current user.
         /// </summary>
-        /// <param name="groupId">ID of the group to fetch details for</param>
-        /// <returns>Response containing complete group information</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<GroupResponse> GetGroupDetailsAsync(int groupId)
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A list of groups.</returns>
+        public Task<IReadOnlyList<Group>> GetUserGroupsAsync(CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGroupsService groupsService = new GroupsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await groupsService.GetGroupDetailsAsync(groupId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _groupService.GetUserGroupsAsync(Id, cancellationToken);
         }
 
         /// <summary>
-        /// Sends a request to join a group or invites a user to join.
+        /// Updates a group.
         /// </summary>
-        /// <param name="request">Group connection request parameters</param>
-        /// <returns>Response containing the connection details</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<GroupConnectionResponse> SendGroupConnectionRequestAsync(GroupConnectionRequest request)
+        /// <param name="groupId">The ID of the group to update.</param>
+        /// <param name="name">The new name of the group.</param>
+        /// <param name="groupType">The new type of group.</param>
+        /// <param name="canAutoJoin">Whether users can automatically join the group.</param>
+        /// <param name="isInviteOnly">Whether the group is invite-only.</param>
+        /// <param name="maxGroupSize">The maximum number of members allowed in the group.</param>
+        /// <param name="searchable">Whether the group can be found in searches.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The updated group.</returns>
+        public Task<Group> UpdateGroupAsync(int groupId, string name = null, string groupType = null, bool? canAutoJoin = null, bool? isInviteOnly = null, int? maxGroupSize = null, bool? searchable = null, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGroupsService groupsService = new GroupsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await groupsService.SendGroupConnectionRequestAsync(request);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _groupService.UpdateGroupAsync(groupId, name, groupType, canAutoJoin, isInviteOnly, maxGroupSize, searchable, cancellationToken);
         }
 
         /// <summary>
-        /// Accepts a group connection request.
+        /// Deletes a group.
         /// </summary>
-        /// <param name="connectionId">ID of the connection request to manage</param>
-        /// <returns>Response confirming the status update</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<GroupConnectionStatusResponse> AcceptGroupConnectionRequestAsync(int connectionId)
+        /// <param name="groupId">The ID of the group to delete.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task DeleteGroupAsync(int groupId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGroupsService groupsService = new GroupsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await groupsService.AcceptGroupConnectionRequestAsync(connectionId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _groupService.DeleteGroupAsync(groupId, cancellationToken);
         }
 
         /// <summary>
-        /// Accepts a group connection request.
+        /// Adds a user to a group.
         /// </summary>
-        /// <param name="connectionId">ID of the connection request to manage</param>
-        /// <returns>Response confirming the status update</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<GroupConnectionStatusResponse> DeclineGroupConnectionRequestAsync(int connectionId)
+        /// <param name="groupId">The ID of the group.</param>
+        /// <param name="userId">The ID of the user to add.</param>
+        /// <param name="isAdmin">Whether the user should be an admin.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task AddUserToGroupAsync(int groupId, int userId, bool isAdmin = false, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGroupsService groupsService = new GroupsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await groupsService.DeclineGroupConnectionRequestAsync(connectionId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _groupService.AddUserToGroupAsync(groupId, userId, isAdmin, cancellationToken);
         }
 
         /// <summary>
-        /// Gets all attributes for a specific group.
+        /// Removes a user from a group.
         /// </summary>
-        /// <param name="groupId">ID of the group to fetch attributes for</param>
-        /// <returns>Response containing group attributes</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<GroupAttributesResponse> GetGroupAttributesAsync(int groupId)
+        /// <param name="groupId">The ID of the group.</param>
+        /// <param name="userId">The ID of the user to remove.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task RemoveUserFromGroupAsync(int groupId, int userId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGroupsService groupsService = new GroupsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await groupsService.GetGroupAttributesAsync(groupId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
-        }
-
-
-        /// <summary>
-        /// Adds a single attribute to a group.
-        /// </summary>
-        /// <param name="groupId">ID of the group to add attributes to</param>
-        /// <param name="request">Attribute to add</param>
-        /// <returns>Response containing updated group attributes</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<GroupAttributesResponse> AddGroupAttributeAsync(int groupId, GroupAttributeRequest request)
-        {
-
-            GroupAttributesRequest attributesRequest = new GroupAttributesRequest();
-            attributesRequest.Attributes = new GroupAttributeRequest[] { request };
-            try
-            {
-                return await AddGroupAttributesAsync(groupId, attributesRequest);
-            }catch(ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _groupService.RemoveUserFromGroupAsync(groupId, userId, cancellationToken);
         }
 
         /// <summary>
-        /// Adds new attributes to a group.
+        /// Updates a member's status in a group.
         /// </summary>
-        /// <param name="groupId">ID of the group to add attributes to</param>
-        /// <param name="request">Attributes to add</param>
-        /// <returns>Response containing updated group attributes</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<GroupAttributesResponse> AddGroupAttributesAsync(int groupId, GroupAttributesRequest request)
+        /// <param name="groupId">The ID of the group.</param>
+        /// <param name="userId">The ID of the user to update.</param>
+        /// <param name="isAdmin">Whether the user should be an admin.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task UpdateGroupMemberAsync(int groupId, int userId, bool isAdmin, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGroupsService groupsService = new GroupsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await groupsService.AddGroupAttributesAsync(groupId, request);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _groupService.UpdateGroupMemberAsync(groupId, userId, isAdmin, cancellationToken);
         }
 
         /// <summary>
-        /// Modifies an existing group attribute.
+        /// Sends a request to join a group.
         /// </summary>
-        /// <param name="groupId">ID of the group containing the attribute</param>
-        /// <param name="key">Key of the attribute to modify</param>
-        /// <param name="value">New value for the attribute</param>
-        /// <returns>Response containing updated group attributes</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<GroupAttribute> ModifyGroupAttributeAsync(int groupId, string key, string value)
+        /// <param name="groupId">The ID of the group.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task SendJoinRequestAsync(int groupId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGroupsService groupsService = new GroupsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await groupsService.ModifyGroupAttributeAsync(groupId, key, value);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _groupService.SendJoinRequestAsync(groupId, Id, cancellationToken);
+        }
+
+        /// <summary>
+        /// Accepts a request to join a group.
+        /// </summary>
+        /// <param name="groupId">The ID of the group.</param>
+        /// <param name="requestId">The ID of the join request.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task AcceptJoinRequestAsync(int groupId, int requestId, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+            return _groupService.AcceptJoinRequestAsync(groupId, requestId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Rejects a request to join a group.
+        /// </summary>
+        /// <param name="groupId">The ID of the group.</param>
+        /// <param name="requestId">The ID of the join request.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task RejectJoinRequestAsync(int groupId, int requestId, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+            return _groupService.RejectJoinRequestAsync(groupId, requestId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Invites a user to join a group.
+        /// </summary>
+        /// <param name="groupId">The ID of the group.</param>
+        /// <param name="inviteeId">The ID of the user to invite.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task InviteUserToGroupAsync(int groupId, int inviteeId, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+            return _groupService.InviteUserToGroupAsync(groupId, Id, inviteeId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Accepts an invitation to join a group.
+        /// </summary>
+        /// <param name="groupId">The ID of the group.</param>
+        /// <param name="inviteId">The ID of the invite.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task AcceptGroupInviteAsync(int groupId, int inviteId, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+            return _groupService.AcceptGroupInviteAsync(groupId, inviteId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Rejects an invitation to join a group.
+        /// </summary>
+        /// <param name="groupId">The ID of the group.</param>
+        /// <param name="inviteId">The ID of the invite.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task RejectGroupInviteAsync(int groupId, int inviteId, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+            return _groupService.RejectGroupInviteAsync(groupId, inviteId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Searches for groups by name.
+        /// </summary>
+        /// <param name="query">The search query.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A list of groups matching the search criteria.</returns>
+        public Task<IReadOnlyList<Group>> SearchGroupsAsync(string query, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+            return _groupService.SearchGroupsAsync(query, cancellationToken);
         }
     }
 }

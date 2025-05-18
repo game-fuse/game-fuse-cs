@@ -1,140 +1,86 @@
+using GameFuse.Models;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace GameFuseCSharp
+namespace GameFuse
 {
     public partial class GameFuseUser
     {
         /// <summary>
-        /// Creates a new basic game round for the current user.
+        /// Creates a new game round for the current user.
         /// </summary>
-        /// <returns>Response containing the created game round.</returns>
-        /// <exception cref="ApiException">Thrown when request fails.</exception>
-        public async Task<GameRoundObject> CreateGameRoundAsync()
+        /// <param name="level">The level identifier (optional).</param>
+        /// <param name="customData">Custom data for the game round (optional).</param>
+        /// <param name="variables">Variables for the game round (optional).</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The created game round.</returns>
+        public Task<GameRound> CreateGameRoundAsync(string level = null, string customData = null, Dictionary<string, string> variables = null, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await gameRoundsService.CreateGameRoundAsync(this.id);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _gameRoundService.CreateGameRoundAsync(Id, level, customData, variables, cancellationToken);
         }
 
         /// <summary>
-        /// Creates a new game round with detailed information for the current user.
+        /// Gets a game round by ID.
         /// </summary>
-        /// <param name="gameRound">Game round details. The GameUserId will be set to the current user's ID.</param>
-        /// <returns>Response containing the created game round.</returns>
-        /// <exception cref="ApiException">Thrown when request fails.</exception>
-        public async Task<GameRoundObject> CreateGameRoundAsync(GameRoundObject gameRound)
+        /// <param name="gameRoundId">The ID of the game round.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The game round.</returns>
+        public Task<GameRound> GetGameRoundAsync(int gameRoundId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                gameRound.GameUserId = this.id;
-                return await gameRoundsService.CreateGameRoundAsync(gameRound);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _gameRoundService.GetGameRoundAsync(gameRoundId, cancellationToken);
         }
 
         /// <summary>
-        /// Updates an existing game round owned by the current user.
+        /// Gets all game rounds for the current user.
         /// </summary>
-        /// <param name="gameRoundId">ID of the game round to update.</param>
-        /// <param name="gameRound">game round with updated values</param>
-        /// <returns>Response containing the updated game round.</returns>
-        /// <exception cref="ApiException">Thrown when request fails or user doesn't own the game round.</exception>
-        public async Task<GameRoundObject> UpdateGameRoundAsync(int gameRoundId, GameRoundObject gameRound)
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A list of game rounds.</returns>
+        public Task<IReadOnlyList<GameRound>> GetCurrentUserGameRoundsAsync(CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await gameRoundsService.UpdateGameRoundAsync(gameRoundId, gameRound);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _gameRoundService.GetGameRoundsForUserAsync(Id, cancellationToken);
         }
 
         /// <summary>
-        /// Retrieves a specific game round by ID.
+        /// Updates a game round.
         /// </summary>
-        /// <param name="gameRoundId">ID of the game round to retrieve.</param>
-        /// <returns>Response containing the game round details.</returns>
-        /// <exception cref="ApiException">Thrown when request fails.</exception>
-        public async Task<GameRoundObject> GetGameRoundAsync(int gameRoundId)
+        /// <param name="gameRoundId">The ID of the game round to update.</param>
+        /// <param name="score">The new score (optional).</param>
+        /// <param name="customData">New custom data (optional).</param>
+        /// <param name="variables">New variables (optional).</param>
+        /// <param name="ended">Whether the game round has ended (optional).</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The updated game round.</returns>
+        public Task<GameRound> UpdateGameRoundAsync(int gameRoundId, int? score = null, string customData = null, Dictionary<string, string> variables = null, bool? ended = null, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await gameRoundsService.GetGameRoundAsync(gameRoundId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _gameRoundService.UpdateGameRoundAsync(gameRoundId, score, customData, variables, ended, cancellationToken);
         }
 
         /// <summary>
-        /// Retrieves all game rounds for the current user.
+        /// Gets the leaderboard for the game.
         /// </summary>
-        /// <returns>Response containing an array of game rounds.</returns>
-        /// <exception cref="ApiException">Thrown when request fails.</exception>
-        public async Task<GameRoundsResponse> GetMyGameRoundsAsync()
+        /// <param name="limit">The maximum number of entries to return.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A list of leaderboard entries.</returns>
+        public Task<IReadOnlyList<LeaderboardEntry>> GetLeaderboardAsync(int limit = 100, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await gameRoundsService.GetUserGameRoundsAsync(this.id);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _gameRoundService.GetLeaderboardAsync(limit, cancellationToken);
         }
 
         /// <summary>
-        /// Retrieves all game rounds for a specific user.
+        /// Gets the current user's rank in the leaderboard.
         /// </summary>
-        /// <param name="userId">ID of the user whose game rounds to retrieve.</param>
-        /// <returns>Response containing an array of game rounds.</returns>
-        /// <exception cref="ApiException">Thrown when request fails.</exception>
-        public async Task<GameRoundsResponse> GetUserGameRoundsAsync(int userId)
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The user's leaderboard entry.</returns>
+        public Task<LeaderboardEntry> GetUserRankAsync(CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await gameRoundsService.GetUserGameRoundsAsync(userId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Deletes a specific game round owned by the current user.
-        /// </summary>
-        /// <param name="gameRoundId">ID of the game round to delete.</param>
-        /// <returns>Response confirming the deletion.</returns>
-        /// <exception cref="ApiException">Thrown when request fails or user doesn't own the game round.</exception>
-        public async Task<MessageResponse> DeleteGameRoundAsync(int gameRoundId)
-        {
-            try
-            {
-                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await gameRoundsService.DeleteGameRoundAsync(gameRoundId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _gameRoundService.GetUserRankAsync(Id, cancellationToken);
         }
     }
 }
