@@ -33,7 +33,7 @@ namespace GameFuse.Transport
         {
             GameFuseSettings settings = GameFuseSettings.Settings;
 
-            _baseUrl = baseUrl ?? settings?.ApiBaseUrl ?? "https://api.gamefuse.co/api/v3";
+            _baseUrl = baseUrl ?? settings?.ApiBaseUrl ?? "https://gamefuse.co/api/v3";
             _maxRetryAttempts = maxRetryAttempts ?? settings?.MaxRetryAttempts ?? 3;
             _requestTimeoutSeconds = requestTimeoutSeconds ?? settings?.RequestTimeoutSeconds ?? 30;
         }
@@ -72,6 +72,12 @@ namespace GameFuse.Transport
         public Task<TResponse> DeleteAsync<TResponse>(string path, Dictionary<string, string> headers = null, CancellationToken cancellationToken = default)
         {
             return SendRequestAsync<TResponse>(UnityWebRequest.kHttpVerbDELETE, path, null, headers, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task<TResponse> DeleteAsync<TRequest, TResponse>(string path, TRequest body, Dictionary<string, string> headers = null, CancellationToken cancellationToken = default)
+        {
+            return SendRequestAsync<TResponse>(UnityWebRequest.kHttpVerbDELETE, path, body, headers, cancellationToken);
         }
 
         /// <inheritdoc/>

@@ -142,6 +142,11 @@ namespace GameFuse.Tests.Common.Transport
             return JsonConvert.DeserializeObject<TResponse>(response.Json);
         }
 
+        public Task<TResponse> DeleteAsync<TRequest, TResponse>(string path, TRequest body, Dictionary<string, string> headers = null, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Represents a mock HTTP response.
         /// </summary>

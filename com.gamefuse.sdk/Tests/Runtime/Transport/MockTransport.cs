@@ -93,6 +93,12 @@ namespace GameFuse.Tests.Transport
         }
 
         /// <inheritdoc/>
+        public Task<TResponse> DeleteAsync<TRequest, TResponse>(string path, TRequest body, Dictionary<string, string> headers = null, CancellationToken cancellationToken = default)
+        {
+            return SendMockRequestAsync<TResponse>("DELETE", path, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public async Task DeleteAsync(string path, Dictionary<string, string> headers = null, CancellationToken cancellationToken = default)
         {
             await SendMockRequestAsync<object>("DELETE", path, cancellationToken);

@@ -77,6 +77,18 @@ namespace GameFuse.Transport
         Task<TResponse> DeleteAsync<TResponse>(string path, Dictionary<string, string> headers = null, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Executes a DELETE request to the specified path with the provided body.
+        /// </summary>
+        /// <typeparam name="TRequest">The request body type.</typeparam>
+        /// <typeparam name="TResponse">The expected response type.</typeparam>
+        /// <param name="path">The API endpoint path (relative to the base URL).</param>
+        /// <param name="body">The request body object to be serialized.</param>
+        /// <param name="headers">Optional headers to include in the request.</param>
+        /// <param name="cancellationToken">Cancellation token to cancel the request.</param>
+        /// <returns>A task representing the asynchronous operation, containing the deserialized response.</returns>
+        Task<TResponse> DeleteAsync<TRequest, TResponse>(string path, TRequest body, Dictionary<string, string> headers = null, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Executes a DELETE request to the specified path, expecting no response body.
         /// </summary>
         /// <param name="path">The API endpoint path (relative to the base URL).</param>
