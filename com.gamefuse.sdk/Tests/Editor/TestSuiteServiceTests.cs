@@ -5,6 +5,7 @@ using GameFuse.Transport;
 using NUnit.Framework;
 using System;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -149,17 +150,21 @@ namespace GameFuse.Tests.Editor
         }
 
         [Test]
-        public void TestSuite_InvalidAdminCredentials_ThrowsException()
+        public async Task TestSuite_InvalidAdminCredentials_ReturnsUnauthorized()
         {
             // Arrange
             string invalidToken = "invalid_token";
             string invalidName = "invalid_name";
 
-            // Act & Assert - CreateGame
-            var createGameException = Assert.ThrowsAsync<GameFuseApiException>(async () =>
-                await _testSuiteService.CreateGameAsync(invalidToken, invalidName));
-            
-            Assert.AreEqual(System.Net.HttpStatusCode.Unauthorized, createGameException.StatusCode);
+            try
+            {
+                await _testSuiteService.CreateGameAsync(invalidToken, invalidName);
+                Assert.Fail("Expected GameFuseApiException was not thrown.");
+            }
+            catch (GameFuseApiException ex)
+            {
+                Assert.AreEqual(HttpStatusCode.Unauthorized, ex.StatusCode);
+            }
         }
     }
 }
