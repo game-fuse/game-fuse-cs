@@ -40,7 +40,7 @@ namespace GameFuse
         {
             EnsureAuthenticated();
             var result = await _storeService.PurchaseItemAsync(Id, itemId, cancellationToken);
-            Credits = result.Credits; // Update the user's credit balance
+           // Credits = result.Credits; // Update the user's credit balance  TODO come back to this see if we need to update credits
             return result;
         }
 
@@ -64,7 +64,7 @@ namespace GameFuse
         {
             EnsureAuthenticated();
             var result = await _storeService.GetCreditBalanceAsync(Id, cancellationToken);
-            Credits = result.Credits; // Update the user's credit balance
+            //Credits = result.Credits; // Update the user's credit balance TODO come back to this see if we need to update credits
             return result;
         }
 

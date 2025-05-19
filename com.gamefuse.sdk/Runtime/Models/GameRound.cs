@@ -63,6 +63,17 @@ namespace GameFuse.Models
         public Dictionary<string, string> Variables { get; internal set; }
     }
 
+     public class LeaderboardEntries
+    {
+         [JsonProperty("leaderboard_entries")]
+         public List<LeaderboardEntry> Entries { get; set; }
+
+        public LeaderboardEntries()
+        {
+            Entries = new List<LeaderboardEntry>(); // Initialize to prevent null reference if API returns empty list
+        }
+    }
+
     /// <summary>
     /// Represents a leaderboard entry.
     /// </summary>

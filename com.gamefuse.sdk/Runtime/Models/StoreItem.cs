@@ -1,7 +1,33 @@
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace GameFuse.Models
 {
+
+    /// <summary>
+    /// Represents the API response when fetching a user's purchased store items.
+    /// Contains the user's current credits and a list of their purchased items.
+    /// </summary>
+    public class UserStore
+    {
+        /// <summary>
+        /// The user's remaining credits after any transactions or as a current balance.
+        /// </summary>
+        [JsonProperty("credits")]
+        public int Credits { get; internal set; }
+
+        /// <summary>
+        /// A list of store items purchased by the user.
+        /// </summary>
+        [JsonProperty("store_items")]
+        public List<StoreItem> StoreItems { get; internal set; }
+
+        public UserStore()
+        {
+            StoreItems = new List<StoreItem>(); // Initialize to prevent null reference if API returns empty list
+        }
+    }
+
     /// <summary>
     /// Represents an item in the GameFuse store.
     /// </summary>

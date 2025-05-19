@@ -1,3 +1,5 @@
+// GameFuseUser.cs
+
 using GameFuse.Config;
 using GameFuse.Exceptions;
 using GameFuse.Models;
@@ -17,58 +19,123 @@ namespace GameFuse
     public partial class GameFuseUser
     {
         private ITransport _transport = new UnityWebRequestTransport();
+        private User _userData; // Store the underlying User model
 
         /// <summary>
         /// The currently authenticated user. Set upon successful sign-in/sign-up and cleared on sign-out.
         /// </summary>
         public static GameFuseUser CurrentUser { get; private set; }
 
+        // --- Properties delegating to _userData ---
         /// <summary>
         /// The ID of the user.
         /// </summary>
-        public int Id { get; }
+        public int Id => _userData.Id;
 
         /// <summary>
         /// The username of the user.
         /// </summary>
-        public string Username { get; }
+        public string Username => _userData.Username;
 
         /// <summary>
-        /// The email of the user.
+        /// The system email of the user.
         /// </summary>
-        public string Email { get; private set; }
+        public string Email => _userData.Email;
 
         /// <summary>
         /// The display email of the user.
         /// </summary>
-        public string DisplayEmail { get; private set; }
-
-        /// <summary>
-        /// The authentication token for the user.
-        /// </summary>
-        internal string AuthenticationToken { get; }
+        public string DisplayEmail => _userData.DisplayEmail;
 
         /// <summary>
         /// The number of credits the user has.
         /// </summary>
-        public int Credits { get; private set; }
+        public int Credits => _userData.Credits;
 
         /// <summary>
         /// The score of the user.
         /// </summary>
-        public int Score { get; private set; }
+        public int Score => _userData.Score;
 
         /// <summary>
         /// The date and time of the user's last login.
         /// </summary>
-        public string LastLogin { get; }
+        public string LastLogin => _userData.LastLogin;
 
         /// <summary>
         /// The number of times the user has logged in.
         /// </summary>
-        public int NumberOfLogins { get; }
+        public int NumberOfLogins => _userData.NumberOfLogins;
 
-        
+        /// <summary>
+        /// Running API hits for this user.
+        /// </summary>
+        public int EventsTotal => _userData.EventsTotal;
+
+        /// <summary>
+        /// Running API hits for this user for the current month.
+        /// </summary>
+        public int EventsCurrentMonth => _userData.EventsCurrentMonth;
+
+        /// <summary>
+        /// Unique game sessions for this user.
+        /// </summary>
+        public int GameSessionsTotal => _userData.GameSessionsTotal;
+
+        /// <summary>
+        /// Unique game sessions for this user during the current month.
+        /// </summary>
+        public int GameSessionsCurrentMonth => _userData.GameSessionsCurrentMonth;
+
+        /// <summary>
+        /// Custom attributes associated with the user.
+        /// Fetched separately, or potentially part of initial sign-in.
+        /// </summary>
+        public IReadOnlyList<UserAttribute> GameUserAttributes => _userData.GameUserAttributes;
+
+        /// <summary>
+        /// Store items purchased by the user.
+        /// Fetched separately, or potentially part of initial sign-in.
+        /// </summary>
+        public IReadOnlyList<StoreItem> GameUserStoreItems => _userData.GameUserStoreItems;
+
+        /// <summary>
+        /// The user's friends.
+        /// Fetched separately, or potentially part of initial sign-in.
+        /// </summary>
+        public IReadOnlyList<Friend> Friends => _userData.Friends;
+
+        /// <summary>
+        /// Outgoing friend requests sent by the user.
+        /// </summary>
+        public IReadOnlyList<FriendRequest> OutgoingFriendRequests => _userData.OutgoingFriendRequests;
+
+        /// <summary>
+        /// Incoming friend requests received by the user.
+        /// </summary>
+        public IReadOnlyList<FriendRequest> IncomingFriendRequests => _userData.IncomingFriendRequests;
+
+        /// <summary>
+        /// Groups that the user is a member of.
+        /// </summary>
+        public IReadOnlyList<Group> Groups => _userData.Groups;
+
+        /// <summary>
+        /// Group join requests sent by the user.
+        /// </summary>
+        public IReadOnlyList<GroupJoinRequest> GroupJoinRequests => _userData.GroupJoinRequests;
+
+        /// <summary>
+        /// Group invites received by the user.
+        /// </summary>
+        public IReadOnlyList<GroupInvite> GroupInvites => _userData.GroupInvites;
+
+
+        /// <summary>
+        /// The authentication token for the user.
+        /// </summary>
+        internal string AuthenticationToken => _userData.AuthenticationToken;
+
         private readonly UserService _userService;
         private readonly GameRoundService _gameRoundService;
         private readonly StoreService _storeService;
@@ -78,21 +145,12 @@ namespace GameFuse
 
         public GameFuseUser(User user)
         {
-            Id = user.Id;
-            Username = user.Username;
-            Email = user.Email;
-            DisplayEmail = user.DisplayEmail;
-            AuthenticationToken = user.AuthenticationToken;
-            Credits = user.Credits;
-            Score = user.Score;
-            LastLogin = user.LastLogin;
-            NumberOfLogins = user.NumberOfLogins;
+            _userData = user ?? throw new ArgumentNullException(nameof(user));
 
             _transport.SetAuthHeaderProvider(() => new Dictionary<string, string>
             {
-                ["authentication-token"] = user.AuthenticationToken
+                ["authentication-token"] = _userData.AuthenticationToken // Use token from User model
             });
-
 
             _userService = new UserService(_transport);
             _gameRoundService = new GameRoundService(_transport);
@@ -102,24 +160,13 @@ namespace GameFuse
             _messageService = new MessageService(_transport);
         }
 
-        public void UpdateUser(User user)
-        {
-            Email = user.Email;
-            DisplayEmail = user.DisplayEmail;
-            Credits = user.Credits;
-            Score = user.Score;
-        }
+        
+        // --- Static Methods (SignUp, SignIn, etc.) remain largely the same ---
+        // They will construct a new GameFuseUser with the User object returned from AuthService
 
         /// <summary>
         /// Signs up a new user.
         /// </summary>
-        /// <param name="email">The user's email address.</param>
-        /// <param name="password">The user's password.</param>
-        /// <param name="username">The user's desired username.</param>
-        /// <param name="gameId">The ID of the game. If null, uses the value from GameFuseSettings.</param>
-        /// <param name="gameApiKey">The API key for the game. If null, uses the value from GameFuseSettings.</param>
-        /// <param name="cancellationToken">A token to cancel the operation.</param>
-        /// <returns>The newly created GameFuseUser.</returns>
         public static async Task<GameFuseUser> SignUpAsync(string email, string password, string username, string gameId = null, string gameApiKey = null, CancellationToken cancellationToken = default)
         {
             gameId ??= GameFuseSettings.Settings?.GameId;
@@ -137,20 +184,14 @@ namespace GameFuse
 
             var transport = new UnityWebRequestTransport();
             var authService = new AuthService(transport);
-            var user = await authService.SignUpAsync(email, password, username, gameId, gameApiKey, cancellationToken);
-            CurrentUser = new GameFuseUser(user);
-            return CurrentUser;
+            var userModel = await authService.SignUpAsync(email, password, username, gameId, gameApiKey, cancellationToken);
+            CurrentUser = new GameFuseUser(userModel); // Pass the full User model
+            return new GameFuseUser(userModel);
         }
 
         /// <summary>
         /// Signs in an existing user.
         /// </summary>
-        /// <param name="emailOrUsername">The user's email address or username.</param>
-        /// <param name="password">The user's password.</param>
-        /// <param name="gameId">The ID of the game. If null, uses the value from GameFuseSettings.</param>
-        /// <param name="gameApiKey">The API key for the game. If null, uses the value from GameFuseSettings.</param>
-        /// <param name="cancellationToken">A token to cancel the operation.</param>
-        /// <returns>The signed-in GameFuseUser.</returns>
         public static async Task<GameFuseUser> SignInAsync(string emailOrUsername, string password, string gameId = null, string gameApiKey = null, CancellationToken cancellationToken = default)
         {
             gameId ??= GameFuseSettings.Settings?.GameId;
@@ -168,30 +209,28 @@ namespace GameFuse
 
             var transport = new UnityWebRequestTransport();
             var authService = new AuthService(transport);
-            var user = await authService.SignInAsync(emailOrUsername, password, gameId, gameApiKey, cancellationToken);
-            CurrentUser = new GameFuseUser(user);
-            return CurrentUser;
+            var userModel = await authService.SignInAsync(emailOrUsername, password, gameId, gameApiKey, cancellationToken);
+            CurrentUser = new GameFuseUser(userModel); // Pass the full User model
+            return new GameFuseUser(userModel);
         }
 
         /// <summary>
         /// Signs out the current user.
         /// </summary>
-        /// <param name="cancellationToken">A token to cancel the operation.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public static Task SignOutAsync(CancellationToken cancellationToken = default)
+        public static void SignOut(CancellationToken cancellationToken = default)
         {
             CurrentUser = null;
-            return Task.CompletedTask;
+           
+        }
+
+        public void SignOut()
+        {
+            _userData.AuthenticationToken = null;
         }
 
         /// <summary>
         /// Initiates the forgot password process for a user.
         /// </summary>
-        /// <param name="email">The user's email address.</param>
-        /// <param name="gameId">The ID of the game. If null, uses the value from GameFuseSettings.</param>
-        /// <param name="gameApiKey">The API key for the game. If null, uses the value from GameFuseSettings.</param>
-        /// <param name="cancellationToken">A token to cancel the operation.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
         public static Task ForgotPasswordAsync(string email, string gameId = null, string gameApiKey = null, CancellationToken cancellationToken = default)
         {
             gameId ??= GameFuseSettings.Settings?.GameId;
@@ -207,7 +246,7 @@ namespace GameFuse
                 throw new ArgumentNullException(nameof(gameApiKey), "Game API Key must be provided explicitly or through GameFuseSettings.");
             }
 
-            var transport = new UnityWebRequestTransport();
+            var transport = new UnityWebRequestTransport(); // Create a new transport for this static call
             var authService = new AuthService(transport);
             return authService.ForgotPasswordAsync(email, gameId, gameApiKey, cancellationToken);
         }
@@ -215,14 +254,10 @@ namespace GameFuse
         /// <summary>
         /// Resets a user's password using a token provided in the forgot password email.
         /// </summary>
-        /// <param name="token">The token provided in the forgot password email.</param>
-        /// <param name="password">The new password.</param>
-        /// <param name="gameId">The ID of the game. If null, uses the value from GameFuseSettings.</param>
-        /// <param name="gameApiKey">The API key for the game. If null, uses the value from GameFuseSettings.</param>
-        /// <param name="cancellationToken">A token to cancel the operation.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
         public static Task ResetPasswordAsync(string token, string password, string gameId = null, string gameApiKey = null, CancellationToken cancellationToken = default)
         {
+            // As before, check API docs for actual reset password endpoint.
+            // This method might not directly map if the reset is purely web-based.
             gameId ??= GameFuseSettings.Settings?.GameId;
             gameApiKey ??= GameFuseSettings.Settings?.GameApiKey;
 
@@ -236,7 +271,7 @@ namespace GameFuse
                 throw new ArgumentNullException(nameof(gameApiKey), "Game API Key must be provided explicitly or through GameFuseSettings.");
             }
 
-            var transport = new UnityWebRequestTransport();
+            var transport = new UnityWebRequestTransport(); // Create a new transport for this static call
             var authService = new AuthService(transport);
             return authService.ResetPasswordAsync(token, password, gameId, gameApiKey, cancellationToken);
         }
@@ -244,22 +279,30 @@ namespace GameFuse
         /// <summary>
         /// Checks if the user is authenticated.
         /// </summary>
-        /// <returns>True if the user is authenticated, false otherwise.</returns>
-        public static bool IsAuthenticated()
+        public bool IsAuthenticated()
         {
-            return CurrentUser != null;
+            return _userData?.AuthenticationToken != null;
         }
 
         /// <summary>
         /// Ensures that the user is authenticated. Throws an exception if not.
         /// </summary>
-        /// <exception cref="GameFuseNotAuthenticatedException">Thrown if the user is not authenticated.</exception>
-        private static void EnsureAuthenticated()
+        private void EnsureAuthenticated()
         {
-            if (CurrentUser == null)
+            if (_userData?.AuthenticationToken == null)
             {
                 throw new GameFuseNotAuthenticatedException();
             }
+        }
+
+        private void SetInternalScore(int newScore)
+        {
+            _userData.Score = newScore;
+        }
+
+        private void SetInternalCredits(int newCredits)
+        {
+            _userData.Credits = newCredits;
         }
     }
 }

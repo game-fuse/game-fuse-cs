@@ -257,4 +257,30 @@ namespace GameFuse.Models
         [JsonProperty("requested_at")]
         public string RequestedAt { get; internal set; }
     }
+
+    public class UserAttributes
+    {
+        [JsonProperty("game_user_attributes")]
+        public List<UserAttribute> Attributes { get; set; }
+
+        UserAttributes()
+        {
+            Attributes = new List<UserAttribute>();
+        }
+    }
+
+    public class UserAttributePayload
+    {
+        [JsonProperty("key")]
+        public string Key { get; set; }
+
+        [JsonProperty("value")]
+        public string Value { get; set; }
+
+        public UserAttributePayload(string key, string value)
+        {
+            Key = key;
+            Value = value;
+        }
+    }
 }
