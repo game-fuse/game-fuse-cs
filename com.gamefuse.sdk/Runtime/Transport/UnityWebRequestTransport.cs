@@ -252,6 +252,7 @@ namespace GameFuse.Transport
                 {
                     foreach (var header in authHeaders)
                     {
+                        Debug.Log($"Set request header {header.Key} : {header.Value}");
                         request.SetRequestHeader(header.Key, header.Value);
                     }
                 }

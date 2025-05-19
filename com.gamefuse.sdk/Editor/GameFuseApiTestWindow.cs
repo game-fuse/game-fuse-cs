@@ -285,7 +285,7 @@ namespace GameFuse.Editor
             {
                 _transport.SetAuthHeaderProvider(() => new Dictionary<string, string>
                 {
-                    ["Authorization"] = $"Bearer {_userAuthToken}"
+                    ["authentication-token"] = _userAuthToken
                 });
             }
 
@@ -468,7 +468,7 @@ namespace GameFuse.Editor
                     _userAuthToken = signUpResult.AuthenticationToken;
                     _transport.SetAuthHeaderProvider(() => new Dictionary<string, string>
                     {
-                        ["Authorization"] = $"Bearer {_userAuthToken}"
+                        ["authentication-token"] = _userAuthToken
                     });
                     break;
 
@@ -484,7 +484,7 @@ namespace GameFuse.Editor
                     _userAuthToken = signInResult.AuthenticationToken;
                     _transport.SetAuthHeaderProvider(() => new Dictionary<string, string>
                     {
-                        ["Authorization"] = $"Bearer {_userAuthToken}"
+                        ["authentication-token"] = _userAuthToken
                     });
                     break;
 
