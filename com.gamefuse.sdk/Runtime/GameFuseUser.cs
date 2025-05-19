@@ -16,34 +16,12 @@ namespace GameFuse
     /// </summary>
     public partial class GameFuseUser
     {
-        private static GameFuseUser _currentUser;
-        private static readonly ITransport _transport = new UnityWebRequestTransport();
+        private ITransport _transport = new UnityWebRequestTransport();
 
         /// <summary>
         /// The currently authenticated user. Set upon successful sign-in/sign-up and cleared on sign-out.
         /// </summary>
-        public static GameFuseUser CurrentUser
-        {
-            get => _currentUser;
-            private set
-            {
-                _currentUser = value;
-                
-                if (_currentUser != null)
-                {
-                    // Set up authentication headers
-                    _transport.SetAuthHeaderProvider(() => new Dictionary<string, string>
-                    {
-                        ["Authorization"] = $"Bearer {_currentUser.AuthenticationToken}"
-                    });
-                }
-                else
-                {
-                    // Clear authentication headers
-                    _transport.SetAuthHeaderProvider(null);
-                }
-            }
-        }
+        public static GameFuseUser CurrentUser { get; private set; }
 
         /// <summary>
         /// The ID of the user.
@@ -58,12 +36,12 @@ namespace GameFuse
         /// <summary>
         /// The email of the user.
         /// </summary>
-        public string Email { get; }
+        public string Email { get; private set; }
 
         /// <summary>
         /// The display email of the user.
         /// </summary>
-        public string DisplayEmail { get; }
+        public string DisplayEmail { get; private set; }
 
         /// <summary>
         /// The authentication token for the user.
@@ -90,7 +68,7 @@ namespace GameFuse
         /// </summary>
         public int NumberOfLogins { get; }
 
-        private readonly AuthService _authService;
+        
         private readonly UserService _userService;
         private readonly GameRoundService _gameRoundService;
         private readonly StoreService _storeService;
@@ -98,7 +76,7 @@ namespace GameFuse
         private readonly GroupService _groupService;
         private readonly MessageService _messageService;
 
-        private GameFuseUser(User user)
+        public GameFuseUser(User user)
         {
             Id = user.Id;
             Username = user.Username;
@@ -110,13 +88,26 @@ namespace GameFuse
             LastLogin = user.LastLogin;
             NumberOfLogins = user.NumberOfLogins;
 
-            _authService = new AuthService(_transport);
+            _transport.SetAuthHeaderProvider(() => new Dictionary<string, string>
+            {
+                ["authentication-token"] = user.AuthenticationToken
+            });
+
+
             _userService = new UserService(_transport);
             _gameRoundService = new GameRoundService(_transport);
             _storeService = new StoreService(_transport);
             _friendService = new FriendService(_transport);
             _groupService = new GroupService(_transport);
             _messageService = new MessageService(_transport);
+        }
+
+        public void UpdateUser(User user)
+        {
+            Email = user.Email;
+            DisplayEmail = user.DisplayEmail;
+            Credits = user.Credits;
+            Score = user.Score;
         }
 
         /// <summary>
@@ -144,7 +135,8 @@ namespace GameFuse
                 throw new ArgumentNullException(nameof(gameApiKey), "Game API Key must be provided explicitly or through GameFuseSettings.");
             }
 
-            var authService = new AuthService(_transport);
+            var transport = new UnityWebRequestTransport();
+            var authService = new AuthService(transport);
             var user = await authService.SignUpAsync(email, password, username, gameId, gameApiKey, cancellationToken);
             CurrentUser = new GameFuseUser(user);
             return CurrentUser;
@@ -174,7 +166,8 @@ namespace GameFuse
                 throw new ArgumentNullException(nameof(gameApiKey), "Game API Key must be provided explicitly or through GameFuseSettings.");
             }
 
-            var authService = new AuthService(_transport);
+            var transport = new UnityWebRequestTransport();
+            var authService = new AuthService(transport);
             var user = await authService.SignInAsync(emailOrUsername, password, gameId, gameApiKey, cancellationToken);
             CurrentUser = new GameFuseUser(user);
             return CurrentUser;
@@ -214,7 +207,8 @@ namespace GameFuse
                 throw new ArgumentNullException(nameof(gameApiKey), "Game API Key must be provided explicitly or through GameFuseSettings.");
             }
 
-            var authService = new AuthService(_transport);
+            var transport = new UnityWebRequestTransport();
+            var authService = new AuthService(transport);
             return authService.ForgotPasswordAsync(email, gameId, gameApiKey, cancellationToken);
         }
 
@@ -242,30 +236,9 @@ namespace GameFuse
                 throw new ArgumentNullException(nameof(gameApiKey), "Game API Key must be provided explicitly or through GameFuseSettings.");
             }
 
-            var authService = new AuthService(_transport);
+            var transport = new UnityWebRequestTransport();
+            var authService = new AuthService(transport);
             return authService.ResetPasswordAsync(token, password, gameId, gameApiKey, cancellationToken);
-        }
-
-        /// <summary>
-        /// Gets the currently authenticated user's information.
-        /// </summary>
-        /// <param name="cancellationToken">A token to cancel the operation.</param>
-        /// <returns>The current user.</returns>
-        public static async Task<GameFuseUser> GetCurrentUserAsync(CancellationToken cancellationToken = default)
-        {
-            if (CurrentUser == null)
-            {
-                throw new GameFuseNotAuthenticatedException();
-            }
-
-            var userService = new UserService(_transport);
-            var user = await userService.GetUserAsync(CurrentUser.Id, cancellationToken);
-            
-            // Update the current user's mutable properties
-            CurrentUser.Credits = user.Credits;
-            CurrentUser.Score = user.Score;
-            
-            return CurrentUser;
         }
 
         /// <summary>

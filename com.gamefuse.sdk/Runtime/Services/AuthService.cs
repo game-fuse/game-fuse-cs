@@ -123,14 +123,9 @@ namespace GameFuse.Services
             if (string.IsNullOrEmpty(gameId)) throw new ArgumentNullException(nameof(gameId));
             if (string.IsNullOrEmpty(gameApiKey)) throw new ArgumentNullException(nameof(gameApiKey));
 
-            var request = new ForgotPasswordRequest
-            {
-                Email = email,
-                GameId = gameId,
-                GameToken = gameApiKey
-            };
-
-            await _transport.PostAsync<ForgotPasswordRequest>("password/forgot", request, null, cancellationToken);
+            // Using the correct API endpoint from documentation - GET request with query parameters
+            string path = $"games/{gameId}/forget_password?email={email}&game_id={gameId}&game_token={gameApiKey}";
+            await _transport.GetAsync<object>(path, null, cancellationToken);
         }
 
         /// <summary>

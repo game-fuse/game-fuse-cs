@@ -7,6 +7,19 @@ namespace GameFuse
 {
     public partial class GameFuseUser
     {
+
+        /// <summary>
+/// Retrieves the most up-to-date information for the currently authenticated user.
+/// </summary>
+/// <param name="cancellationToken">Optional token to cancel the operation.</param>
+/// <returns>The refreshed <see cref="User"/> record.</returns>
+public Task<User> GetUserAsync(CancellationToken cancellationToken = default)
+{
+    EnsureAuthenticated();
+    return _userService.GetUserAsync(Id, cancellationToken);
+}
+
+
         /// <summary>
         /// Updates the current user's information.
         /// </summary>
@@ -14,10 +27,12 @@ namespace GameFuse
         /// <param name="email">The new email, or null to keep the current one.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>The updated user.</returns>
-        public Task<User> UpdateUserAsync(string username = null, string email = null, CancellationToken cancellationToken = default)
+        public async Task<User> UpdateUserAsync(string username = null, string email = null, CancellationToken cancellationToken = default)
         {
             EnsureAuthenticated();
-            return _userService.UpdateUserAsync(Id, username, email, cancellationToken);
+            var user = await _userService.UpdateUserAsync(Id, username, email, cancellationToken);
+            UpdateUser(user);
+            return user;
         }
 
         /// <summary>

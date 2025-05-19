@@ -1,5 +1,6 @@
 using GameFuse.Models;
 using GameFuse.Services;
+using GameFuse.Transport;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,9 @@ namespace GameFuse.Tests.Editor.IntegrationTests
     [TestFixture]
     public class UserServiceIntegrationTests : TestBase
     {
-        private UserService _userService;
         private AuthService _authService;
-        private User _testUser;
-        
+        private GameFuseUser _testUser;
+
         [SetUp]
         public override async Task Setup()
         {
@@ -26,26 +26,27 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             {
                 return;
             }
-            
+
             // Initialize the services
-            _userService = new UserService(Transport);
-            _authService = new AuthService(Transport);
-            
+            var transport = new UnityWebRequestTransport();
+            _authService = new AuthService(transport);
+
             // Create and sign in a test user for each test
             string uniqueSuffix = DateTime.UtcNow.Ticks.ToString();
             string email = $"tester_{uniqueSuffix}@example.com";
             string username = $"tester_{uniqueSuffix}";
             string password = "Password123!";
             
-            _testUser = await _authService.SignUpAsync(
+            var user = await _authService.SignUpAsync(
                 email,
                 password,
                 username,
                 TestGameId.ToString(),
                 TestGameToken
             );
-            
-            Assert.IsNotNull(_testUser, "Test user should be created successfully");
+            Assert.IsNotNull(user, "Test user should be created successfully");
+
+            _testUser = new GameFuseUser(user);
             Assert.Greater(_testUser.Id, 0, "User ID should be positive");
             Debug.Log($"Created test user for UserService tests: ID={_testUser.Id}, Username={_testUser.Username}");
         }
@@ -54,7 +55,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
         public async Task Test_GetUser_Succeeds()
         {
             // Act
-            var user = await _userService.GetUserAsync(_testUser.Id);
+            var user = await _testUser.GetUserAsync();
             
             // Assert
             Assert.IsNotNull(user, "User should not be null");
@@ -71,7 +72,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             string newUsername = $"updated_{_testUser.Username}";
             
             // Act
-            var updatedUser = await _userService.UpdateUserAsync(_testUser.Id, newUsername);
+            var updatedUser = await _testUser.UpdateUserAsync(newUsername);
             
             // Assert
             Assert.IsNotNull(updatedUser, "Updated user should not be null");
@@ -89,7 +90,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             string newPassword = "NewPassword123!";
             
             // Act
-            await _userService.UpdatePasswordAsync(_testUser.Id, currentPassword, newPassword);
+            await _testUser.UpdatePasswordAsync(currentPassword, newPassword);
             
             // Assert - Try to sign in with the new password
             var signedInUser = await _authService.SignInAsync(
@@ -113,7 +114,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             string value = $"test_value_{DateTime.UtcNow.Ticks}";
             
             // Act
-            var attribute = await _userService.SetUserAttributeAsync(_testUser.Id, key, value);
+            var attribute = await _testUser.SetUserAttributeAsync(key, value);
             
             // Assert
             Assert.IsNotNull(attribute, "Attribute should not be null");
@@ -133,11 +134,11 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             string key2 = $"test_key2_{DateTime.UtcNow.Ticks}";
             string value2 = $"test_value2_{DateTime.UtcNow.Ticks}";
             
-            await _userService.SetUserAttributeAsync(_testUser.Id, key1, value1);
-            await _userService.SetUserAttributeAsync(_testUser.Id, key2, value2);
+            await _testUser.SetUserAttributeAsync(key1, value1);
+            await _testUser.SetUserAttributeAsync(key2, value2);
             
             // Act
-            var attributes = await _userService.GetUserAttributesAsync(_testUser.Id);
+            var attributes = await _testUser.GetUserAttributesAsync();
             
             // Assert
             Assert.IsNotNull(attributes, "Attributes list should not be null");
@@ -162,19 +163,19 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             string key = $"test_key_to_delete_{DateTime.UtcNow.Ticks}";
             string value = $"test_value_{DateTime.UtcNow.Ticks}";
             
-            var attribute = await _userService.SetUserAttributeAsync(_testUser.Id, key, value);
+            var attribute = await _testUser.SetUserAttributeAsync(key, value);
             Assert.IsNotNull(attribute, "Attribute should be created successfully");
             
             // Get all attributes to confirm our attribute exists
-            var attributesBefore = await _userService.GetUserAttributesAsync(_testUser.Id);
+            var attributesBefore = await _testUser.GetUserAttributesAsync();
             var attrBefore = attributesBefore.FirstOrDefault(a => a.Key == key);
             Assert.IsNotNull(attrBefore, $"Attribute with key {key} should exist before deletion");
             
             // Act
-            await _userService.DeleteUserAttributeAsync(_testUser.Id, attribute.Id);
+            await _testUser.DeleteUserAttributeAsync(attribute.Id);
             
             // Assert - Verify the attribute is gone
-            var attributesAfter = await _userService.GetUserAttributesAsync(_testUser.Id);
+            var attributesAfter = await _testUser.GetUserAttributesAsync();
             var attrAfter = attributesAfter.FirstOrDefault(a => a.Key == key);
             
             Assert.IsNull(attrAfter, $"Attribute with key {key} should not exist after deletion");

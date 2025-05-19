@@ -1,6 +1,7 @@
 using GameFuse.Exceptions;
 using GameFuse.Models;
 using GameFuse.Services;
+using GameFuse.Transport;
 using NUnit.Framework;
 using System;
 using System.Net;
@@ -25,9 +26,10 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             {
                 return;
             }
-            
+
             // Initialize the service under test
-            _authService = new AuthService(Transport);
+            var transport = new UnityWebRequestTransport(); 
+            _authService = new AuthService(transport);
         }
         
         [Test]
