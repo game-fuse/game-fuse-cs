@@ -86,6 +86,18 @@ namespace GameFuse.Transport
             await SendRequestAsync<EmptyResponse>(UnityWebRequest.kHttpVerbDELETE, path, null, headers, cancellationToken);
         }
 
+        public Task<TResponse> PatchAsync<TRequest, TResponse>(string path, TRequest body, Dictionary<string, string> headers = null, CancellationToken cancellationToken = default)
+        {
+            // UnityWebRequest doesn't have a direct UnityWebRequest.kHttpVerbPATCH constant.
+            // You need to set the method string directly.
+            return SendRequestAsync<TResponse>("PATCH", path, body, headers, cancellationToken);
+        }
+
+        public async Task PatchAsync<TRequest>(string path, TRequest body, Dictionary<string, string> headers = null, CancellationToken cancellationToken = default)
+        {
+            await SendRequestAsync<EmptyResponse>("PATCH", path, body, headers, cancellationToken);
+        }
+
         /// <inheritdoc/>
         public void SetAuthHeaderProvider(Func<Dictionary<string, string>> authHeaderProvider)
         {
@@ -131,6 +143,11 @@ namespace GameFuse.Transport
                             }
                             await Task.Yield();
                         }
+
+                        /*
+                        Debug.Log($"[Transport DEBUG] Path: {path}, Method: {method}, Status: {request.responseCode}");
+                        string responseJsonForDebug = request.downloadHandler.text;
+                        Debug.Log($"[Transport DEBUG] Raw Response JSON for {path}: {responseJsonForDebug}");*/
 
                         // Check for network error
                         if (request.result == UnityWebRequest.Result.ConnectionError)

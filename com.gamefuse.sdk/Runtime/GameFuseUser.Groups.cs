@@ -1,5 +1,6 @@
 using GameFuse.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -106,6 +107,83 @@ namespace GameFuse
             if (groupConnectionId <= 0) throw new System.ArgumentOutOfRangeException(nameof(groupConnectionId), "Group Connection ID must be positive.");
 
             return await _groupService.ManageGroupMembershipRequestAsync(groupConnectionId, "declined", cancellationToken);
+        }
+
+        /// <summary>
+        /// Creates one or more custom attributes for a specified group.
+        /// This user must have permission to add attributes to the group.
+        /// </summary>
+        /// <param name="groupId">The ID of the group to add attributes to.</param>
+        /// <param name="attributesToCreate">A list of attribute details to create.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response containing the list of created attributes with their server-assigned IDs.</returns>
+        public async Task<CreateGroupAttributesResponse> CreateGroupAttributesAsync(int groupId, List<GroupAttributePayloadItem> attributesToCreate, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+            if (groupId <= 0) throw new System.ArgumentOutOfRangeException(nameof(groupId), "Group ID must be positive.");
+            if (attributesToCreate == null || !attributesToCreate.Any())
+                throw new System.ArgumentException("Attributes list cannot be null or empty.", nameof(attributesToCreate));
+
+            var payload = new CreateGroupAttributesPayload { Attributes = attributesToCreate };
+            return await _groupService.CreateGroupAttributesAsync(groupId, payload, cancellationToken);
+        }
+
+        /// <summary>
+        /// Convenience overload to create a single custom attribute for a specified group.
+        /// </summary>
+        /// <param name="groupId">The ID of the group.</param>
+        /// <param name="key">The key of the attribute.</param>
+        /// <param name="value">The value of the attribute.</param>
+        /// <param name="othersCanEdit">Optional: Whether other group members (non-creators/non-admins) can edit this attribute. Defaults to false.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response containing the created attribute.</returns>
+        public async Task<GroupAttributeResponseItem> CreateGroupAttributeAsync(int groupId, string key, string value, bool? othersCanEdit = null, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+            if (string.IsNullOrEmpty(key)) throw new System.ArgumentNullException(nameof(key));
+
+            var attributeItem = new GroupAttributePayloadItem { Key = key, Value = value, OthersCanEdit = othersCanEdit };
+            var payload = new CreateGroupAttributesPayload { Attributes = new List<GroupAttributePayloadItem> { attributeItem } };
+
+            CreateGroupAttributesResponse response = await _groupService.CreateGroupAttributesAsync(groupId, payload, cancellationToken);
+
+            // Return the single created attribute, or null/throw if something went wrong
+            return response?.Attributes?.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Fetches all custom attributes for a specified group.
+        /// This user must have permission to view the attributes (e.g., be a member of the group).
+        /// </summary>
+        /// <param name="groupId">The ID of the group whose attributes are to be fetched.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A read-only list of the group's attributes. Returns an empty list if none are found or on error before exception.</returns>
+        public async Task<IReadOnlyList<GroupAttributeResponseItem>> FetchGroupAttributesAsync(int groupId, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+            if (groupId <= 0) throw new System.ArgumentOutOfRangeException(nameof(groupId), "Group ID must be positive.");
+
+            FetchGroupAttributesResponse response = await _groupService.FetchGroupAttributesAsync(groupId, cancellationToken);
+
+            return response?.Attributes?.AsReadOnly() ?? (IReadOnlyList<GroupAttributeResponseItem>)new List<GroupAttributeResponseItem>().AsReadOnly();
+        }
+
+        /// <summary>
+        /// Modifies an existing custom attribute for a specified group.
+        /// This user must have permission to modify the attribute.
+        /// </summary>
+        /// <param name="groupId">The ID of the group whose attribute is to be modified.</param>
+        /// <param name="payload">Details of the attribute to modify (key and new value).</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The updated GroupAttributeResponseItem.</returns>
+        public async Task<GroupAttributeResponseItem> ModifyGroupAttributeAsync(int groupId, ModifyGroupAttributePayload payload, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+            if (groupId <= 0) throw new System.ArgumentOutOfRangeException(nameof(groupId), "Group ID must be positive.");
+            if (payload == null) throw new System.ArgumentNullException(nameof(payload));
+            if (string.IsNullOrEmpty(payload.Key)) throw new System.ArgumentException("Attribute key cannot be empty.", nameof(payload.Key));
+
+            return await _groupService.ModifyGroupAttributeAsync(groupId, payload, cancellationToken);
         }
 
         /*

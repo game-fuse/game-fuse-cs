@@ -391,6 +391,179 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             // Assert.IsFalse(groupDetailsAfterDecline.JoinRequests.Any(jr => jr.GroupConnectionId == groupConnectionId && jr.Status == "pending"));
         }
 
+        private async Task<Group> CreateTestGroupForAttributes(GameFuseUser groupCreator, string baseName = "AttrTestGroup")
+        {
+            string groupName = $"{baseName}_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+            var group = await groupCreator.CreateGroupAsync(new CreateGroupPayload
+            {
+                Name = groupName,
+                MaxGroupSize = 5
+            });
+            Assert.IsNotNull(group, $"Helper: Failed to create group '{groupName}'.");
+            Assert.IsTrue(group.Id > 0, "Helper: Created group has invalid ID.");
+            return group;
+        }
+
+        [Test]
+        public async Task Test_CreateSingleGroupAttribute_Succeeds()
+        {
+            Assert.IsNotNull(_testUser, "Test user not initialized.");
+            Group testGroup = await CreateTestGroupForAttributes(_testUser); // _testUser creates the group
+
+            string attrKey = "theme_color";
+            string attrValue = "dark_blue";
+
+            Debug.Log($"'{_testUser.Username}' adding single attribute ('{attrKey}':'{attrValue}') to group ID {testGroup.Id}.");
+
+            // Act
+            // Facade method could take single key/value or a payload item
+            CreateGroupAttributesResponse response = await _testUser.CreateGroupAttributesAsync(testGroup.Id,
+                new List<GroupAttributePayloadItem> { new GroupAttributePayloadItem { Key = attrKey, Value = attrValue, OthersCanEdit = true } });
+
+            // Assert
+            Assert.IsNotNull(response, "CreateGroupAttributesResponse should not be null.");
+            Assert.IsNotNull(response.Attributes, "Response.Attributes list should not be null.");
+            Assert.AreEqual(1, response.Attributes.Count, "Expected 1 attribute in the response.");
+
+            var createdAttr = response.Attributes.First();
+            Assert.IsTrue(createdAttr.Id > 0, "Attribute ID should be positive.");
+            Assert.AreEqual(attrKey, createdAttr.Key, "Attribute key mismatch.");
+            Assert.AreEqual(attrValue, createdAttr.Value, "Attribute value mismatch.");
+            Assert.AreEqual(_testUser.Id, createdAttr.CreatorId, "CreatorId should be the ID of the user who added the attribute.");
+            Assert.IsTrue(createdAttr.CanEdit, "CanEdit should be true for the creator."); // Assuming OthersCanEdit=true translates to this or creator always can.
+
+            Debug.Log($"Successfully created single group attribute ID: {createdAttr.Id}, Key: '{createdAttr.Key}'.");
+        }
+
+        [Test]
+        public async Task Test_CreateMultipleGroupAttributes_Succeeds()
+        {
+            Assert.IsNotNull(_testUser, "Test user not initialized.");
+            Group testGroup = await CreateTestGroupForAttributes(_testUser);
+
+            var attributesToCreate = new List<GroupAttributePayloadItem>
+            {
+                new GroupAttributePayloadItem { Key = "difficulty", Value = "hard", OthersCanEdit = false },
+                new GroupAttributePayloadItem { Key = "max_players", Value = "4" } // OthersCanEdit defaults to false
+            };
+
+            var payload = new CreateGroupAttributesPayload { Attributes = attributesToCreate };
+
+            Debug.Log($"'{_testUser.Username}' adding multiple attributes to group ID {testGroup.Id}.");
+
+            // Act
+            CreateGroupAttributesResponse response = await _testUser.CreateGroupAttributesAsync(testGroup.Id, attributesToCreate);
+
+            // Assert
+            Assert.IsNotNull(response, "CreateGroupAttributesResponse should not be null.");
+            Assert.IsNotNull(response.Attributes, "Response.Attributes list should not be null.");
+            Assert.AreEqual(attributesToCreate.Count, response.Attributes.Count, "Number of created attributes mismatch.");
+
+            foreach (var attrToCreate in attributesToCreate)
+            {
+                var createdAttr = response.Attributes.FirstOrDefault(ra => ra.Key == attrToCreate.Key);
+                Assert.IsNotNull(createdAttr, $"Attribute with key '{attrToCreate.Key}' not found in response.");
+                Assert.AreEqual(attrToCreate.Value, createdAttr.Value, $"Value mismatch for key '{attrToCreate.Key}'.");
+                Assert.AreEqual(_testUser.Id, createdAttr.CreatorId, $"CreatorId mismatch for key '{attrToCreate.Key}'.");
+                // Assert.AreEqual(attrToCreate.OthersCanEdit ?? false, createdAttr.CanEdit); // This needs careful checking against API logic for CanEdit
+            }
+            Debug.Log("Successfully created multiple group attributes.");
+        }
+
+        [Test]
+        public async Task Test_FetchGroupAttributes_Succeeds()
+        {
+            Assert.IsNotNull(_testUser, "Test user not initialized.");
+            Group testGroup = await CreateTestGroupForAttributes(_testUser); // _testUser creates the group
+
+            // Arrange: Add some attributes to the group
+            var attributesToAdd = new List<GroupAttributePayloadItem>
+            {
+                new GroupAttributePayloadItem { Key = "map_preference", Value = "dust2", OthersCanEdit = true },
+                new GroupAttributePayloadItem { Key = "skill_level", Value = "intermediate" }
+            };
+            CreateGroupAttributesResponse creationResponse = await _testUser.CreateGroupAttributesAsync(testGroup.Id, attributesToAdd);
+            Assert.IsNotNull(creationResponse?.Attributes, "Failed to add attributes in arrange step.");
+            Assert.AreEqual(attributesToAdd.Count, creationResponse.Attributes.Count, "Mismatch in number of attributes created.");
+            Debug.Log($"Added {attributesToAdd.Count} attributes to group ID {testGroup.Id}.");
+
+            // Act: Fetch attributes for the group
+            Debug.Log($"Fetching attributes for group ID {testGroup.Id} by user '{_testUser.Username}'.");
+            // The facade method might return IReadOnlyList<GroupAttributeResponseItem> directly or the wrapper.
+            // Let's assume the facade returns the list directly for convenience.
+            IReadOnlyList<GroupAttributeResponseItem> fetchedAttributes = await _testUser.FetchGroupAttributesAsync(testGroup.Id);
+
+            // Assert
+            Assert.IsNotNull(fetchedAttributes, "Fetched attributes list should not be null.");
+            Assert.AreEqual(attributesToAdd.Count, fetchedAttributes.Count, "Number of fetched attributes does not match number added.");
+
+            foreach (var addedAttrPayload in attributesToAdd)
+            {
+                var fetchedAttr = fetchedAttributes.FirstOrDefault(fa => fa.Key == addedAttrPayload.Key);
+                Assert.IsNotNull(fetchedAttr, $"Attribute with key '{addedAttrPayload.Key}' not found in fetched list.");
+                Assert.AreEqual(addedAttrPayload.Value, fetchedAttr.Value, $"Value mismatch for key '{addedAttrPayload.Key}'.");
+                Assert.AreEqual(_testUser.Id, fetchedAttr.CreatorId, $"CreatorId mismatch for key '{addedAttrPayload.Key}'.");
+                // Asserting CanEdit can be tricky as it depends on the authenticated user and 'OthersCanEdit' flag.
+                // For attributes created by _testUser, CanEdit should generally be true.
+                Assert.IsTrue(fetchedAttr.CanEdit, $"Creator '{_testUser.Username}' should be able to edit attribute '{fetchedAttr.Key}'.");
+            }
+
+            Debug.Log($"Successfully fetched {fetchedAttributes.Count} attributes for group ID {testGroup.Id}.");
+        }
+
+        [Test]
+        public async Task Test_FetchGroupAttributes_EmptyForNewGroup_Succeeds()
+        {
+            Assert.IsNotNull(_testUser, "Test user not initialized.");
+            Group testGroup = await CreateTestGroupForAttributes(_testUser); // A new group with no attributes yet
+
+            Debug.Log($"Fetching attributes for new group ID {testGroup.Id} (should be empty).");
+            IReadOnlyList<GroupAttributeResponseItem> fetchedAttributes = await _testUser.FetchGroupAttributesAsync(testGroup.Id);
+
+            Assert.IsNotNull(fetchedAttributes, "Fetched attributes list should not be null, even if empty.");
+            Assert.IsEmpty(fetchedAttributes, "Attributes list should be empty for a newly created group with no added attributes.");
+            Debug.Log("Successfully fetched attributes for a new group; list is empty as expected.");
+        }
+
+        [Test]
+        public async Task Test_ModifyGroupAttribute_Succeeds()
+        {
+            Assert.IsNotNull(_testUser, "Test user not initialized.");
+            Group testGroup = await CreateTestGroupForAttributes(_testUser); // _testUser creates the group
+
+            // Arrange: Add an attribute first
+            string originalKey = "game_mode";
+            string originalValue = "capture_the_flag";
+            string newValue = "king_of_the_hill";
+
+            GroupAttributeResponseItem addedAttribute = await _testUser.CreateGroupAttributeAsync(testGroup.Id, originalKey, originalValue, othersCanEdit: true);
+            Assert.IsNotNull(addedAttribute, "Failed to add attribute in arrange step.");
+            Assert.AreEqual(originalValue, addedAttribute.Value, "Initial attribute value mismatch.");
+            Debug.Log($"Added attribute '{originalKey}'='{originalValue}' to group ID {testGroup.Id}.");
+
+            // Act: Modify the attribute's value
+            var modifyPayload = new ModifyGroupAttributePayload { Key = originalKey, Value = newValue };
+            Debug.Log($"Modifying attribute '{originalKey}' in group ID {testGroup.Id} to new value '{newValue}'.");
+            GroupAttributeResponseItem modifiedAttributeResponse = await _testUser.ModifyGroupAttributeAsync(testGroup.Id, modifyPayload);
+
+            // Assert - Check the response from the PATCH call itself
+            Assert.IsNotNull(modifiedAttributeResponse, "ModifyGroupAttribute response should not be null.");
+            Assert.AreEqual(addedAttribute.Id, modifiedAttributeResponse.Id, "ID of modified attribute should remain the same.");
+            Assert.AreEqual(originalKey, modifiedAttributeResponse.Key, "Key of modified attribute should remain the same.");
+            Assert.AreEqual(newValue, modifiedAttributeResponse.Value, "Value in PATCH response is not the new value.");
+            Debug.Log($"Attribute modification response received. New value: '{modifiedAttributeResponse.Value}'.");
+
+            // Assert - Fetch all attributes again to confirm the change is persisted
+            IReadOnlyList<GroupAttributeResponseItem> fetchedAttributes = await _testUser.FetchGroupAttributesAsync(testGroup.Id);
+            Assert.IsNotNull(fetchedAttributes, "Fetched attributes list after modify should not be null.");
+
+            var confirmedModifiedAttribute = fetchedAttributes.FirstOrDefault(fa => fa.Key == originalKey);
+            Assert.IsNotNull(confirmedModifiedAttribute, $"Attribute '{originalKey}' not found after modification attempt.");
+            Assert.AreEqual(newValue, confirmedModifiedAttribute.Value, "Attribute value was not updated correctly when fetched again.");
+
+            Debug.Log($"Successfully modified and verified attribute '{originalKey}' to '{newValue}'.");
+        }
+
         private void LoadTestConfig()
         {
             // ... (same as before)

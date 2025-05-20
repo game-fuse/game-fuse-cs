@@ -123,12 +123,12 @@ namespace GameFuse
         /// <summary>
         /// Group join requests sent by the user.
         /// </summary>
-        public IReadOnlyList<GroupJoinRequest> GroupJoinRequests => _userData.GroupJoinRequests;
+        public IReadOnlyList<GroupConnectionResponse> GroupJoinRequests => _userData.GroupJoinRequests;
 
         /// <summary>
         /// Group invites received by the user.
         /// </summary>
-        public IReadOnlyList<GroupInvite> GroupInvites => _userData.GroupInvites;
+        public IReadOnlyList<MyGroupInvite> GroupInvites => _userData.GroupInvites;
 
 
         /// <summary>

@@ -88,6 +88,10 @@ namespace GameFuse.Transport
         /// <returns>A task representing the asynchronous operation, containing the deserialized response.</returns>
         Task<TResponse> DeleteAsync<TRequest, TResponse>(string path, TRequest body, Dictionary<string, string> headers = null, CancellationToken cancellationToken = default);
 
+
+        Task<TResponse> PatchAsync<TRequest, TResponse>(string path, TRequest body, Dictionary<string, string> headers = null, CancellationToken cancellationToken = default);
+        Task PatchAsync<TRequest>(string path, TRequest body, Dictionary<string, string> headers = null, CancellationToken cancellationToken = default);
+
         /// <summary>
         /// Executes a DELETE request to the specified path, expecting no response body.
         /// </summary>

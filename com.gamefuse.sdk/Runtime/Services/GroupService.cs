@@ -3,6 +3,7 @@ using GameFuse.Models;
 using GameFuse.Transport;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,8 +47,8 @@ namespace GameFuse.Services
             {
                 createdGroup.Members ??= new System.Collections.Generic.List<UserSummary>();
                 createdGroup.Admins ??= new System.Collections.Generic.List<UserSummary>();
-                createdGroup.JoinRequests ??= new System.Collections.Generic.List<GroupJoinRequest>();
-                createdGroup.Invites ??= new System.Collections.Generic.List<GroupInvite>();
+                createdGroup.JoinRequests ??= new System.Collections.Generic.List<GroupConnectionResponse>();
+                createdGroup.Invites ??= new System.Collections.Generic.List<GroupConnectionResponse>();
             }
             
 
@@ -96,8 +97,8 @@ namespace GameFuse.Services
             {
                 groupDetails.Members ??= new List<UserSummary>();
                 groupDetails.Admins ??= new List<UserSummary>();
-                groupDetails.JoinRequests ??= new List<GroupJoinRequest>();
-                groupDetails.Invites ??= new List<GroupInvite>();
+                groupDetails.JoinRequests ??= new List<GroupConnectionResponse>();
+                groupDetails.Invites ??= new List<GroupConnectionResponse>();
             }
             // else: Handle cases where groupDetails might be null if API returns non-success
             // or if _transport.GetAsync can return null on certain conditions.
@@ -171,6 +172,93 @@ namespace GameFuse.Services
             }
 
             return response;
+        }
+
+        /// <summary>
+        /// Adds new attributes to a group.
+        /// </summary>
+        /// <param name="groupId">The ID of the group to add attributes to.</param>
+        /// <param name="payload">The payload containing a list of attributes to create.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response containing the list of created attributes with their server-assigned IDs.</returns>
+        public async Task<CreateGroupAttributesResponse> CreateGroupAttributesAsync(int groupId, CreateGroupAttributesPayload payload, CancellationToken cancellationToken = default)
+        {
+            if (groupId <= 0) throw new ArgumentOutOfRangeException(nameof(groupId), "Group ID must be positive.");
+            if (payload == null) throw new ArgumentNullException(nameof(payload));
+            if (payload.Attributes == null || !payload.Attributes.Any())
+                throw new ArgumentException("Attributes list cannot be null or empty.", nameof(payload.Attributes));
+
+            // API Path: POST /api/v3/groups/{id}/add_attribute
+            string path = $"groups/{groupId}/add_attribute";
+
+            // The payload to the API is an object with an "attributes" key, which is a list.
+            var response = await _transport.PostAsync<CreateGroupAttributesPayload, CreateGroupAttributesResponse>(path, payload, null, cancellationToken);
+
+            if (response == null)
+            {
+                return new CreateGroupAttributesResponse(); // Or throw, or return specific error indicator
+            }
+            response.Attributes ??= new List<GroupAttributeResponseItem>();
+
+            return response;
+        }
+
+        /// <summary>
+        /// Retrieves all attributes for a specific group.
+        /// Requires user authentication (user must have permission to view attributes, typically being a member).
+        /// </summary>
+        /// <param name="groupId">The ID of the group to fetch attributes for.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response object containing a list of the group's attributes.</returns>
+        public async Task<FetchGroupAttributesResponse> FetchGroupAttributesAsync(int groupId, CancellationToken cancellationToken = default)
+        {
+            if (groupId <= 0) throw new ArgumentOutOfRangeException(nameof(groupId), "Group ID must be positive.");
+
+            // API Path: GET /api/v3/groups/{id}/attributes
+            string path = $"groups/{groupId}/attributes";
+            var response = await _transport.GetAsync<FetchGroupAttributesResponse>(path, null, cancellationToken);
+
+            if (response == null)
+            {
+                return new FetchGroupAttributesResponse(); // Or throw
+            }
+            response.Attributes ??= new List<GroupAttributeResponseItem>();
+
+            return response;
+        }
+
+        /// <summary>
+        /// Modifies an existing attribute of a group.
+        /// The authenticated user must have permission (e.g., creator or admin).
+        /// </summary>
+        /// <param name="groupId">The ID of the group whose attribute is being modified.</param>
+        /// <param name="payload">The payload containing the key of the attribute to modify and its new value.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The updated GroupAttributeResponseItem.</returns>
+        public async Task<GroupAttributeResponseItem> ModifyGroupAttributeAsync(int groupId, ModifyGroupAttributePayload payload, CancellationToken cancellationToken = default)
+        {
+            if (groupId <= 0) throw new ArgumentOutOfRangeException(nameof(groupId), "Group ID must be positive.");
+            if (payload == null) throw new ArgumentNullException(nameof(payload));
+            if (string.IsNullOrEmpty(payload.Key)) throw new ArgumentException("Attribute key cannot be empty.", nameof(payload.Key));
+            // Value can potentially be empty string, so no check for IsNullOrEmpty on payload.Value unless API forbids it.
+
+            // API Path: PATCH /api/v3/groups/{id}/modify_attribute
+            string path = $"groups/{groupId}/modify_attribute";
+
+            // Your ITransport needs a PatchAsync method.
+            // Assuming: public Task<TResponse> PatchAsync<TRequest, TResponse>(string path, TRequest body, Dictionary<string, string> headers = null, CancellationToken cancellationToken = default)
+            var modifiedAttribute = await _transport.PatchAsync<ModifyGroupAttributePayload, GroupAttributeResponseItem>(path, payload, null, cancellationToken);
+
+            // It's possible the API returns a 200 OK with the updated attribute, or 204 No Content.
+            // The example response in the doc shows the full attribute object, so we expect it.
+            if (modifiedAttribute == null)
+            {
+                // Handle case where PATCH might return null or an error not caught by transport
+                // For now, we'll assume transport throws or returns the deserialized object.
+                // Or throw a specific exception e.g. GameFuseApiException("Failed to modify attribute or API returned no content.");
+            }
+
+            return modifiedAttribute;
         }
 
         /*

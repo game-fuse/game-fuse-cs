@@ -1,155 +1,172 @@
+// Models/MessagingModels.cs
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace GameFuse.Models
 {
     /// <summary>
-    /// Represents a message sent between users in GameFuse.
+    /// Represents a single message.
     /// </summary>
     public class Message
     {
-        /// <summary>
-        /// The message's unique identifier.
-        /// </summary>
         [JsonProperty("id")]
-        public int Id { get; internal set; }
+        public int Id { get; set; }
 
-        /// <summary>
-        /// The ID of the user who sent the message.
-        /// </summary>
-        [JsonProperty("sender_id")]
-        public int SenderId { get; internal set; }
+        [JsonProperty("text")]
+        public string Text { get; set; }
 
-        /// <summary>
-        /// The username of the user who sent the message.
-        /// </summary>
-        [JsonProperty("sender_username")]
-        public string SenderUsername { get; internal set; }
+        [JsonProperty("user_id")]
+        public int UserId { get; set; } // ID of the user who sent the message
 
-        /// <summary>
-        /// The ID of the user who received the message.
-        /// </summary>
-        [JsonProperty("recipient_id")]
-        public int RecipientId { get; internal set; }
-
-        /// <summary>
-        /// The username of the user who received the message.
-        /// </summary>
-        [JsonProperty("recipient_username")]
-        public string RecipientUsername { get; internal set; }
-
-        /// <summary>
-        /// The content of the message.
-        /// </summary>
-        [JsonProperty("content")]
-        public string Content { get; internal set; }
-
-        /// <summary>
-        /// Whether the message has been read.
-        /// </summary>
-        [JsonProperty("read")]
-        public bool Read { get; internal set; }
-
-        /// <summary>
-        /// When the message was created.
-        /// </summary>
         [JsonProperty("created_at")]
-        public string CreatedAt { get; internal set; }
+        public string CreatedAt { get; set; } // Timestamp
 
-        /// <summary>
-        /// When the message was last updated.
-        /// </summary>
-        [JsonProperty("updated_at")]
-        public string UpdatedAt { get; internal set; }
-    }
-
-    /// <summary>
-    /// Represents a group message in GameFuse.
-    /// </summary>
-    public class GroupMessage
-    {
-        /// <summary>
-        /// The message's unique identifier.
-        /// </summary>
-        [JsonProperty("id")]
-        public int Id { get; internal set; }
-
-        /// <summary>
-        /// The ID of the user who sent the message.
-        /// </summary>
-        [JsonProperty("sender_id")]
-        public int SenderId { get; internal set; }
-
-        /// <summary>
-        /// The username of the user who sent the message.
-        /// </summary>
-        [JsonProperty("sender_username")]
-        public string SenderUsername { get; internal set; }
-
-        /// <summary>
-        /// The ID of the group the message was sent to.
-        /// </summary>
-        [JsonProperty("group_id")]
-        public int GroupId { get; internal set; }
-
-        /// <summary>
-        /// The name of the group the message was sent to.
-        /// </summary>
-        [JsonProperty("group_name")]
-        public string GroupName { get; internal set; }
-
-        /// <summary>
-        /// The content of the message.
-        /// </summary>
-        [JsonProperty("content")]
-        public string Content { get; internal set; }
-
-        /// <summary>
-        /// When the message was created.
-        /// </summary>
-        [JsonProperty("created_at")]
-        public string CreatedAt { get; internal set; }
-
-        /// <summary>
-        /// When the message was last updated.
-        /// </summary>
-        [JsonProperty("updated_at")]
-        public string UpdatedAt { get; internal set; }
-
-        /// <summary>
-        /// The list of users who have read the message.
-        /// </summary>
         [JsonProperty("read_by")]
-        public IReadOnlyList<int> ReadBy { get; internal set; }
+        public List<int> ReadBy { get; set; } // List of user IDs who have read the message
+
+        [JsonProperty("read")]
+        public bool Read { get; set; } // Whether the current authenticated user has read this message
+
+        public Message()
+        {
+            ReadBy = new List<int>();
+        }
     }
 
     /// <summary>
-    /// Represents a conversation between users.
+    /// Represents a chat conversation (direct or group).
     /// </summary>
-    public class Conversation
+    public class Chat
     {
-        /// <summary>
-        /// The ID of the other user in the conversation.
-        /// </summary>
-        [JsonProperty("other_user_id")]
-        public int OtherUserId { get; internal set; }
+        [JsonProperty("id")]
+        public int Id { get; set; }
 
-        /// <summary>
-        /// The username of the other user in the conversation.
-        /// </summary>
-        [JsonProperty("other_user_username")]
-        public string OtherUserUsername { get; internal set; }
+        [JsonProperty("creator_id")]
+        public int CreatorId { get; set; }
 
-        /// <summary>
-        /// The most recent message in the conversation.
-        /// </summary>
-        [JsonProperty("last_message")]
-        public Message LastMessage { get; internal set; }
+        [JsonProperty("creator_type")]
+        public string CreatorType { get; set; } // e.g., "User"
 
-        /// <summary>
-        /// The number of unread messages in the conversation.
-        /// </summary>
-        [JsonProperty("unread_count")]
-        public int UnreadCount { get; internal set; }
+        [JsonProperty("messages")] // List of most recent messages
+        public List<Message> Messages { get; set; }
+
+        [JsonProperty("participants")] // List of users in the chat
+        public List<UserSummary> Participants { get; set; } // Using existing UserSummary
+
+        // For Group Chats, there might be a group_id or group_name,
+        // The API doc is a bit sparse on distinguishing direct vs group chat structure here,
+        // aside from them being in separate lists in the PaginatedChatsResponse.
+        // If a group chat has specific group info attached, we'd add it here.
+        // For now, assuming 'participants' covers who is in it.
+
+        public Chat()
+        {
+            Messages = new List<Message>();
+            Participants = new List<UserSummary>();
+        }
+    }
+
+    /// <summary>
+    /// Response for fetching paginated chats.
+    /// </summary>
+    public class PaginatedChatsResponse
+    {
+        [JsonProperty("direct_chats")]
+        public List<Chat> DirectChats { get; set; }
+
+        [JsonProperty("group_chats")]
+        public List<Chat> GroupChats { get; set; }
+
+        public PaginatedChatsResponse()
+        {
+            DirectChats = new List<Chat>();
+            GroupChats = new List<Chat>();
+        }
+    }
+
+    /// <summary>
+    /// Payload for creating a new chat.
+    /// </summary>
+    public class CreateChatPayload
+    {
+        [JsonProperty("usernames", NullValueHandling = NullValueHandling.Ignore)]
+        public List<string> Usernames { get; set; } // For direct chat
+
+        [JsonProperty("group_id", NullValueHandling = NullValueHandling.Ignore)]
+        public int? GroupId { get; set; } // For group chat
+
+        [JsonProperty("text")]
+        public string Text { get; set; } // Initial message text
+    }
+
+    
+
+    /// <summary>
+    /// Response for fetching paginated messages for a chat.
+    /// </summary>
+    public class PaginatedMessagesResponse
+    {
+        [JsonProperty("messages")]
+        public List<Message> Messages { get; set; }
+
+        public PaginatedMessagesResponse()
+        {
+            Messages = new List<Message>();
+        }
+    }
+
+    /// <summary>
+    /// Payload for sending a message to an existing chat.
+    /// </summary>
+    public class SendMessagePayload
+    {
+        [JsonProperty("text")]
+        public string Text { get; set; }
+
+        [JsonProperty("chat_id")]
+        public int ChatId { get; set; }
+    }
+
+    /// <summary>
+    /// Response from sending a message or marking a message as read.
+    /// </summary>
+    public class MessageActionResponse // Can be used for SendMessage and MarkAsRead
+    {
+        // Send Message returns the created "message" object
+        [JsonProperty("message")]
+        public Message MessageDetail { get; set; } // For SendMessage response
+
+        // MarkAsRead only returns a simple "message": "Message marked as read"
+        // This means this model might need to be flexible or we use two different models.
+        // For simplicity, if MessageDetail is null, we check GeneralMessage.
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
+        private string GeneralMessageString { get; set; } // For MarkAsRead string response
+
+        [JsonIgnore] // Not part of JSON, just a helper
+        public string ConfirmationMessage => GeneralMessageString;
+
+        // If SendMessage only returns Message object without a wrapper "message" key:
+        // then SendMessage response is just 'Message' model, MarkAsRead is '{ "message": "string" }'
+        // The doc for Send Message says "Response object: message (object) The newly created message object."
+        // This implies {"message": { message_details }}
+        // The doc for Mark Message as Read says "Response object: message (string) Success message..."
+        // This implies {"message": "string_message"}
+        // This is problematic for a single response model due to type conflict on "message" key.
+
+        // Let's assume SendMessage returns the Message object directly without a "message" wrapper key.
+        // If it *is* wrapped, we'll need to adjust or use dynamic parsing.
+        // For now, let's assume:
+        // - SendMessage returns Message
+        // - MarkAsRead returns MarkAsReadResponse { string Message; }
+    }
+
+    // Specific response for SendMessage if it's just the Message object
+    // (If API returns {"message": MessageObject}, then MessageActionResponse with MessageDetail is fine)
+
+    // Specific response for MarkAsRead
+    public class MarkAsReadResponse
+    {
+        [JsonProperty("message")]
+        public string Message { get; set; }
     }
 }
