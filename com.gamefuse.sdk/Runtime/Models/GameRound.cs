@@ -17,8 +17,56 @@ namespace GameFuse.Models
         /// <summary>
         /// The ID of the user who created the game round.
         /// </summary>
-        [JsonProperty("user_id")]
-        public int UserId { get; internal set; }
+        [JsonProperty("game_user_id")]
+        public int GameUserId { get; internal set; }
+
+        /// <summary>
+        /// The start time of the game round.
+        /// </summary>
+        [JsonProperty("start_time")]
+        public string StartTime { get; internal set; }
+
+        /// <summary>
+        /// The end time of the game round.
+        /// </summary>
+        [JsonProperty("end_time")]
+        public string EndTime { get; internal set; }
+
+        /// <summary>
+        /// The score achieved in the game round.
+        /// </summary>
+        [JsonProperty("score")]
+        public double Score { get; internal set; }
+
+        /// <summary>
+        /// The place finished in the game round.
+        /// </summary>
+        [JsonProperty("place")]
+        public int Place { get; internal set; }
+
+        /// <summary>
+        /// The type of game played.
+        /// </summary>
+        [JsonProperty("game_type")]
+        public string GameType { get; internal set; }
+
+        /// <summary>
+        /// The ID of the associated multiplayer game round, if applicable.
+        /// </summary>
+        [JsonProperty("multiplayer_game_round_id")]
+        public int? MultiplayerGameRoundId { get; internal set; }
+
+        /// <summary>
+        /// Additional metadata related to the game round.
+        /// </summary>
+        [JsonProperty("metadata")]
+        public Dictionary<string, object> Metadata { get; internal set; }
+
+        /// <summary>
+        /// Rankings of all participants in a multiplayer game round, if applicable.
+        /// </summary>
+        [JsonProperty("rankings")]
+        public List<RankingEntry> Rankings { get; internal set; }
 
         /// <summary>
         /// The date and time when the game round was created.
@@ -31,42 +79,126 @@ namespace GameFuse.Models
         /// </summary>
         [JsonProperty("updated_at")]
         public string UpdatedAt { get; internal set; }
+    }
 
+    /// <summary>
+    /// Represents a player's ranking entry in a multiplayer game round.
+    /// </summary>
+    public class RankingEntry
+    {
         /// <summary>
-        /// When the game round ended, if it has ended.
+        /// The unique identifier of the game round for this ranking.
         /// </summary>
-        [JsonProperty("ended_at")]
-        public string EndedAt { get; internal set; }
+        [JsonProperty("id")]
+        public int Id { get; internal set; }
+        
+        /// <summary>
+        /// The place finished in the game round.
+        /// </summary>
+        [JsonProperty("place")]
+        public int Place { get; internal set; }
 
         /// <summary>
         /// The score achieved in the game round.
         /// </summary>
         [JsonProperty("score")]
-        public int Score { get; internal set; }
+        public double Score { get; internal set; }
 
         /// <summary>
-        /// Custom data associated with the game round.
+        /// The start time of the game round.
         /// </summary>
-        [JsonProperty("custom_data")]
-        public string CustomData { get; internal set; }
+        [JsonProperty("start_time")]
+        public string StartTime { get; internal set; }
 
         /// <summary>
-        /// The name or identifier of the level played in the game round.
+        /// The end time of the game round.
         /// </summary>
-        [JsonProperty("level")]
-        public string Level { get; internal set; }
+        [JsonProperty("end_time")]
+        public string EndTime { get; internal set; }
 
         /// <summary>
-        /// Variables associated with the game round.
+        /// The user associated with this ranking entry.
         /// </summary>
-        [JsonProperty("variables")]
-        public Dictionary<string, string> Variables { get; internal set; }
+        [JsonProperty("user")]
+        public UserRankInfo User { get; internal set; }
     }
 
-     public class LeaderboardEntries
+    /// <summary>
+    /// Represents user information in a ranking entry.
+    /// </summary>
+    public class UserRankInfo
     {
-         [JsonProperty("leaderboard_entries")]
-         public List<LeaderboardEntry> Entries { get; set; }
+        /// <summary>
+        /// The user's ID.
+        /// </summary>
+        [JsonProperty("id")]
+        public int Id { get; internal set; }
+
+        /// <summary>
+        /// The user's username.
+        /// </summary>
+        [JsonProperty("username")]
+        public string Username { get; internal set; }
+
+        /// <summary>
+        /// The user's email.
+        /// </summary>
+        [JsonProperty("email")]
+        public string Email { get; internal set; }
+
+        /// <summary>
+        /// The display email for the user.
+        /// </summary>
+        [JsonProperty("display_email")]
+        public string DisplayEmail { get; internal set; }
+
+        /// <summary>
+        /// The user's credits.
+        /// </summary>
+        [JsonProperty("credits")]
+        public int Credits { get; internal set; }
+
+        /// <summary>
+        /// The user's score.
+        /// </summary>
+        [JsonProperty("score")]
+        public double Score { get; internal set; }
+
+        /// <summary>
+        /// Indicates if this is a new user.
+        /// </summary>
+        [JsonProperty("is_new_user")]
+        public bool IsNewUser { get; internal set; }
+    }
+
+    /// <summary>
+    /// Container for a list of game rounds from API response.
+    /// </summary>
+    public class GameRoundListResponse
+    {
+        /// <summary>
+        /// List of game rounds.
+        /// </summary>
+        [JsonProperty("game_rounds")]
+        public List<GameRound> GameRounds { get; set; }
+    }
+
+    /// <summary>
+    /// Response for delete operation.
+    /// </summary>
+    public class GameRoundDeleteResponse
+    {
+        /// <summary>
+        /// Success message.
+        /// </summary>
+        [JsonProperty("message")]
+        public string Message { get; set; }
+    }
+
+    public class LeaderboardEntries
+    {
+        [JsonProperty("leaderboard_entries")]
+        public List<LeaderboardEntry> Entries { get; set; }
 
         public LeaderboardEntries()
         {
@@ -95,7 +227,7 @@ namespace GameFuse.Models
         /// The user's score.
         /// </summary>
         [JsonProperty("score")]
-        public int Score { get; internal set; }
+        public double Score { get; internal set; }
 
         /// <summary>
         /// The user's rank in the leaderboard.

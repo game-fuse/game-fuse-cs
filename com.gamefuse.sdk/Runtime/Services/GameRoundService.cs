@@ -28,35 +28,45 @@ namespace GameFuse.Services
         /// <summary>
         /// Creates a new game round.
         /// </summary>
-        /// <param name="userId">The ID of the user creating the game round.</param>
-        /// <param name="level">The level identifier (optional).</param>
-        /// <param name="customData">Custom data for the game round (optional).</param>
-        /// <param name="variables">Variables for the game round (optional).</param>
+        /// <param name="gameUserId">The ID of the user creating the game round.</param>
+        /// <param name="gameType">The type of game being played.</param>
+        /// <param name="startTime">The start time of the game round.</param>
+        /// <param name="endTime">The end time of the game round.</param>
+        /// <param name="score">The score achieved in the game round.</param>
+        /// <param name="place">The place the user finished in during the game round.</param>
+        /// <param name="metadata">Additional metadata related to the game round.</param>
+        /// <param name="multiplayer">If true, create or join a multiplayer round.</param>
+        /// <param name="multiplayerGameRoundId">ID of the associated multiplayer game round if applicable.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>The created game round.</returns>
-        public Task<GameRound> CreateGameRoundAsync(int userId, string level = null, string customData = null, Dictionary<string, string> variables = null, CancellationToken cancellationToken = default)
+        public Task<GameRound> CreateGameRoundAsync(
+            int gameUserId, 
+            string gameType, 
+            string startTime = null, 
+            string endTime = null, 
+            int? score = null, 
+            int? place = null, 
+            Dictionary<string, object> metadata = null, 
+            bool? multiplayer = null, 
+            int? multiplayerGameRoundId = null, 
+            CancellationToken cancellationToken = default)
         {
-            if (userId <= 0) throw new ArgumentOutOfRangeException(nameof(userId), "User ID must be positive.");
+            if (gameUserId <= 0) throw new ArgumentOutOfRangeException(nameof(gameUserId), "Game User ID must be positive.");
+            if (string.IsNullOrEmpty(gameType)) throw new ArgumentException("Game type cannot be null or empty.", nameof(gameType));
             
             var request = new Dictionary<string, object>
             {
-                ["user_id"] = userId
+                ["game_user_id"] = gameUserId,
+                ["game_type"] = gameType
             };
             
-            if (!string.IsNullOrEmpty(level))
-            {
-                request["level"] = level;
-            }
-            
-            if (!string.IsNullOrEmpty(customData))
-            {
-                request["custom_data"] = customData;
-            }
-            
-            if (variables != null && variables.Count > 0)
-            {
-                request["variables"] = variables;
-            }
+            if (!string.IsNullOrEmpty(startTime)) request["start_time"] = startTime;
+            if (!string.IsNullOrEmpty(endTime)) request["end_time"] = endTime;
+            if (score.HasValue) request["score"] = score.Value;
+            if (place.HasValue) request["place"] = place.Value;
+            if (metadata != null) request["metadata"] = metadata;
+            if (multiplayer.HasValue) request["multiplayer"] = multiplayer.Value;
+            if (multiplayerGameRoundId.HasValue) request["multiplayer_game_round_id"] = multiplayerGameRoundId.Value;
             
             return _transport.PostAsync<Dictionary<string, object>, GameRound>("game_rounds", request, null, cancellationToken);
         }
@@ -84,45 +94,42 @@ namespace GameFuse.Services
         {
             if (userId <= 0) throw new ArgumentOutOfRangeException(nameof(userId), "User ID must be positive.");
             
-            var response = await _transport.GetAsync<List<GameRound>>($"users/{userId}/game_rounds", null, cancellationToken);
-            return response.AsReadOnly();
+            var response = await _transport.GetAsync<GameRoundListResponse>($"game_rounds?user_id={userId}", null, cancellationToken);
+            return response.GameRounds?.AsReadOnly() ?? new List<GameRound>().AsReadOnly();
         }
 
         /// <summary>
         /// Updates a game round.
         /// </summary>
         /// <param name="gameRoundId">The ID of the game round to update.</param>
-        /// <param name="score">The new score (optional).</param>
-        /// <param name="customData">New custom data (optional).</param>
-        /// <param name="variables">New variables (optional).</param>
-        /// <param name="ended">Whether the game round has ended (optional).</param>
+        /// <param name="startTime">The start time of the game round.</param>
+        /// <param name="endTime">The end time of the game round.</param>
+        /// <param name="score">The score achieved in the game round.</param>
+        /// <param name="place">The place the user finished in during the game round.</param>
+        /// <param name="gameType">The type of game being played.</param>
+        /// <param name="metadata">Additional metadata related to the game round.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>The updated game round.</returns>
-        public Task<GameRound> UpdateGameRoundAsync(int gameRoundId, int? score = null, string customData = null, Dictionary<string, string> variables = null, bool? ended = null, CancellationToken cancellationToken = default)
+        public Task<GameRound> UpdateGameRoundAsync(
+            int gameRoundId, 
+            string startTime = null, 
+            string endTime = null, 
+            int? score = null, 
+            int? place = null, 
+            string gameType = null, 
+            Dictionary<string, object> metadata = null, 
+            CancellationToken cancellationToken = default)
         {
             if (gameRoundId <= 0) throw new ArgumentOutOfRangeException(nameof(gameRoundId), "Game Round ID must be positive.");
             
             var request = new Dictionary<string, object>();
             
-            if (score.HasValue)
-            {
-                request["score"] = score.Value;
-            }
-            
-            if (!string.IsNullOrEmpty(customData))
-            {
-                request["custom_data"] = customData;
-            }
-            
-            if (variables != null && variables.Count > 0)
-            {
-                request["variables"] = variables;
-            }
-            
-            if (ended.HasValue && ended.Value)
-            {
-                request["ended_at"] = DateTime.UtcNow.ToString("o");
-            }
+            if (!string.IsNullOrEmpty(startTime)) request["start_time"] = startTime;
+            if (!string.IsNullOrEmpty(endTime)) request["end_time"] = endTime;
+            if (score.HasValue) request["score"] = score.Value;
+            if (place.HasValue) request["place"] = place.Value;
+            if (!string.IsNullOrEmpty(gameType)) request["game_type"] = gameType;
+            if (metadata != null) request["metadata"] = metadata;
             
             if (request.Count == 0)
             {
@@ -130,6 +137,19 @@ namespace GameFuse.Services
             }
             
             return _transport.PutAsync<Dictionary<string, object>, GameRound>($"game_rounds/{gameRoundId}", request, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Deletes a game round.
+        /// </summary>
+        /// <param name="gameRoundId">The ID of the game round to delete.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response indicating success.</returns>
+        public Task<GameRoundDeleteResponse> DeleteGameRoundAsync(int gameRoundId, CancellationToken cancellationToken = default)
+        {
+            if (gameRoundId <= 0) throw new ArgumentOutOfRangeException(nameof(gameRoundId), "Game Round ID must be positive.");
+            
+            return _transport.DeleteAsync<GameRoundDeleteResponse>($"game_rounds/{gameRoundId}", null, cancellationToken);
         }
 
         /// <summary>
@@ -142,8 +162,8 @@ namespace GameFuse.Services
         {
             if (limit <= 0) throw new ArgumentOutOfRangeException(nameof(limit), "Limit must be positive.");
             
-            var response = await _transport.GetAsync<List<LeaderboardEntry>>($"leaderboard?limit={limit}", null, cancellationToken);
-            return response.AsReadOnly();
+            var response = await _transport.GetAsync<LeaderboardEntries>($"leaderboard?limit={limit}", null, cancellationToken);
+            return response.Entries?.AsReadOnly() ?? new List<LeaderboardEntry>().AsReadOnly();
         }
 
         /// <summary>
