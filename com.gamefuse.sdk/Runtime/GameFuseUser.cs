@@ -142,6 +142,8 @@ namespace GameFuse
         private readonly FriendService _friendService;
         private readonly GroupService _groupService;
         private readonly MessageService _messageService;
+        private readonly LeaderboardService _leaderboardService;
+        
 
         public GameFuseUser(User user)
         {
@@ -158,6 +160,7 @@ namespace GameFuse
             _friendService = new FriendService(_transport);
             _groupService = new GroupService(_transport);
             _messageService = new MessageService(_transport);
+            _leaderboardService = new LeaderboardService(_transport);
         }
 
         
