@@ -123,7 +123,7 @@ namespace GameFuse.Models
         /// Groups that the user is a member of.
         /// </summary>
         [JsonProperty("groups")]
-        public IReadOnlyList<Group> Groups { get; internal set; }
+        public IReadOnlyList<GroupSummary> Groups { get; internal set; }
 
         /// <summary>
         /// Group join requests sent by the user.

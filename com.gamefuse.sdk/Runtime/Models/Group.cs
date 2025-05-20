@@ -1,209 +1,190 @@
+// Models/GroupModels.cs
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace GameFuse.Models
 {
-    /// <summary>
-    /// Represents a group in GameFuse.
-    /// </summary>
+    public class CreateGroupPayload
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("group_type", NullValueHandling = NullValueHandling.Ignore)]
+        public string GroupType { get; set; } // e.g., "Public", "Private"
+
+        [JsonProperty("max_group_size", NullValueHandling = NullValueHandling.Ignore)]
+        public int? MaxGroupSize { get; set; }
+
+        [JsonProperty("can_auto_join", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? CanAutoJoin { get; set; }
+
+        [JsonProperty("is_invite_only", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? IsInviteOnly { get; set; }
+
+        [JsonProperty("searchable", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Searchable { get; set; } // Not in doc but good to have if API supports
+
+        [JsonProperty("admins_only_can_create_attributes", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? AdminsOnlyCanCreateAttributes { get; set; }
+    }
+
+    // This will be the comprehensive Group model, also used as response for CreateGroup
     public class Group
     {
-        /// <summary>
-        /// The group's unique identifier.
-        /// </summary>
         [JsonProperty("id")]
         public int Id { get; internal set; }
 
-        /// <summary>
-        /// The group's name.
-        /// </summary>
         [JsonProperty("name")]
         public string Name { get; internal set; }
 
-        /// <summary>
-        /// The type of group (e.g., "Public", "Private").
-        /// </summary>
         [JsonProperty("group_type")]
         public string GroupType { get; internal set; }
 
-        /// <summary>
-        /// Whether users can automatically join the group.
-        /// </summary>
         [JsonProperty("can_auto_join")]
         public bool CanAutoJoin { get; internal set; }
 
-        /// <summary>
-        /// Whether the group is invite-only.
-        /// </summary>
         [JsonProperty("is_invite_only")]
         public bool IsInviteOnly { get; internal set; }
 
-        /// <summary>
-        /// The maximum number of members allowed in the group.
-        /// </summary>
         [JsonProperty("max_group_size")]
         public int MaxGroupSize { get; internal set; }
 
-        /// <summary>
-        /// Whether the group can be found in searches.
-        /// </summary>
         [JsonProperty("searchable")]
         public bool Searchable { get; internal set; }
 
-        /// <summary>
-        /// The current number of members in the group.
-        /// </summary>
+        [JsonProperty("admins_only_can_create_attributes")]
+        public bool AdminsOnlyCanCreateAttributes { get; internal set; }
+
+
         [JsonProperty("member_count")]
         public int MemberCount { get; internal set; }
 
-        /// <summary>
-        /// List of members in the group (may be null if not provided).
-        /// </summary>
+        // The API doc for Create Group response shows members and admins.
+        // We can use the existing Friend/User model for members/admins if the structure is similar.
+        // Assuming 'Friend' model (id, username, email, credits, score) is suitable here.
         [JsonProperty("members")]
-        public IReadOnlyList<GroupMember> Members { get; internal set; }
+        public List<UserSummary> Members { get; internal set; } // Using a UserSummary or Friend-like model
 
-        /// <summary>
-        /// List of admin members in the group (may be null if not provided).
-        /// </summary>
         [JsonProperty("admins")]
-        public IReadOnlyList<GroupMember> Admins { get; internal set; }
+        public List<UserSummary> Admins { get; internal set; } // Using a UserSummary or Friend-like model
+
+        // These might not be populated on create, but are part of a full group object
+        [JsonProperty("join_requests", NullValueHandling = NullValueHandling.Ignore)]
+        public List<GroupJoinRequest> JoinRequests { get; internal set; }
+
+        [JsonProperty("invites", NullValueHandling = NullValueHandling.Ignore)]
+        public List<GroupInvite> Invites { get; internal set; }
+
+        // Constructor to initialize lists
+        public Group()
+        {
+            Members = new List<UserSummary>();
+            Admins = new List<UserSummary>();
+            JoinRequests = new List<GroupJoinRequest>();
+            Invites = new List<GroupInvite>();
+        }
     }
 
     /// <summary>
-    /// Represents a member of a group.
+    /// Represents a summary of a group, typically used in lists.
     /// </summary>
-    public class GroupMember
+    public class GroupSummary
     {
-        /// <summary>
-        /// The member's unique identifier.
-        /// </summary>
         [JsonProperty("id")]
         public int Id { get; internal set; }
 
-        /// <summary>
-        /// The member's display username.
-        /// </summary>
+        [JsonProperty("name")]
+        public string Name { get; internal set; }
+
+        [JsonProperty("group_type")]
+        public string GroupType { get; internal set; }
+
+        [JsonProperty("can_auto_join")]
+        public bool CanAutoJoin { get; internal set; }
+
+        [JsonProperty("is_invite_only")]
+        public bool IsInviteOnly { get; internal set; }
+
+        [JsonProperty("max_group_size")]
+        public int MaxGroupSize { get; internal set; }
+
+        [JsonProperty("searchable")]
+        public bool Searchable { get; internal set; }
+
+        // admins_only_can_create_attributes might not be in summary, check API actual response
+        // For now, assuming it's not, to keep summary distinct from full Group.
+
+        [JsonProperty("member_count")]
+        public int MemberCount { get; internal set; }
+    }
+
+    public class FetchAllGroupsResponse
+    {
+        [JsonProperty("groups")]
+        public List<GroupSummary> Groups { get; set; }
+
+        public FetchAllGroupsResponse()
+        {
+            Groups = new List<GroupSummary>();
+        }
+    }
+
+    // A simplified user model for listings like members/admins, if different from full User/Friend
+    public class UserSummary // Or reuse Friend if appropriate
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
         [JsonProperty("username")]
-        public string Username { get; internal set; }
-
-        /// <summary>
-        /// The member's email.
-        /// </summary>
-        [JsonProperty("email")]
-        public string Email { get; internal set; }
-
-        /// <summary>
-        /// Number of credits the member has.
-        /// </summary>
+        public string Username { get; set; }
+        [JsonProperty("email")] // System email
+        public string Email { get; set; }
+        // display_email might not be in this summary
         [JsonProperty("credits")]
-        public int Credits { get; internal set; }
-
-        /// <summary>
-        /// The member's score.
-        /// </summary>
+        public int Credits { get; set; }
         [JsonProperty("score")]
-        public int Score { get; internal set; }
+        public int Score { get; set; }
     }
 
-    /// <summary>
-    /// Represents a request to join a group.
-    /// </summary>
-    public class GroupJoinRequest
+    public class SendGroupConnectionRequestPayload
     {
-        /// <summary>
-        /// The request's unique identifier.
-        /// </summary>
+        [JsonProperty("group_id")]
+        public int GroupId { get; set; }
+
+        [JsonProperty("user_id")]
+        public int UserId { get; set; } // The ID of the user requesting or being connected
+    }
+
+    public class GroupConnectionResponse
+    {
         [JsonProperty("id")]
-        public int Id { get; internal set; }
+        public int Id { get; set; } // This is the GroupConnection ID
 
-        /// <summary>
-        /// The group associated with the request.
-        /// </summary>
-        [JsonProperty("group")]
-        public Group Group { get; internal set; }
+        [JsonProperty("status")]
+        public string Status { get; set; } // e.g., "pending", "accepted"
 
-        /// <summary>
-        /// When the request was made.
-        /// </summary>
-        [JsonProperty("requested_at")]
-        public string RequestedAt { get; internal set; }
+        [JsonProperty("inviter_id")] // Could be self if requesting, or an admin if invited
+        public int? InviterId { get; set; } // Nullable if not applicable
+
+        [JsonProperty("user")] // The user involved in the connection
+        public UserSummary User { get; set; } // Assuming UserSummary is appropriate here
     }
 
-    /// <summary>
-    /// Represents an invitation to join a group.
-    /// </summary>
-    public class GroupInvite
+    public class UpdateGroupConnectionStatusPayload
     {
-        /// <summary>
-        /// The invite details.
-        /// </summary>
-        [JsonProperty("invite")]
-        public object Invite { get; internal set; }
-
-        /// <summary>
-        /// The user being invited.
-        /// </summary>
-        [JsonProperty("user")]
-        public InviteUser User { get; internal set; }
-
-        /// <summary>
-        /// The user sending the invitation.
-        /// </summary>
-        [JsonProperty("inviter")]
-        public InviteUser Inviter { get; internal set; }
-
-        /// <summary>
-        /// The group associated with the invitation.
-        /// </summary>
-        [JsonProperty("group")]
-        public Group Group { get; internal set; }
+        [JsonProperty("status")]
+        public string Status { get; set; } // "accepted" or "declined"
     }
 
-    /// <summary>
-    /// Represents a user in the context of a group invite.
-    /// </summary>
-    public class InviteUser
+    public class GroupConnectionStatusUpdateResponse
     {
-        /// <summary>
-        /// The user's unique identifier.
-        /// </summary>
         [JsonProperty("id")]
-        public int Id { get; internal set; }
+        public int Id { get; set; } // GroupConnection ID that was updated
 
-        /// <summary>
-        /// The user's display username.
-        /// </summary>
-        [JsonProperty("username")]
-        public string Username { get; internal set; }
-
-        /// <summary>
-        /// The user's email.
-        /// </summary>
-        [JsonProperty("email")]
-        public string Email { get; internal set; }
-
-        /// <summary>
-        /// The user's display email.
-        /// </summary>
-        [JsonProperty("display_email")]
-        public string DisplayEmail { get; internal set; }
-
-        /// <summary>
-        /// Number of credits the user has.
-        /// </summary>
-        [JsonProperty("credits")]
-        public int Credits { get; internal set; }
-
-        /// <summary>
-        /// The user's score.
-        /// </summary>
-        [JsonProperty("score")]
-        public int Score { get; internal set; }
-
-        /// <summary>
-        /// When the request was made.
-        /// </summary>
-        [JsonProperty("requested_at")]
-        public string RequestedAt { get; internal set; }
+        [JsonProperty("status")]
+        public string Status { get; set; } // The new status ("accepted" or "declined")
     }
+
+    // Placeholder for more detailed models if needed later
+    public class GroupJoinRequest { /* ... */ }
+    public class GroupInvite { /* ... */ }
 }

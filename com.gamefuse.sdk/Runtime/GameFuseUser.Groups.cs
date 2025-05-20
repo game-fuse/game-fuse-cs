@@ -7,6 +7,108 @@ namespace GameFuse
 {
     public partial class GameFuseUser
     {
+
+        /// <summary>
+        /// Creates a new group with this user as the admin.
+        /// </summary>
+        /// <param name="payload">The details for the group to be created.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The newly created Group object.</returns>
+        public async Task<Group> CreateGroupAsync(CreateGroupPayload payload, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated(); // User must be signed in
+            Group createdGroup = await _groupService.CreateGroupAsync(payload, cancellationToken);
+            return createdGroup;
+        }
+
+        /// <summary>
+        /// Fetches a list of all available groups (summary view).
+        /// Requires the user to be authenticated.
+        /// </summary>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A read-only list of group summaries.</returns>
+        public async Task<IReadOnlyList<GroupSummary>> FetchAllGroupsAsync(CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated(); // User must be signed in
+
+            FetchAllGroupsResponse response = await _groupService.FetchAllGroupsAsync(cancellationToken);
+
+            
+             if (response?.Groups != null)
+             {
+                 _userData.Groups = response.Groups; // If _userData.Groups is List<GroupSummary>
+             }
+
+            return response?.Groups?.AsReadOnly() ?? (IReadOnlyList<GroupSummary>)new List<GroupSummary>().AsReadOnly();
+        }
+
+        /// <summary>
+        /// Fetches the full details for a specific group by its ID.
+        /// Requires the user to be authenticated.
+        /// </summary>
+        /// <param name="groupId">The ID of the group to fetch.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A Group object containing the detailed information.</returns>
+        public async Task<Group> FetchGroupDetailsAsync(int groupId, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated(); // User must be signed in
+
+            if (groupId <= 0)
+            {
+                throw new System.ArgumentOutOfRangeException(nameof(groupId), "Group ID must be positive.");
+            }
+
+            return await _groupService.FetchGroupDetailsAsync(groupId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends a request for this authenticated user to connect to (join or request to join) a specific group.
+        /// </summary>
+        /// <param name="groupId">The ID of the group to connect to.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A GroupConnectionResponse object detailing the outcome of the connection attempt.</returns>
+        public async Task<GroupConnectionResponse> SendGroupConnectionRequestAsync(int groupId, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated(); // This user instance must be authenticated
+
+            if (groupId <= 0)
+            {
+                throw new System.ArgumentOutOfRangeException(nameof(groupId), "Group ID must be positive.");
+            }
+
+            // The 'userId' in the payload is the ID of the user making the request, which is this.Id.
+            return await _groupService.SendGroupConnectionRequestAsync(groupId, this.Id, cancellationToken);
+        }
+
+        /// <summary>
+        /// Accepts a pending group membership request. This user (admin) performs the action.
+        /// </summary>
+        /// <param name="groupConnectionId">The ID of the group_connection (join request) to accept.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response indicating the updated ID and status of the group connection.</returns>
+        public async Task<GroupConnectionStatusUpdateResponse> AcceptGroupMembershipRequestAsync(int groupConnectionId, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated(); // Admin user must be signed in
+            if (groupConnectionId <= 0) throw new System.ArgumentOutOfRangeException(nameof(groupConnectionId), "Group Connection ID must be positive.");
+
+            return await _groupService.ManageGroupMembershipRequestAsync(groupConnectionId, "accepted", cancellationToken);
+        }
+
+        /// <summary>
+        /// Declines a pending group membership request. This user (admin) performs the action.
+        /// </summary>
+        /// <param name="groupConnectionId">The ID of the group_connection (join request) to decline.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response indicating the updated ID and status of the group connection.</returns>
+        public async Task<GroupConnectionStatusUpdateResponse> DeclineGroupMembershipRequestAsync(int groupConnectionId, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated(); // Admin user must be signed in
+            if (groupConnectionId <= 0) throw new System.ArgumentOutOfRangeException(nameof(groupConnectionId), "Group Connection ID must be positive.");
+
+            return await _groupService.ManageGroupMembershipRequestAsync(groupConnectionId, "declined", cancellationToken);
+        }
+
+        /*
         /// <summary>
         /// Creates a new group.
         /// </summary>
@@ -205,6 +307,6 @@ namespace GameFuse
         {
             EnsureAuthenticated();
             return _groupService.SearchGroupsAsync(query, cancellationToken);
-        }
+        }*/
     }
 }

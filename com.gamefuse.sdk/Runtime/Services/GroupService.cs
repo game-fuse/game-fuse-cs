@@ -25,6 +25,156 @@ namespace GameFuse.Services
         }
 
         /// <summary>
+        /// Creates a new group for the authenticated user.
+        /// </summary>
+        /// <param name="payload">The details of the group to create.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The newly created Group object.</returns>
+        public async Task<Group> CreateGroupAsync(CreateGroupPayload payload, CancellationToken cancellationToken = default)
+        {
+            if (payload == null) throw new ArgumentNullException(nameof(payload));
+            if (string.IsNullOrEmpty(payload.Name)) throw new ArgumentException("Group name cannot be empty.", nameof(payload.Name));
+
+            // API Path: POST /api/v3/groups
+            // The ITransport instance used by this service (via GameFuseUser) should be
+            // configured with the user's authentication-token.
+            // Expected HTTP status 201 Created. Transport layer should handle.
+            var createdGroup = await _transport.PostAsync<CreateGroupPayload, Group>("groups", payload, null, cancellationToken);
+
+            // Initialize lists if API returns null for them (good practice)
+            if (createdGroup != null)
+            {
+                createdGroup.Members ??= new System.Collections.Generic.List<UserSummary>();
+                createdGroup.Admins ??= new System.Collections.Generic.List<UserSummary>();
+                createdGroup.JoinRequests ??= new System.Collections.Generic.List<GroupJoinRequest>();
+                createdGroup.Invites ??= new System.Collections.Generic.List<GroupInvite>();
+            }
+            
+
+            return createdGroup;
+        }
+
+        /// <summary>
+        /// Retrieves a list of available groups on the platform (summary view).
+        /// Requires user authentication.
+        /// </summary>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response object containing a list of group summaries.</returns>
+        public async Task<FetchAllGroupsResponse> FetchAllGroupsAsync(CancellationToken cancellationToken = default)
+        {
+            // API Path: GET /api/v3/groups
+            // User authentication is required (implicit from the auth token).
+            var response = await _transport.GetAsync<FetchAllGroupsResponse>("groups", null, cancellationToken);
+
+            if (response == null) return new FetchAllGroupsResponse();
+            response.Groups ??= new List<GroupSummary>();
+
+            return response;
+        }
+
+        /// <summary>
+        /// Retrieves the full details of a specific group.
+        /// Requires user authentication.
+        /// </summary>
+        /// <param name="groupId">The ID of the group to fetch details for.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A Group object containing full details of the group.</returns>
+        public async Task<Group> FetchGroupDetailsAsync(int groupId, CancellationToken cancellationToken = default)
+        {
+            if (groupId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(groupId), "Group ID must be positive.");
+            }
+
+            // API Path: GET /api/v3/groups/{id}
+            // User authentication is required (implicit from the auth token).
+            string path = $"groups/{groupId}";
+            var groupDetails = await _transport.GetAsync<Group>(path, null, cancellationToken);
+
+            // Initialize lists if API returns null for them
+            if (groupDetails != null)
+            {
+                groupDetails.Members ??= new List<UserSummary>();
+                groupDetails.Admins ??= new List<UserSummary>();
+                groupDetails.JoinRequests ??= new List<GroupJoinRequest>();
+                groupDetails.Invites ??= new List<GroupInvite>();
+            }
+            // else: Handle cases where groupDetails might be null if API returns non-success
+            // or if _transport.GetAsync can return null on certain conditions.
+            // Usually, transport throws for HTTP errors.
+
+            return groupDetails;
+        }
+
+        /// <summary>
+        /// Creates a new group connection, which may involve sending an invite (admin action, not covered here yet)
+        /// or processing a membership request (user action).
+        /// The authenticated user is the one initiating this connection.
+        /// </summary>
+        /// <param name="groupId">The ID of the group to connect to.</param>
+        /// <param name="requestingUserId">The ID of the user requesting to join (should be the authenticated user's ID).</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A GroupConnectionResponse object detailing the connection attempt.</returns>
+        public async Task<GroupConnectionResponse> SendGroupConnectionRequestAsync(int groupId, int requestingUserId, CancellationToken cancellationToken = default)
+        {
+            if (groupId <= 0) throw new ArgumentOutOfRangeException(nameof(groupId), "Group ID must be positive.");
+            if (requestingUserId <= 0) throw new ArgumentOutOfRangeException(nameof(requestingUserId), "Requesting User ID must be positive.");
+
+            var payload = new SendGroupConnectionRequestPayload
+            {
+                GroupId = groupId,
+                UserId = requestingUserId
+            };
+
+            // API Path: POST /api/v3/group_connections
+            string path = "group_connections";
+            var response = await _transport.PostAsync<SendGroupConnectionRequestPayload, GroupConnectionResponse>(path, payload, null, cancellationToken);
+
+            if (response == null)
+            {
+                // Or throw specific exception
+                return new GroupConnectionResponse { Status = "error_null_response" };
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Manages a group membership request by updating its status (e.g., accept or decline).
+        /// This action is typically performed by a group admin.
+        /// </summary>
+        /// <param name="groupConnectionId">The ID of the group_connection (join request) to manage.</param>
+        /// <param name="newStatus">The new status to set (e.g., "accepted", "declined").</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response indicating the updated ID and status of the group connection.</returns>
+        public async Task<GroupConnectionStatusUpdateResponse> ManageGroupMembershipRequestAsync(int groupConnectionId, string newStatus, CancellationToken cancellationToken = default)
+        {
+            if (groupConnectionId <= 0) throw new ArgumentOutOfRangeException(nameof(groupConnectionId), "Group Connection ID must be positive.");
+            if (string.IsNullOrEmpty(newStatus) || (newStatus.ToLower() != "accepted" && newStatus.ToLower() != "declined"))
+            {
+                throw new ArgumentException("New status must be 'accepted' or 'declined'.", nameof(newStatus));
+            }
+
+            var payload = new UpdateGroupConnectionStatusPayload
+            {
+                Status = newStatus.ToLower()
+            };
+
+            // API Path: PUT /api/v3/group_connections/{id}
+            string path = $"group_connections/{groupConnectionId}";
+            var response = await _transport.PutAsync<UpdateGroupConnectionStatusPayload, GroupConnectionStatusUpdateResponse>(path, payload, null, cancellationToken);
+
+            if (response == null)
+            {
+                // Or throw specific exception
+                return new GroupConnectionStatusUpdateResponse { Id = groupConnectionId, Status = "error_null_response" };
+            }
+
+            return response;
+        }
+
+        /*
+        /// <summary>
         /// Creates a new group.
         /// </summary>
         /// <param name="userId">The ID of the user creating the group.</param>
@@ -327,6 +477,6 @@ namespace GameFuse.Services
             
             var response = await _transport.GetAsync<List<Group>>($"groups/search?query={Uri.EscapeDataString(query)}", null, cancellationToken);
             return response.AsReadOnly();
-        }
+        }*/
     }
 }

@@ -118,7 +118,7 @@ namespace GameFuse
         /// <summary>
         /// Groups that the user is a member of.
         /// </summary>
-        public IReadOnlyList<Group> Groups => _userData.Groups;
+        public IReadOnlyList<GroupSummary> Groups => _userData.Groups;
 
         /// <summary>
         /// Group join requests sent by the user.
