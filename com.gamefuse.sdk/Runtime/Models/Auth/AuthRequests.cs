@@ -74,29 +74,6 @@ namespace GameFuse.Models.Auth
         public string GameToken { get; set; }
     }
 
-    /// <summary>
-    /// Request model for the forgot password functionality.
-    /// </summary>
-    public class ForgotPasswordRequest
-    {
-        /// <summary>
-        /// The user's email address.
-        /// </summary>
-        [JsonProperty("email")]
-        public string Email { get; set; }
-
-        /// <summary>
-        /// The ID of the game.
-        /// </summary>
-        [JsonProperty("game_id")]
-        public string GameId { get; set; }
-
-        /// <summary>
-        /// The API token for the game.
-        /// </summary>
-        [JsonProperty("game_token")]
-        public string GameToken { get; set; }
-    }
 
     /// <summary>
     /// Request model for resetting a user's password.

@@ -58,35 +58,6 @@ namespace GameFuse.Models.TestSuite
         public string Email { get; set; }
     }
 
-    /// <summary>
-    /// Response model for creating a test user.
-    /// </summary>
-    public class CreateUserResponse
-    {
-        /// <summary>
-        /// The ID of the created user.
-        /// </summary>
-        [JsonProperty("Id")]
-        public int Id { get; set; }
-
-        /// <summary>
-        /// The username of the created user.
-        /// </summary>
-        [JsonProperty("Username")]
-        public string Username { get; set; }
-
-        /// <summary>
-        /// The email of the created user.
-        /// </summary>
-        [JsonProperty("Email")]
-        public string Email { get; set; }
-
-        /// <summary>
-        /// The display email of the created user.
-        /// </summary>
-        [JsonProperty("DisplayEmail")]
-        public string DisplayEmail { get; set; }
-    }
 
     /// <summary>
     /// Request model for cleaning up a test game.

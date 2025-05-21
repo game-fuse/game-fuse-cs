@@ -1,4 +1,5 @@
 using GameFuse.Models.TestSuite;
+using GameFuse.Models;
 using GameFuse.Services;
 using GameFuse.Transport;
 using NUnit.Framework;
@@ -135,7 +136,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
         /// </summary>
         /// <param name="usernamePrefix">Optional prefix for the username to make it more identifiable.</param>
         /// <returns>The created test user.</returns>
-        protected async Task<CreateUserResponse> CreateTestUserAsync(string usernamePrefix = "tester")
+        protected async Task<Friend> CreateTestUserAsync(string usernamePrefix = "tester")
         {
             // Generate a unique username and email
             string uniqueSuffix = DateTime.UtcNow.Ticks.ToString();

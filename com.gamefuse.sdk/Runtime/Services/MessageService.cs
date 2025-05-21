@@ -51,7 +51,7 @@ namespace GameFuse.Services
             if (chatResponseObject != null)
             {
                 chatResponseObject.Messages ??= new List<Message>();
-                chatResponseObject.Participants ??= new List<UserSummary>();
+                chatResponseObject.Participants ??= new List<Friend>();
             }
             return chatResponseObject; // Return the Chat object
         }

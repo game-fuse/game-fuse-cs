@@ -66,10 +66,10 @@ namespace GameFuse.Models
         public int MemberCount { get; internal set; }
 
         [JsonProperty("members")]
-        public List<UserSummary> Members { get; internal set; }
+        public List<Friend> Members { get; internal set; }
 
         [JsonProperty("admins")]
-        public List<UserSummary> Admins { get; internal set; }
+        public List<Friend> Admins { get; internal set; }
 
         /// <summary>
         /// List of pending join requests for this group. Each item is a GroupConnection.
@@ -90,8 +90,8 @@ namespace GameFuse.Models
 
         public Group()
         {
-            Members = new List<UserSummary>();
-            Admins = new List<UserSummary>();
+            Members = new List<Friend>();
+            Admins = new List<Friend>();
             JoinRequests = new List<GroupConnectionResponse>();
             Invites = new List<GroupConnectionResponse>();
         }
@@ -141,30 +141,6 @@ namespace GameFuse.Models
         }
     }
 
-    /// <summary>
-    /// A summarized representation of a user, often used in lists like group members or friends.
-    /// </summary>
-    public class UserSummary
-    {
-        [JsonProperty("id")]
-        public int Id { get; set; }
-
-        [JsonProperty("username")]
-        public string Username { get; set; }
-
-        [JsonProperty("email")] // System email as per API docs for similar contexts
-        public string Email { get; set; }
-
-        [JsonProperty("credits")]
-        public int Credits { get; set; }
-
-        [JsonProperty("score")]
-        public int Score { get; set; }
-
-        // If "display_email" is consistently present in these summaries, add it.
-        // [JsonProperty("display_email")]
-        // public string DisplayEmail { get; set; }
-    }
 
     /// <summary>
     /// Payload for creating a group connection (user requesting to join or admin inviting).
@@ -197,7 +173,7 @@ namespace GameFuse.Models
         public int? InviterId { get; set; } // User ID of who initiated (could be self if requesting, or admin if inviting)
 
         [JsonProperty("user")]
-        public UserSummary User { get; set; } // The user who this connection pertains to (requester or invitee)
+        public Friend User { get; set; } // The user who this connection pertains to (requester or invitee)
 
         [JsonProperty("group_id")] // The ID of the group this connection is for
         public int GroupId { get; set; }
@@ -245,10 +221,10 @@ namespace GameFuse.Models
         // It's assumed the main object in the "group_invites" array *is* the invite.
 
         [JsonProperty("user")] // The user who IS INVITED (this would be the authenticated user)
-        public UserSummary InvitedUser { get; set; }
+        public Friend InvitedUser { get; set; }
 
         [JsonProperty("inviter")] // The user WHO SENT THE INVITE (an admin or group representative)
-        public UserSummary Inviter { get; set; }
+        public Friend Inviter { get; set; }
 
         [JsonProperty("group")] // The group to which the user is invited
         public Group GroupDetails { get; set; } // Sign-in example shows full group details here

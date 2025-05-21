@@ -45,8 +45,8 @@ namespace GameFuse.Services
             // Initialize lists if API returns null for them (good practice)
             if (createdGroup != null)
             {
-                createdGroup.Members ??= new System.Collections.Generic.List<UserSummary>();
-                createdGroup.Admins ??= new System.Collections.Generic.List<UserSummary>();
+                createdGroup.Members ??= new System.Collections.Generic.List<Friend>();
+                createdGroup.Admins ??= new System.Collections.Generic.List<Friend>();
                 createdGroup.JoinRequests ??= new System.Collections.Generic.List<GroupConnectionResponse>();
                 createdGroup.Invites ??= new System.Collections.Generic.List<GroupConnectionResponse>();
             }
@@ -95,8 +95,8 @@ namespace GameFuse.Services
             // Initialize lists if API returns null for them
             if (groupDetails != null)
             {
-                groupDetails.Members ??= new List<UserSummary>();
-                groupDetails.Admins ??= new List<UserSummary>();
+                groupDetails.Members ??= new List<Friend>();
+                groupDetails.Admins ??= new List<Friend>();
                 groupDetails.JoinRequests ??= new List<GroupConnectionResponse>();
                 groupDetails.Invites ??= new List<GroupConnectionResponse>();
             }

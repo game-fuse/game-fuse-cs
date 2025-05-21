@@ -30,8 +30,8 @@ namespace GameFuse.Models
         /// <summary>
         /// The friend's actual email used for notifications and login.
         /// </summary>
-        [JsonProperty("display_email")]
-        public string DisplayEmail { get; internal set; }
+        [JsonProperty("display_email", NullValueHandling = NullValueHandling.Ignore)]
+        public string? DisplayEmail { get; internal set; }
 
         /// <summary>
         /// Number of credits the friend has.
@@ -125,19 +125,6 @@ namespace GameFuse.Models
         public List<Friend> Friends { get; set; }
     }
 
-    // For GET /api/v3/outgoing_friend_requests
-    public class OutgoingFriendRequestsResponse
-    {
-        [JsonProperty("outgoing_friend_requests")]
-        public List<FriendRequest> OutgoingFriendRequests { get; set; }
-    }
-
-    // For GET /api/v3/incoming_friend_requests
-    public class IncomingFriendRequestsResponse
-    {
-        [JsonProperty("incoming_friend_requests")]
-        public List<FriendRequest> IncomingFriendRequests { get; set; }
-    }
 
     public class FriendshipDataResponse
     {

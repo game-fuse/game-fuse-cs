@@ -51,7 +51,7 @@ namespace GameFuse.Models
         public List<Message> Messages { get; set; }
 
         [JsonProperty("participants")] // List of users in the chat
-        public List<UserSummary> Participants { get; set; } // Using existing UserSummary
+        public List<Friend> Participants { get; set; }
 
         // For Group Chats, there might be a group_id or group_name,
         // The API doc is a bit sparse on distinguishing direct vs group chat structure here,
@@ -62,7 +62,7 @@ namespace GameFuse.Models
         public Chat()
         {
             Messages = new List<Message>();
-            Participants = new List<UserSummary>();
+            Participants = new List<Friend>();
         }
     }
 
@@ -127,38 +127,6 @@ namespace GameFuse.Models
         public int ChatId { get; set; }
     }
 
-    /// <summary>
-    /// Response from sending a message or marking a message as read.
-    /// </summary>
-    public class MessageActionResponse // Can be used for SendMessage and MarkAsRead
-    {
-        // Send Message returns the created "message" object
-        [JsonProperty("message")]
-        public Message MessageDetail { get; set; } // For SendMessage response
-
-        // MarkAsRead only returns a simple "message": "Message marked as read"
-        // This means this model might need to be flexible or we use two different models.
-        // For simplicity, if MessageDetail is null, we check GeneralMessage.
-        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
-        private string GeneralMessageString { get; set; } // For MarkAsRead string response
-
-        [JsonIgnore] // Not part of JSON, just a helper
-        public string ConfirmationMessage => GeneralMessageString;
-
-        // If SendMessage only returns Message object without a wrapper "message" key:
-        // then SendMessage response is just 'Message' model, MarkAsRead is '{ "message": "string" }'
-        // The doc for Send Message says "Response object: message (object) The newly created message object."
-        // This implies {"message": { message_details }}
-        // The doc for Mark Message as Read says "Response object: message (string) Success message..."
-        // This implies {"message": "string_message"}
-        // This is problematic for a single response model due to type conflict on "message" key.
-
-        // Let's assume SendMessage returns the Message object directly without a "message" wrapper key.
-        // If it *is* wrapped, we'll need to adjust or use dynamic parsing.
-        // For now, let's assume:
-        // - SendMessage returns Message
-        // - MarkAsRead returns MarkAsReadResponse { string Message; }
-    }
 
     // Specific response for SendMessage if it's just the Message object
     // (If API returns {"message": MessageObject}, then MessageActionResponse with MessageDetail is fine)

@@ -57,27 +57,6 @@ namespace GameFuse.Models
         }
     }
 
-    public class CreditTransaction
-    {
-        [JsonProperty("id")]
-        public int Id { get; internal set; }
-        [JsonProperty("credits_amount")]
-        public int CreditsAmount { get; internal set; }
-        [JsonProperty("transaction_type")]
-        public string TransactionType { get; internal set; }
-        [JsonProperty("description")]
-        public string Description { get; internal set; }
-        [JsonProperty("created_at")]
-        public string CreatedAt { get; internal set; }
-    }
-
-    public class CreditBalance
-    {
-        [JsonProperty("credits")]
-        public int Credits { get; internal set; }
-        [JsonProperty("user_id")]
-        public int UserId { get; internal set; }
-    }
 
     public class PurchaseItemPayload
     {

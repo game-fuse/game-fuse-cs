@@ -1,4 +1,5 @@
 using GameFuse.Exceptions;
+using GameFuse.Models;
 using GameFuse.Models.TestSuite;
 using GameFuse.Transport;
 using System;
@@ -81,7 +82,7 @@ namespace GameFuse.Services
         /// <param name="serviceKeyName">The admin service key name.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>The created test user information.</returns>
-        public async Task<CreateUserResponse> CreateUserAsync(int gameId, string username, string email, string serviceKeyToken, string serviceKeyName, CancellationToken cancellationToken = default)
+        public async Task<Friend> CreateUserAsync(int gameId, string username, string email, string serviceKeyToken, string serviceKeyName, CancellationToken cancellationToken = default)
         {
             if (gameId <= 0) throw new ArgumentOutOfRangeException(nameof(gameId), "Game ID must be positive.");
             if (string.IsNullOrEmpty(username)) throw new ArgumentNullException(nameof(username));
@@ -100,7 +101,7 @@ namespace GameFuse.Services
 
             try
             {
-                return await _transport.PostAsync<CreateUserRequest, CreateUserResponse>($"{BASE_PATH}/create_user", request, headers, cancellationToken);
+                return await _transport.PostAsync<CreateUserRequest, Friend>($"{BASE_PATH}/create_user", request, headers, cancellationToken);
             }
             catch (GameFuseApiException ex)
             {
