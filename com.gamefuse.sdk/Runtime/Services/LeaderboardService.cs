@@ -1,4 +1,5 @@
 using GameFuse.Models;
+using GameFuse.Models.Shared;
 using GameFuse.Transport;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace GameFuse.Services
         /// <param name="metadata">Optional metadata for the leaderboard entry.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>The response with user details.</returns>
-        public Task<SubmitLeaderboardEntryResponse> SubmitLeaderboardEntryAsync(
+        public Task<User> SubmitLeaderboardEntryAsync(
             int userId,
             string leaderboardName,
             double score,
@@ -53,7 +54,7 @@ namespace GameFuse.Services
                 request["metadata"] = metadata;
             }
             
-            return _transport.PostAsync<Dictionary<string, object>, SubmitLeaderboardEntryResponse>($"users/{userId}/add_leaderboard_entry", request, null, cancellationToken);
+            return _transport.PostAsync<Dictionary<string, object>, User>($"users/{userId}/add_leaderboard_entry", request, null, cancellationToken);
         }
 
         /// <summary>

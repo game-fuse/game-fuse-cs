@@ -1,5 +1,5 @@
 using GameFuse.Config;
-using GameFuse.Models;
+using GameFuse.Models.Shared;
 using GameFuse.Services;
 using GameFuse.Transport;
 using System.Collections.Generic;

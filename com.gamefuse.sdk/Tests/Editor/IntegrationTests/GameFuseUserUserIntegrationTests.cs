@@ -1,4 +1,4 @@
-using GameFuse.Models;
+using GameFuse.Models.Shared;
 using GameFuse.Models.TestSuite;
 using GameFuse.Services;
 using GameFuse.Transport;

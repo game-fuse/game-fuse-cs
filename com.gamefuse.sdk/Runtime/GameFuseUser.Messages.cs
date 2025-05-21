@@ -1,5 +1,5 @@
 // GameFuseUser.Messages.cs
-using GameFuse.Models;
+using GameFuse.Models.Shared;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

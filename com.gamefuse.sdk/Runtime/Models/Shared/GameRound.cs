@@ -1,10 +1,27 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace GameFuse.Models
+namespace GameFuse.Models.Shared
 {
     /// <summary>
-    /// Represents a game round in GameFuse.
+    /// Represents the type of a game round.
+    /// </summary>
+    public enum GameRoundType
+    {
+        /// <summary>
+        /// A single-player game round.
+        /// </summary>
+        SinglePlayer,
+        
+        /// <summary>
+        /// A multiplayer game round.
+        /// </summary>
+        Multiplayer
+    }
+
+    /// <summary>
+    /// Consolidated model that represents a game round in GameFuse.
+    /// Covers both single-player and multiplayer use cases.
     /// </summary>
     public class GameRound
     {
@@ -79,6 +96,30 @@ namespace GameFuse.Models
         /// </summary>
         [JsonProperty("updated_at")]
         public string UpdatedAt { get; internal set; }
+
+        /// <summary>
+        /// Gets the type of the game round.
+        /// </summary>
+        [JsonIgnore]
+        public GameRoundType RoundType
+        {
+            get
+            {
+                return MultiplayerGameRoundId.HasValue || 
+                       (Rankings != null && Rankings.Count > 0) 
+                       ? GameRoundType.Multiplayer 
+                       : GameRoundType.SinglePlayer;
+            }
+        }
+
+        /// <summary>
+        /// Creates a new GameRound instance with empty collections.
+        /// </summary>
+        public GameRound()
+        {
+            Metadata = new Dictionary<string, object>();
+            Rankings = new List<RankingEntry>();
+        }
     }
 
     /// <summary>
@@ -149,8 +190,8 @@ namespace GameFuse.Models
         /// <summary>
         /// The display email for the user.
         /// </summary>
-        [JsonProperty("display_email")]
-        public string DisplayEmail { get; internal set; }
+        [JsonProperty("display_email", NullValueHandling = NullValueHandling.Ignore)]
+        public string? DisplayEmail { get; internal set; }
 
         /// <summary>
         /// The user's credits.
@@ -181,6 +222,14 @@ namespace GameFuse.Models
         /// </summary>
         [JsonProperty("game_rounds")]
         public List<GameRound> GameRounds { get; set; }
+
+        /// <summary>
+        /// Creates a new GameRoundListResponse with an empty list.
+        /// </summary>
+        public GameRoundListResponse()
+        {
+            GameRounds = new List<GameRound>();
+        }
     }
 
     /// <summary>
@@ -193,17 +242,6 @@ namespace GameFuse.Models
         /// </summary>
         [JsonProperty("message")]
         public string Message { get; set; }
-    }
-
-    public class LeaderboardEntries
-    {
-        [JsonProperty("leaderboard_entries")]
-        public List<LeaderboardEntry> Entries { get; set; }
-
-        public LeaderboardEntries()
-        {
-            Entries = new List<LeaderboardEntry>(); // Initialize to prevent null reference if API returns empty list
-        }
     }
 
     /// <summary>
@@ -252,5 +290,87 @@ namespace GameFuse.Models
         /// </summary>
         [JsonProperty("game_round_id")]
         public int GameRoundId { get; internal set; }
+    }
+
+    /// <summary>
+    /// Container for a list of leaderboard entries.
+    /// </summary>
+    public class LeaderboardEntries
+    {
+        /// <summary>
+        /// The list of leaderboard entries.
+        /// </summary>
+        [JsonProperty("leaderboard_entries")]
+        public List<LeaderboardEntry> Entries { get; set; }
+
+        /// <summary>
+        /// Creates a new LeaderboardEntries instance with an empty list.
+        /// </summary>
+        public LeaderboardEntries()
+        {
+            Entries = new List<LeaderboardEntry>();
+        }
+    }
+
+    /// <summary>
+    /// Represents an entry in a named leaderboard.
+    /// </summary>
+    public class LeaderboardEntryModel
+    {
+        /// <summary>
+        /// User's display username.
+        /// </summary>
+        [JsonProperty("username")]
+        public string Username { get; internal set; }
+
+        /// <summary>
+        /// Score for the leaderboard entry.
+        /// </summary>
+        [JsonProperty("score")]
+        public double Score { get; internal set; }
+
+        /// <summary>
+        /// Name of the leaderboard within the game.
+        /// </summary>
+        [JsonProperty("leaderboard_name")]
+        public string LeaderboardName { get; internal set; }
+
+        /// <summary>
+        /// The user ID associated with this leaderboard entry.
+        /// </summary>
+        [JsonProperty("game_user_id")]
+        public int GameUserId { get; internal set; }
+
+        /// <summary>
+        /// Additional metadata related to the leaderboard entry.
+        /// </summary>
+        [JsonProperty("metadata")]
+        public object Metadata { get; internal set; }
+
+        /// <summary>
+        /// When the leaderboard entry was created.
+        /// </summary>
+        [JsonProperty("created_at")]
+        public string CreatedAt { get; internal set; }
+    }
+
+    /// <summary>
+    /// Container for a list of leaderboard entries.
+    /// </summary>
+    public class LeaderboardEntriesResponse
+    {
+        /// <summary>
+        /// List of leaderboard entries.
+        /// </summary>
+        [JsonProperty("leaderboard_entries")]
+        public List<LeaderboardEntryModel> LeaderboardEntries { get; internal set; }
+
+        /// <summary>
+        /// Creates a new LeaderboardEntriesResponse with an empty list.
+        /// </summary>
+        public LeaderboardEntriesResponse()
+        {
+            LeaderboardEntries = new List<LeaderboardEntryModel>();
+        }
     }
 }

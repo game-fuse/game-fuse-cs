@@ -1,7 +1,7 @@
 // GameFuseApiTestWindow.cs
 using GameFuse.Config;
 using GameFuse.Exceptions;
-using GameFuse.Models;
+using GameFuse.Models.Shared;
 using GameFuse.Services;
 using GameFuse.Transport;
 using Newtonsoft.Json; // For better JSON serialization

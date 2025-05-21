@@ -1,5 +1,5 @@
 // GameFuseUserMessageIntegrationTests.cs
-using GameFuse.Models;
+using GameFuse.Models.Shared;
 using GameFuse.Models.TestSuite;
 using GameFuse.Services; // Not directly used here, but good to have for consistency
 using GameFuse.Transport; // For service transport setup

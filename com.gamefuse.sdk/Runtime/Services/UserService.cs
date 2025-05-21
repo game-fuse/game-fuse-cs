@@ -1,5 +1,5 @@
 using GameFuse.Exceptions;
-using GameFuse.Models;
+using GameFuse.Models.Shared;
 using GameFuse.Transport;
 using Newtonsoft.Json;
 using System;

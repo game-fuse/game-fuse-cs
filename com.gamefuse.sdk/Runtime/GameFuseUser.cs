@@ -10,7 +10,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using GameFuse.Models.Shared;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("GameFuse.Tests.Editor")]
 namespace GameFuse
 {
     /// <summary>

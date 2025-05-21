@@ -1,5 +1,5 @@
 using GameFuse.Exceptions;
-using GameFuse.Models;
+using GameFuse.Models.Shared;
 using GameFuse.Models.TestSuite;
 using GameFuse.Transport;
 using System;

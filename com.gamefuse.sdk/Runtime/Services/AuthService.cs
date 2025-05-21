@@ -1,6 +1,6 @@
 using GameFuse.Exceptions;
-using GameFuse.Models;
 using GameFuse.Models.Auth;
+using GameFuse.Models.Shared;
 using GameFuse.Transport;
 using System;
 using System.Net;

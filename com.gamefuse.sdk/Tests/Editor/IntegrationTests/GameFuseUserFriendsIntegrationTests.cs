@@ -1,5 +1,5 @@
 // GameFuseUserFriendsIntegrationTests.cs
-using GameFuse.Models;
+using GameFuse.Models.Shared;
 using GameFuse.Models.TestSuite;
 using GameFuse.Services;
 using GameFuse.Transport;
@@ -98,7 +98,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             Debug.Log($"Attempting to send friend request from '{_testUser.Username}' to '{_friendCandidateUser.Username}'.");
 
             // Act: _testUser sends a friend request to _friendCandidateUser by username
-            SendFriendRequestResponse response = await _testUser.SendFriendRequestAsync(_friendCandidateUser.Username);
+            FriendshipResponse response = await _testUser.SendFriendRequestAsync(_friendCandidateUser.Username);
 
             // Assert
             Assert.IsNotNull(response, "SendFriendRequest response should not be null.");
@@ -117,7 +117,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
 
             // Arrange: _testUser sends a friend request to _friendCandidateUser
             Debug.Log($"Arrange: '{_testUser.Username}' sending friend request to '{_friendCandidateUser.Username}'.");
-            SendFriendRequestResponse sendResponse = await _testUser.SendFriendRequestAsync(_friendCandidateUser.Username);
+            FriendshipResponse sendResponse = await _testUser.SendFriendRequestAsync(_friendCandidateUser.Username);
             Assert.IsNotNull(sendResponse, "Failed to send friend request in arrange step.");
             Assert.IsTrue(sendResponse.FriendshipId > 0, "Invalid FriendshipId from send request.");
             int friendshipIdToAccept = sendResponse.FriendshipId;
@@ -147,7 +147,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
 
             // Arrange: _testUser sends a friend request to _friendCandidateUser
             Debug.Log($"Arrange: '{_testUser.Username}' sending friend request to '{_friendCandidateUser.Username}' for decline test.");
-            SendFriendRequestResponse sendResponse = await _testUser.SendFriendRequestAsync(_friendCandidateUser.Username);
+            FriendshipResponse sendResponse = await _testUser.SendFriendRequestAsync(_friendCandidateUser.Username);
             Assert.IsNotNull(sendResponse, "Failed to send friend request in arrange step for decline test.");
             Assert.IsTrue(sendResponse.FriendshipId > 0, "Invalid FriendshipId from send request for decline test.");
             int friendshipIdToDecline = sendResponse.FriendshipId;
@@ -176,7 +176,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
 
             // Arrange: _testUser (sender) sends a friend request to _friendCandidateUser
             Debug.Log($"Arrange: '{_testUser.Username}' sending friend request to '{_friendCandidateUser.Username}' for cancel test.");
-            SendFriendRequestResponse sendResponse = await _testUser.SendFriendRequestAsync(_friendCandidateUser.Username);
+            FriendshipResponse sendResponse = await _testUser.SendFriendRequestAsync(_friendCandidateUser.Username);
             Assert.IsNotNull(sendResponse, "Failed to send friend request in arrange step for cancel test.");
             Assert.IsTrue(sendResponse.FriendshipId > 0, "Invalid FriendshipId from send request for cancel test.");
             int friendshipIdToCancel = sendResponse.FriendshipId;
@@ -203,7 +203,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             // Arrange: Establish a friendship first
             // 1. _testUser sends request to _friendCandidateUser
             Debug.Log($"Arrange [Unfriend]: '{_testUser.Username}' sending friend request to '{_friendCandidateUser.Username}'.");
-            SendFriendRequestResponse sendResponse = await _testUser.SendFriendRequestAsync(_friendCandidateUser.Username);
+            FriendshipResponse sendResponse = await _testUser.SendFriendRequestAsync(_friendCandidateUser.Username);
             Assert.IsNotNull(sendResponse, "Failed to send friend request in arrange (unfriend test).");
             Assert.IsTrue(sendResponse.FriendshipId > 0, "Invalid FriendshipId from send request (unfriend test).");
             int friendshipId = sendResponse.FriendshipId;
@@ -217,7 +217,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
 
             // Act: _testUser unfriends _friendCandidateUser
             // The user being unfriended is specified by their ID.
-            FriendshipStatusResponse unfriendResponse = await _testUser.UnfriendPlayerAsync(_friendCandidateUser.Id);
+            FriendshipResponse unfriendResponse = await _testUser.UnfriendPlayerAsync(_friendCandidateUser.Id);
 
             // Assert
             Assert.IsNotNull(unfriendResponse, "UnfriendPlayer response should not be null.");
@@ -262,7 +262,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
 
             // Arrange: _testUser sends a request to _friendCandidateUser
             Debug.Log($"Arrange: '{_testUser.Username}' sending request to '{_friendCandidateUser.Username}'.");
-            SendFriendRequestResponse sendResponse = await _testUser.SendFriendRequestAsync(_friendCandidateUser.Username);
+            FriendshipResponse sendResponse = await _testUser.SendFriendRequestAsync(_friendCandidateUser.Username);
             Assert.IsTrue(sendResponse.FriendshipId > 0, "Failed to send friend request.");
             int sentFriendshipId = sendResponse.FriendshipId;
 
@@ -305,7 +305,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             // Arrange: Establish friendship
             // 1. _testUser sends request
             Debug.Log($"Arrange: '{_testUser.Username}' sending request to '{_friendCandidateUser.Username}'.");
-            SendFriendRequestResponse sendResponse = await _testUser.SendFriendRequestAsync(_friendCandidateUser.Username);
+            FriendshipResponse sendResponse = await _testUser.SendFriendRequestAsync(_friendCandidateUser.Username);
             Assert.IsTrue(sendResponse.FriendshipId > 0, "Failed to send friend request.");
 
             // 2. _friendCandidateUser accepts
@@ -372,7 +372,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             // Arrange: Establish a friendship between _friendCandidateUser and _thirdUser
             // 1. _friendCandidateUser sends request to _thirdUser
             Debug.Log($"Arrange: '{_friendCandidateUser.Username}' sending request to '{_thirdUser.Username}'.");
-            SendFriendRequestResponse sendResponse = await _friendCandidateUser.SendFriendRequestAsync(_thirdUser.Username);
+            FriendshipResponse sendResponse = await _friendCandidateUser.SendFriendRequestAsync(_thirdUser.Username);
             Assert.IsTrue(sendResponse.FriendshipId > 0, "Failed to send friend request between target and third user.");
 
             // 2. _thirdUser accepts the request

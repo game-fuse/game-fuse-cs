@@ -1,5 +1,5 @@
 // GameFuseUserLeaderboardIntegrationTests.cs
-using GameFuse.Models;
+using GameFuse.Models.Shared;
 using GameFuse.Models.TestSuite;
 using GameFuse.Services;
 using GameFuse.Transport;
@@ -100,7 +100,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             Debug.Log($"Submitting leaderboard entry for user '{_testUser.Username}'");
 
             // Act: Submit a leaderboard entry
-            SubmitLeaderboardEntryResponse response = await _testUser.SubmitLeaderboardEntryAsync(
+           User response = await _testUser.SubmitLeaderboardEntryAsync(
                 TEST_LEADERBOARD_NAME,
                 score,
                 metadata);
@@ -127,7 +127,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             Debug.Log($"Submitting leaderboard entry without metadata for user '{_testUser.Username}'");
 
             // Act: Submit a leaderboard entry without metadata
-            SubmitLeaderboardEntryResponse response = await _testUser.SubmitLeaderboardEntryAsync(
+            User response = await _testUser.SubmitLeaderboardEntryAsync(
                 TEST_LEADERBOARD_NAME,
                 score);
 

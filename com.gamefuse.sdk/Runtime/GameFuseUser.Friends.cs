@@ -1,4 +1,4 @@
-using GameFuse.Models;
+using GameFuse.Models.Shared;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -26,7 +26,7 @@ namespace GameFuse
         /// <param name="friendUsername">The username of the user to send the request to.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>A response object containing a message and the friendship ID.</returns>
-        public async Task<SendFriendRequestResponse> SendFriendRequestAsync(string friendUsername, CancellationToken cancellationToken = default)
+        public async Task<FriendshipResponse> SendFriendRequestAsync(string friendUsername, CancellationToken cancellationToken = default)
         {
             EnsureAuthenticated(); // Ensures the current GameFuseUser instance is authenticated
             // The FriendService.SendFriendRequestAsync doesn't need the current user's ID,
@@ -77,7 +77,7 @@ namespace GameFuse
         /// <param name="friendUserId">The ID of the user to unfriend.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>A response object containing a confirmation message.</returns>
-        public async Task<FriendshipStatusResponse> UnfriendPlayerAsync(int friendUserId, CancellationToken cancellationToken = default)
+        public async Task<FriendshipResponse> UnfriendPlayerAsync(int friendUserId, CancellationToken cancellationToken = default)
         {
             EnsureAuthenticated();
             return await  _friendService.UnfriendPlayerAsync(friendUserId, cancellationToken);

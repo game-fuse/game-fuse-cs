@@ -1,5 +1,5 @@
 using GameFuse.Exceptions;
-using GameFuse.Models;
+using GameFuse.Models.Shared;
 using GameFuse.Transport;
 using System;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ namespace GameFuse.Services
         /// <param name="targetUsername">The username of the player to send a friend request to.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>A response object containing a message and the friendship ID.</returns>
-        public async Task<SendFriendRequestResponse> SendFriendRequestAsync(string targetUsername, CancellationToken cancellationToken = default)
+        public async Task<FriendshipResponse> SendFriendRequestAsync(string targetUsername, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(targetUsername))
             {
@@ -61,7 +61,7 @@ namespace GameFuse.Services
             // API Path: POST /api/v3/friendships
             // The _baseUrl in UnityWebRequestTransport is "https://gamefuse.co/api/v3" (or configured).
             // So the path here should be "friendships".
-            return await _transport.PostAsync<SendFriendRequestPayload, SendFriendRequestResponse>("friendships", payload, null, cancellationToken);
+            return await _transport.PostAsync<SendFriendRequestPayload, FriendshipResponse>("friendships", payload, null, cancellationToken);
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace GameFuse.Services
         /// <param name="friendUserId">The ID of the user to unfriend.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>A response object containing a confirmation message.</returns>
-        public async Task<FriendshipStatusResponse> UnfriendPlayerAsync(int friendUserId, CancellationToken cancellationToken = default)
+        public async Task<FriendshipResponse> UnfriendPlayerAsync(int friendUserId, CancellationToken cancellationToken = default)
         {
             if (friendUserId <= 0)
             {
@@ -150,7 +150,7 @@ namespace GameFuse.Services
 
             // No payload for this DELETE request.
             // The _transport.DeleteAsync should handle query parameters in the path correctly.
-            return await _transport.DeleteAsync<FriendshipStatusResponse>(path, null, cancellationToken);
+            return await _transport.DeleteAsync<FriendshipResponse>(path, null, cancellationToken);
         }
 
         /// <summary>
