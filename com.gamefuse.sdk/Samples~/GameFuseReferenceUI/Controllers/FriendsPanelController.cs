@@ -220,6 +220,10 @@ namespace GameFuse.UI
         {
             var item = new VisualElement();
             item.AddToClassList("friend-item");
+            // Force horizontal layout with inline styles
+            item.style.flexDirection = FlexDirection.Row;
+            item.style.justifyContent = Justify.SpaceBetween;
+            item.style.alignItems = Align.Center;
             
             // Friend info section
             var infoSection = new VisualElement();
@@ -232,13 +236,19 @@ namespace GameFuse.UI
             var details = new VisualElement();
             details.AddToClassList("friend-details");
             
+            var detailsRow = new VisualElement(); 
+            detailsRow.style.flexDirection = FlexDirection.Row;
+            detailsRow.style.alignItems = Align.Center;
+            
             var nameLabel = new Label(friend.Username);
             nameLabel.AddToClassList("friend-name");
-            details.Add(nameLabel);
+            detailsRow.Add(nameLabel);
             
             var statsLabel = new Label($"Score: {friend.Score} | Credits: {friend.Credits}");
             statsLabel.AddToClassList("friend-status");
-            details.Add(statsLabel);
+            detailsRow.Add(statsLabel);
+            
+            details.Add(detailsRow);
             
             infoSection.Add(details);
             item.Add(infoSection);
@@ -246,17 +256,33 @@ namespace GameFuse.UI
             // Actions section
             var actionsSection = new VisualElement();
             actionsSection.AddToClassList("friend-actions");
+            actionsSection.style.flexDirection = FlexDirection.Row; // Force horizontal layout
             
+            // Directly style the buttons with inline styles to ensure they get the right colors
             var viewProfileButton = new Button(() => HandleViewProfile(friend));
             viewProfileButton.text = "View Profile";
             viewProfileButton.AddToClassList("friend-action-button");
             viewProfileButton.AddToClassList("primary");
+            viewProfileButton.style.backgroundColor = new StyleColor(new Color(0.39f, 0.7f, 1f)); // RGB 100, 180, 255
+            viewProfileButton.style.color = Color.white;
+            viewProfileButton.style.borderLeftWidth = 0;
+            viewProfileButton.style.borderRightWidth = 0;
+            viewProfileButton.style.borderTopWidth = 0;
+            viewProfileButton.style.borderBottomWidth = 0;
+            viewProfileButton.style.marginLeft = 5;
             actionsSection.Add(viewProfileButton);
             
             var unfriendButton = new Button(() => HandleUnfriend(friend));
             unfriendButton.text = "Unfriend";
             unfriendButton.AddToClassList("friend-action-button");
             unfriendButton.AddToClassList("danger");
+            unfriendButton.style.backgroundColor = new StyleColor(new Color(0.7f, 0.24f, 0.24f)); // RGB 180, 60, 60
+            unfriendButton.style.color = Color.white;
+            unfriendButton.style.borderLeftWidth = 0;
+            unfriendButton.style.borderRightWidth = 0;
+            unfriendButton.style.borderTopWidth = 0;
+            unfriendButton.style.borderBottomWidth = 0;
+            unfriendButton.style.marginLeft = 5;
             actionsSection.Add(unfriendButton);
             
             item.Add(actionsSection);

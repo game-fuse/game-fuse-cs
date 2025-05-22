@@ -318,6 +318,16 @@ namespace GameFuse.UI.Controls
             var closeButton = new Button(() => HideProfilePopup());
             closeButton.text = "×";
             closeButton.AddToClassList("profile-popup-close");
+            closeButton.AddToClassList("danger"); // Add danger class for red styling
+            // Apply inline styles to ensure it shows up as red
+            closeButton.style.backgroundColor = new StyleColor(new Color(0.7f, 0.24f, 0.24f)); // RGB 180, 60, 60
+            closeButton.style.color = Color.white;
+            closeButton.style.fontSize = 18;
+            closeButton.style.unityFontStyleAndWeight = FontStyle.Bold;
+            closeButton.style.borderLeftWidth = 0;
+            closeButton.style.borderRightWidth = 0;
+            closeButton.style.borderTopWidth = 0;
+            closeButton.style.borderBottomWidth = 0;
             header.Add(closeButton);
             
             profilePopup.Add(header);
