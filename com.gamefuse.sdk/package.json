@@ -24,7 +24,7 @@
     {
       "displayName": "GameFuse Sample UI",
       "description": "Sample UI implementation for GameFuse SDK showing sign-in, sign-up, and data fetching",
-      "path": "Samples~/GameFuseSampleUI"
+      "path": "Samples~/GameFuseReferenceUI"
     }
   ]
 }
