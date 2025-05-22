@@ -8,6 +8,37 @@ namespace GameFuse
 {
     public partial class GameFuseUser
     {
+        /// <summary>
+        /// Retrieves the list of incoming friend requests for this user.
+        /// </summary>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A read-only list of incoming friend requests.</returns>
+        public async Task<IReadOnlyList<FriendRequest>> GetIncomingFriendRequestsAsync(CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+
+            // Get the full friendship data that includes incoming requests
+            FriendshipDataResponse friendshipData = await GetFriendshipDataAsync(cancellationToken);
+
+            // Return the incoming requests
+            return friendshipData.IncomingFriendRequests.AsReadOnly();
+        }
+
+        /// <summary>
+        /// Retrieves the list of outgoing friend requests for this user.
+        /// </summary>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A read-only list of outgoing friend requests.</returns>
+        public async Task<IReadOnlyList<FriendRequest>> GetOutgoingFriendRequestsAsync(CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+
+            // Get the full friendship data that includes outgoing requests
+            FriendshipDataResponse friendshipData = await GetFriendshipDataAsync(cancellationToken);
+
+            // Return the outgoing requests
+            return friendshipData.OutgoingFriendRequests.AsReadOnly();
+        }
         /*
         /// <summary>
         /// Gets all friends for the current user.
@@ -80,7 +111,7 @@ namespace GameFuse
         public async Task<FriendshipResponse> UnfriendPlayerAsync(int friendUserId, CancellationToken cancellationToken = default)
         {
             EnsureAuthenticated();
-            return await  _friendService.UnfriendPlayerAsync(friendUserId, cancellationToken);
+            return await _friendService.UnfriendPlayerAsync(friendUserId, cancellationToken);
         }
 
         /// <summary>
@@ -152,66 +183,5 @@ namespace GameFuse
             // We don't update the current _userData.Friends here, as this is for another user.
             return response?.Friends?.AsReadOnly() ?? (IReadOnlyList<Friend>)new List<Friend>().AsReadOnly();
         }
-
-        /*
-        /// <summary>
-        /// Gets all friend requests for the current user.
-        /// </summary>
-        /// <param name="cancellationToken">A token to cancel the operation.</param>
-        /// <returns>A dictionary containing incoming and outgoing friend requests.</returns>
-        public Task<(IReadOnlyList<FriendRequest> Incoming, IReadOnlyList<FriendRequest> Outgoing)> GetFriendRequestsAsync(CancellationToken cancellationToken = default)
-        {
-            EnsureAuthenticated();
-            return _friendService.GetFriendRequestsAsync(Id, cancellationToken);
-        }
-
-        /// <summary>
-        /// Accepts a friend request.
-        /// </summary>
-        /// <param name="friendshipId">The ID of the friendship request.</param>
-        /// <param name="cancellationToken">A token to cancel the operation.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public Task AcceptFriendRequestAsync(int friendshipId, CancellationToken cancellationToken = default)
-        {
-            EnsureAuthenticated();
-            return _friendService.AcceptFriendRequestAsync(friendshipId, cancellationToken);
-        }
-
-        /// <summary>
-        /// Rejects a friend request.
-        /// </summary>
-        /// <param name="friendshipId">The ID of the friendship request.</param>
-        /// <param name="cancellationToken">A token to cancel the operation.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public Task RejectFriendRequestAsync(int friendshipId, CancellationToken cancellationToken = default)
-        {
-            EnsureAuthenticated();
-            return _friendService.RejectFriendRequestAsync(friendshipId, cancellationToken);
-        }
-
-        /// <summary>
-        /// Removes a friend from the current user's friends list.
-        /// </summary>
-        /// <param name="friendId">The ID of the friend to remove.</param>
-        /// <param name="cancellationToken">A token to cancel the operation.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public Task RemoveFriendAsync(int friendId, CancellationToken cancellationToken = default)
-        {
-            EnsureAuthenticated();
-            return _friendService.RemoveFriendAsync(Id, friendId, cancellationToken);
-        }
-
-        /// <summary>
-        /// Searches for users by username.
-        /// </summary>
-        /// <param name="query">The search query.</param>
-        /// <param name="cancellationToken">A token to cancel the operation.</param>
-        /// <returns>A list of users matching the search criteria.</returns>
-        public Task<IReadOnlyList<User>> SearchUsersAsync(string query, CancellationToken cancellationToken = default)
-        {
-            EnsureAuthenticated();
-            return _friendService.SearchUsersAsync(query, cancellationToken);
-        }
-        */
     }
 }

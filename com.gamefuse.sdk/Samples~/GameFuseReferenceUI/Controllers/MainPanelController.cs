@@ -8,7 +8,7 @@ namespace GameFuse.UI
     /// <summary>
     /// Controls the main application panel after authentication.
     /// Manages navigation between different feature panels.
-    /// Updated for Phase 2: Enhanced profile management integration.
+    /// Updated for Phase 3: Added friends functionality and social features.
     /// </summary>
     public class MainPanelController
     {
@@ -48,6 +48,7 @@ namespace GameFuse.UI
 
         // Panel Controllers
         private ProfilePanelController profileController;
+        private FriendsPanelController friendsController;
 
         // Current user and state
         private GameFuseUser currentUser;
@@ -104,8 +105,13 @@ namespace GameFuse.UI
                 profileController = new ProfilePanelController(profilePanel);
             }
 
+            // Friends Panel Controller (Phase 3)
+            if (friendsPanel != null)
+            {
+                friendsController = new FriendsPanelController(friendsPanel);
+            }
+
             // Future panel controllers will be initialized here in subsequent phases
-            // Phase 3: friendsController = new FriendsPanelController(friendsPanel);
             // Phase 4: groupsController = new GroupsPanelController(groupsPanel);
             // etc.
         }
@@ -128,6 +134,10 @@ namespace GameFuse.UI
             ProfilePanelController.OnUserDataUpdated += HandleUserDataUpdated;
             ProfilePanelController.OnError += HandlePanelError;
             ProfilePanelController.OnSuccess += HandlePanelSuccess;
+            
+            // Friends Panel Events (Phase 3)
+            FriendsPanelController.OnError += HandlePanelError;
+            FriendsPanelController.OnSuccess += HandlePanelSuccess;
         }
 
         private void HandleUserDataUpdated(GameFuseUser updatedUser)
@@ -163,6 +173,7 @@ namespace GameFuse.UI
 
             // Pass user to active panel controllers
             profileController?.SetCurrentUser(user);
+            friendsController?.SetCurrentUser(user);
 
             // Future panel controllers will also receive the user here
         }
@@ -251,11 +262,10 @@ namespace GameFuse.UI
 
         private void SetupFriendsPanel()
         {
-            // Placeholder for friends functionality (Phase 3)
-            var statusLabel = friendsPanel.Q<Label>("friends-status");
-            if (statusLabel != null)
+            // Friends panel is now managed by FriendsPanelController (Phase 3)
+            if (friendsController != null && currentUser != null)
             {
-                statusLabel.text = "Friends panel - Coming in Phase 3";
+                friendsController.SetCurrentUser(currentUser);
             }
         }
 
@@ -321,6 +331,7 @@ namespace GameFuse.UI
 
             // Update active panel controllers
             profileController?.SetCurrentUser(user);
+            friendsController?.SetCurrentUser(user);
             // Future panel controllers will also be updated here
         }
 
@@ -341,6 +352,7 @@ namespace GameFuse.UI
 
             // Reset panel controllers
             profileController?.Reset();
+            friendsController?.Reset();
             // Future panel controllers will also be reset here
 
             // Show default panel
@@ -353,6 +365,10 @@ namespace GameFuse.UI
             ProfilePanelController.OnUserDataUpdated -= HandleUserDataUpdated;
             ProfilePanelController.OnError -= HandlePanelError;
             ProfilePanelController.OnSuccess -= HandlePanelSuccess;
+            
+            // Unsubscribe from friends panel events
+            FriendsPanelController.OnError -= HandlePanelError;
+            FriendsPanelController.OnSuccess -= HandlePanelSuccess;
         }
     }
 }

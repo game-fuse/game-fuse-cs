@@ -92,11 +92,8 @@
                     <!-- Profile Panel - Using Custom Control -->
                     <gf:ProfilePanel name="profile-panel" />
                     
-                    <!-- Friends Panel -->
-                    <ui:VisualElement name="friends-panel" class="panel-content">
-                        <ui:Label text="Friends" class="panel-title" />
-                        <ui:Label name="friends-status" class="info-text" />
-                    </ui:VisualElement>
+                    <!-- Friends Panel - Using Custom Control -->
+                    <gf:FriendsPanel name="friends-panel" />
                     
                     <!-- Groups Panel -->
                     <ui:VisualElement name="groups-panel" class="panel-content">
