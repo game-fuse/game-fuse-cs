@@ -26,18 +26,30 @@ namespace GameFuse.UI.Controls
         private void CreateProfilePanelContent()
         {
             // Basic structure - recreate the structure from ProfilePanel.uxml directly
-            // Panel title
+            
+            // Header with title and status
+            var headerContainer = new VisualElement();
+            headerContainer.AddToClassList("profile-header");
+            headerContainer.style.flexDirection = FlexDirection.Row;
+            headerContainer.style.justifyContent = Justify.SpaceBetween;
+            headerContainer.style.alignItems = Align.Center;
+            headerContainer.style.marginBottom = 10;
+            
             var titleLabel = new Label("Profile");
             titleLabel.AddToClassList("panel-title");
-            Add(titleLabel);
+            headerContainer.Add(titleLabel);
             
-            // Status and loading
             var statusLabel = new Label();
             statusLabel.name = "profile-status";
             statusLabel.AddToClassList("status-label");
             statusLabel.style.display = DisplayStyle.None;
-            Add(statusLabel);
+            statusLabel.style.flexGrow = 1;
+            statusLabel.style.marginLeft = 20;
+            headerContainer.Add(statusLabel);
             
+            Add(headerContainer);
+            
+            // Loading indicator
             var loadingIndicator = new VisualElement();
             loadingIndicator.name = "profile-loading";
             loadingIndicator.AddToClassList("loading-indicator");
@@ -50,17 +62,21 @@ namespace GameFuse.UI.Controls
             // Profile info section
             CreateProfileInfoSection();
             
-            // Score management section
-            CreateScoreManagementSection();
+            // Score and Credits management side by side
+            var managementContainer = new VisualElement();
+            managementContainer.style.flexDirection = FlexDirection.Row;
+            managementContainer.style.marginBottom = 15;
             
-            // Credits management section
-            CreateCreditsManagementSection();
+            // Create score and credits management in the container
+            CreateScoreManagementSection(managementContainer);
+            CreateCreditsManagementSection(managementContainer);
             
-            // Attributes section
+            Add(managementContainer);
+            
+            // Attributes section with increased height
             CreateAttributesSection();
             
-            // Batch attributes section
-            CreateBatchAttributesSection();
+            // Batch attributes section is removed, giving more space to attributes section
         }
 
         // Method to initialize the profile panel elements after the controller attaches
@@ -81,8 +97,26 @@ namespace GameFuse.UI.Controls
             sectionTitle.AddToClassList("section-title");
             section.Add(sectionTitle);
             
-            var infoGrid = new VisualElement();
-            infoGrid.AddToClassList("profile-info-grid");
+            // Two-column container
+            var infoContainer = new VisualElement();
+            infoContainer.style.flexDirection = FlexDirection.Row;
+            infoContainer.style.marginTop = 10;
+            
+            // Left column
+            var leftColumn = new VisualElement();
+            leftColumn.style.width = Length.Percent(50);
+            leftColumn.style.paddingRight = 15;
+            
+            // Right column
+            var rightColumn = new VisualElement();
+            rightColumn.style.width = Length.Percent(50);
+            rightColumn.style.paddingLeft = 15;
+            
+            // Add columns to container
+            infoContainer.Add(leftColumn);
+            infoContainer.Add(rightColumn);
+            
+            // Left column - User ID, Username, Email
             
             // User ID row
             var userIdRow = new VisualElement();
@@ -94,7 +128,7 @@ namespace GameFuse.UI.Controls
             userIdValue.AddToClassList("profile-value");
             userIdRow.Add(userIdLabel);
             userIdRow.Add(userIdValue);
-            infoGrid.Add(userIdRow);
+            leftColumn.Add(userIdRow);
             
             // Username row
             var usernameRow = new VisualElement();
@@ -106,7 +140,7 @@ namespace GameFuse.UI.Controls
             usernameValue.AddToClassList("profile-value");
             usernameRow.Add(usernameLabel);
             usernameRow.Add(usernameValue);
-            infoGrid.Add(usernameRow);
+            leftColumn.Add(usernameRow);
             
             // Email row
             var emailRow = new VisualElement();
@@ -118,7 +152,9 @@ namespace GameFuse.UI.Controls
             emailValue.AddToClassList("profile-value");
             emailRow.Add(emailLabel);
             emailRow.Add(emailValue);
-            infoGrid.Add(emailRow);
+            leftColumn.Add(emailRow);
+            
+            // Right column - Score, Credits, Last Login
             
             // Score row
             var scoreRow = new VisualElement();
@@ -131,7 +167,7 @@ namespace GameFuse.UI.Controls
             scoreValue.AddToClassList("score-value");
             scoreRow.Add(scoreLabel);
             scoreRow.Add(scoreValue);
-            infoGrid.Add(scoreRow);
+            rightColumn.Add(scoreRow);
             
             // Credits row
             var creditsRow = new VisualElement();
@@ -144,7 +180,7 @@ namespace GameFuse.UI.Controls
             creditsValue.AddToClassList("credits-value");
             creditsRow.Add(creditsLabel);
             creditsRow.Add(creditsValue);
-            infoGrid.Add(creditsRow);
+            rightColumn.Add(creditsRow);
             
             // Last Login row
             var lastLoginRow = new VisualElement();
@@ -156,29 +192,21 @@ namespace GameFuse.UI.Controls
             lastLoginValue.AddToClassList("profile-value");
             lastLoginRow.Add(lastLoginLabel);
             lastLoginRow.Add(lastLoginValue);
-            infoGrid.Add(lastLoginRow);
+            rightColumn.Add(lastLoginRow);
             
-            // Login Count row
-            var loginCountRow = new VisualElement();
-            loginCountRow.AddToClassList("profile-info-row");
-            var loginCountLabel = new Label("Login Count:");
-            loginCountLabel.AddToClassList("profile-label");
-            var loginCountValue = new Label("0");
-            loginCountValue.name = "login-count";
-            loginCountValue.AddToClassList("profile-value");
-            loginCountRow.Add(loginCountLabel);
-            loginCountRow.Add(loginCountValue);
-            infoGrid.Add(loginCountRow);
+            // Note: Login Count is removed as requested
             
-            section.Add(infoGrid);
+            section.Add(infoContainer);
             Add(section);
         }
         
-        private void CreateScoreManagementSection()
+        private void CreateScoreManagementSection(VisualElement parentContainer = null)
         {
             var section = new VisualElement();
             section.name = "score-management-section";
             section.AddToClassList("profile-section");
+            section.style.width = Length.Percent(50);
+            section.style.marginRight = 10;
             
             var sectionTitle = new Label("Score Management");
             sectionTitle.AddToClassList("section-title");
@@ -218,14 +246,20 @@ namespace GameFuse.UI.Controls
             helpText.AddToClassList("help-text");
             section.Add(helpText);
             
-            Add(section);
+            // If parent container is provided, add to it; otherwise add to this (the profile panel)
+            if (parentContainer != null)
+                parentContainer.Add(section);
+            else
+                Add(section);
         }
         
-        private void CreateCreditsManagementSection()
+        private void CreateCreditsManagementSection(VisualElement parentContainer = null)
         {
             var section = new VisualElement();
             section.name = "credits-management-section";
             section.AddToClassList("profile-section");
+            section.style.width = Length.Percent(50);
+            section.style.marginLeft = 10;
             
             var sectionTitle = new Label("Credits Management");
             sectionTitle.AddToClassList("section-title");
@@ -265,7 +299,11 @@ namespace GameFuse.UI.Controls
             helpText.AddToClassList("help-text");
             section.Add(helpText);
             
-            Add(section);
+            // If parent container is provided, add to it; otherwise add to this (the profile panel)
+            if (parentContainer != null)
+                parentContainer.Add(section);
+            else
+                Add(section);
         }
         
         private void CreateAttributesSection()
@@ -273,6 +311,7 @@ namespace GameFuse.UI.Controls
             var section = new VisualElement();
             section.name = "attributes-section";
             section.AddToClassList("profile-section");
+            section.style.marginTop = 20;
             
             var sectionHeader = new VisualElement();
             sectionHeader.AddToClassList("section-header");
@@ -314,9 +353,11 @@ namespace GameFuse.UI.Controls
             
             section.Add(addControls);
             
-            // Attributes List
+            // Attributes List with significantly increased height
             var scrollView = new ScrollView();
             scrollView.AddToClassList("attributes-scroll");
+            scrollView.style.height = 400;
+            scrollView.style.minHeight = 300;
             
             var attributesList = new VisualElement();
             attributesList.name = "attributes-list";
@@ -327,57 +368,5 @@ namespace GameFuse.UI.Controls
             Add(section);
         }
         
-        private void CreateBatchAttributesSection()
-        {
-            var section = new VisualElement();
-            section.name = "batch-attributes-section";
-            section.AddToClassList("profile-section");
-            
-            var sectionTitle = new Label("Batch Attribute Operations");
-            sectionTitle.AddToClassList("section-title");
-            section.Add(sectionTitle);
-            
-            var helpText = new Label("Add multiple attributes at once for efficient bulk operations");
-            helpText.AddToClassList("help-text");
-            section.Add(helpText);
-            
-            var batchControls = new VisualElement();
-            batchControls.AddToClassList("batch-controls");
-            
-            var addRowButton = new Button();
-            addRowButton.name = "add-batch-row-button";
-            addRowButton.text = "+ Add Row";
-            addRowButton.AddToClassList("management-button");
-            addRowButton.AddToClassList("secondary");
-            batchControls.Add(addRowButton);
-            
-            var saveButton = new Button();
-            saveButton.name = "save-batch-attributes-button";
-            saveButton.text = "Save All";
-            saveButton.AddToClassList("management-button");
-            saveButton.AddToClassList("primary");
-            batchControls.Add(saveButton);
-            
-            var clearButton = new Button();
-            clearButton.name = "clear-batch-button";
-            clearButton.text = "Clear All";
-            clearButton.AddToClassList("management-button");
-            clearButton.AddToClassList("danger");
-            batchControls.Add(clearButton);
-            
-            section.Add(batchControls);
-            
-            // Batch Attributes List
-            var scrollView = new ScrollView();
-            scrollView.AddToClassList("batch-attributes-scroll");
-            
-            var batchList = new VisualElement();
-            batchList.name = "batch-attributes-list";
-            batchList.AddToClassList("batch-attributes-list");
-            scrollView.Add(batchList);
-            
-            section.Add(scrollView);
-            Add(section);
-        }
     }
 }

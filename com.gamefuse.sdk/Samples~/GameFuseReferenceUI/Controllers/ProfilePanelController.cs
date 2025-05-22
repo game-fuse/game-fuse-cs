@@ -33,7 +33,6 @@ namespace GameFuse.UI
         private Label scoreLabel;
         private Label creditsLabel;
         private Label lastLoginLabel;
-        private Label loginCountLabel;
 
         // Score Management Section
         private VisualElement scoreManagementSection;
@@ -56,13 +55,6 @@ namespace GameFuse.UI
         private TextField newAttributeValueInput;
         private Button addAttributeButton;
         private Button refreshAttributesButton;
-
-        // Batch Attributes Section
-        private VisualElement batchAttributesSection;
-        private VisualElement batchAttributesList;
-        private Button addBatchRowButton;
-        private Button saveBatchAttributesButton;
-        private Button clearBatchButton;
 
         // Loading and Status
         private VisualElement loadingIndicator;
@@ -98,7 +90,6 @@ namespace GameFuse.UI
             scoreLabel = root.Q<Label>("score");
             creditsLabel = root.Q<Label>("credits");
             lastLoginLabel = root.Q<Label>("last-login");
-            loginCountLabel = root.Q<Label>("login-count");
 
             // Score Management
             scoreManagementSection = root.Q<VisualElement>("score-management-section");
@@ -122,19 +113,9 @@ namespace GameFuse.UI
             addAttributeButton = root.Q<Button>("add-attribute-button");
             refreshAttributesButton = root.Q<Button>("refresh-attributes-button");
 
-            // Batch Attributes
-            batchAttributesSection = root.Q<VisualElement>("batch-attributes-section");
-            batchAttributesList = root.Q<VisualElement>("batch-attributes-list");
-            addBatchRowButton = root.Q<Button>("add-batch-row-button");
-            saveBatchAttributesButton = root.Q<Button>("save-batch-attributes-button");
-            clearBatchButton = root.Q<Button>("clear-batch-button");
-
             // Status and Loading
             loadingIndicator = root.Q<VisualElement>("profile-loading");
             statusLabel = root.Q<Label>("profile-status");
-
-            // Initialize with placeholder row
-            AddBatchAttributeRow();
         }
 
         private void SetupEventHandlers()
@@ -150,11 +131,6 @@ namespace GameFuse.UI
             // Attributes Management
             addAttributeButton.clicked += HandleAddAttribute;
             refreshAttributesButton.clicked += HandleRefreshAttributes;
-
-            // Batch Attributes
-            addBatchRowButton.clicked += () => AddBatchAttributeRow();
-            saveBatchAttributesButton.clicked += HandleSaveBatchAttributes;
-            clearBatchButton.clicked += HandleClearBatchAttributes;
 
             // Input validation
             scoreInput.RegisterValueChangedCallback(evt => ValidateNumericInput(evt.newValue, scoreInput));
@@ -178,13 +154,13 @@ namespace GameFuse.UI
         {
             if (currentUser == null) return;
 
-            userIdLabel.text = $"ID: {currentUser.Id}";
+            userIdLabel.text = $"{currentUser.Id}";
             usernameLabel.text = currentUser.Username;
             emailLabel.text = currentUser.Email;
             scoreLabel.text = $"{currentUser.Score:N0}";
             creditsLabel.text = $"{currentUser.Credits:N0}";
             lastLoginLabel.text = currentUser.LastLogin ?? "N/A";
-            loginCountLabel.text = $"{currentUser.NumberOfLogins:N0}";
+            // Login count removed as requested
         }
 
         private async void HandleSetScore()
@@ -417,90 +393,6 @@ namespace GameFuse.UI
             }
         }
 
-        private void AddBatchAttributeRow()
-        {
-            var row = new VisualElement();
-            row.AddToClassList("batch-attribute-row");
-
-            var keyInput = new TextField();
-            keyInput.AddToClassList("batch-attribute-key");
-            
-            var valueInput = new TextField();
-            valueInput.AddToClassList("batch-attribute-value");
-            
-
-            var removeButton = new Button(() => {
-                batchAttributesList.Remove(row);
-            });
-            removeButton.text = "�";
-            removeButton.AddToClassList("remove-batch-row-button");
-
-            row.Add(keyInput);
-            row.Add(valueInput);
-            row.Add(removeButton);
-
-            batchAttributesList.Add(row);
-        }
-
-        private async void HandleSaveBatchAttributes()
-        {
-            var batchAttributes = GetBatchAttributesData();
-            if (batchAttributes.Count == 0)
-            {
-                ShowStatus("No batch attributes to save", true);
-                return;
-            }
-
-            SetLoading(true);
-
-            try
-            {
-                await currentUser.SetUserAttributesBatchAsync(batchAttributes);
-                ShowStatus($"Saved {batchAttributes.Count} attributes successfully", false);
-                OnSuccess?.Invoke($"Batch attributes saved ({batchAttributes.Count} items)");
-
-                // Clear batch list and refresh attributes
-                HandleClearBatchAttributes();
-                await RefreshUserAttributes();
-            }
-            catch (Exception ex)
-            {
-                ShowStatus($"Failed to save batch attributes: {ex.Message}", true);
-                OnError?.Invoke($"Batch save failed: {ex.Message}");
-            }
-            finally
-            {
-                SetLoading(false);
-            }
-        }
-
-        private void HandleClearBatchAttributes()
-        {
-            batchAttributesList.Clear();
-            AddBatchAttributeRow(); // Add one empty row
-        }
-
-        private List<KeyValuePair<string, string>> GetBatchAttributesData()
-        {
-            var attributes = new List<KeyValuePair<string, string>>();
-
-            foreach (var row in batchAttributesList.Children())
-            {
-                var keyInput = row.Q<TextField>("batch-attribute-key");
-                var valueInput = row.Q<TextField>("batch-attribute-value");
-
-                if (keyInput != null && valueInput != null &&
-                    !string.IsNullOrWhiteSpace(keyInput.value) &&
-                    !string.IsNullOrWhiteSpace(valueInput.value))
-                {
-                    attributes.Add(new KeyValuePair<string, string>(
-                        keyInput.value.Trim(),
-                        valueInput.value.Trim()));
-                }
-            }
-
-            return attributes;
-        }
 
         private bool ValidateScoreInput()
         {
@@ -583,7 +475,6 @@ namespace GameFuse.UI
             addCreditsButton?.SetEnabled(!loading);
             addAttributeButton?.SetEnabled(!loading);
             refreshAttributesButton?.SetEnabled(!loading);
-            saveBatchAttributesButton?.SetEnabled(!loading);
         }
 
         private void ShowStatus(string message, bool isError)
@@ -617,7 +508,6 @@ namespace GameFuse.UI
 
             // Clear displays
             attributesList.Clear();
-            HandleClearBatchAttributes();
 
             // Hide status
             if (statusLabel != null)
