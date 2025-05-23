@@ -25,7 +25,7 @@ namespace GameFuse.Config
         /// Base URL for the GameFuse API. Change only if you're using a custom API endpoint.
         /// </summary>
         [Tooltip("Base URL for the GameFuse API. Change only if you're using a custom API endpoint")]
-        public string ApiBaseUrl = "https://api.gamefuse.co/api/v3";
+        public string ApiBaseUrl = "https://gamefuse.co/api/v3";
 
         /// <summary>
         /// Maximum number of retry attempts for failed API requests.
