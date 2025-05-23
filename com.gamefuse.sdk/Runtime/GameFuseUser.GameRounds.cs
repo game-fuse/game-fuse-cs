@@ -95,25 +95,44 @@ namespace GameFuse
         /// <summary>
         /// Gets all game rounds for the current user.
         /// </summary>
+        /// <param name="page">Page number (default 1).</param>
+        /// <param name="perPage">Number of game rounds per page (default and max 100).</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>A list of game rounds.</returns>
-        public Task<IReadOnlyList<GameRound>> GetCurrentUserGameRoundsAsync(CancellationToken cancellationToken = default)
+        /// <remarks>
+        /// Note that multiplayer game rounds retrieved in bulk will not have rankings attached.
+        /// To retrieve rankings, use GetGameRoundAsync to fetch individual game rounds.
+        /// </remarks>
+        public Task<IReadOnlyList<GameRound>> GetCurrentUserGameRoundsAsync(
+            int page = 1,
+            int perPage = 100,
+            CancellationToken cancellationToken = default)
         {
             EnsureAuthenticated();
-            return _gameRoundService.GetGameRoundsForUserAsync(Id, cancellationToken);
+            return _gameRoundService.GetGameRoundsForUserAsync(Id, page, perPage, cancellationToken);
         }
 
         /// <summary>
         /// Gets all game rounds for a specific user.
         /// </summary>
         /// <param name="userId">The ID of the user whose game rounds to retrieve.</param>
+        /// <param name="page">Page number (default 1).</param>
+        /// <param name="perPage">Number of game rounds per page (default and max 100).</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>A list of game rounds.</returns>
-        public Task<IReadOnlyList<GameRound>> GetGameRoundsForUserAsync(int userId, CancellationToken cancellationToken = default)
+        /// <remarks>
+        /// Note that multiplayer game rounds retrieved in bulk will not have rankings attached.
+        /// To retrieve rankings, use GetGameRoundAsync to fetch individual game rounds.
+        /// </remarks>
+        public Task<IReadOnlyList<GameRound>> GetGameRoundsForUserAsync(
+            int userId, 
+            int page = 1,
+            int perPage = 100,
+            CancellationToken cancellationToken = default)
         {
             EnsureAuthenticated();
             if (userId <= 0) throw new ArgumentOutOfRangeException(nameof(userId), "User ID must be positive.");
-            return _gameRoundService.GetGameRoundsForUserAsync(userId, cancellationToken);
+            return _gameRoundService.GetGameRoundsForUserAsync(userId, page, perPage, cancellationToken);
         }
 
         /// <summary>

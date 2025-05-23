@@ -76,7 +76,10 @@ namespace GameFuse.Services
         /// </summary>
         /// <param name="gameRoundId">The ID of the game round.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
-        /// <returns>The game round.</returns>
+        /// <returns>The game round. For multiplayer rounds, includes rankings of all participants.</returns>
+        /// <remarks>
+        /// When retrieving a multiplayer game round, the response includes a rankings array with all participants.
+        /// </remarks>
         public Task<GameRound> GetGameRoundAsync(int gameRoundId, CancellationToken cancellationToken = default)
         {
             if (gameRoundId <= 0) throw new ArgumentOutOfRangeException(nameof(gameRoundId), "Game Round ID must be positive.");
@@ -88,13 +91,28 @@ namespace GameFuse.Services
         /// Gets all game rounds for a user.
         /// </summary>
         /// <param name="userId">The ID of the user.</param>
+        /// <param name="page">Page number (default 1).</param>
+        /// <param name="perPage">Number of game rounds per page (default and max 100).</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>A list of game rounds.</returns>
-        public async Task<IReadOnlyList<GameRound>> GetGameRoundsForUserAsync(int userId, CancellationToken cancellationToken = default)
+        /// <remarks>
+        /// Note that multiplayer game rounds retrieved in bulk will not have rankings attached.
+        /// To retrieve rankings, use GetGameRoundAsync to fetch individual game rounds.
+        /// </remarks>
+        public async Task<IReadOnlyList<GameRound>> GetGameRoundsForUserAsync(
+            int userId, 
+            int page = 1, 
+            int perPage = 100, 
+            CancellationToken cancellationToken = default)
         {
             if (userId <= 0) throw new ArgumentOutOfRangeException(nameof(userId), "User ID must be positive.");
+            if (page <= 0) throw new ArgumentOutOfRangeException(nameof(page), "Page number must be positive.");
+            if (perPage <= 0 || perPage > 100) throw new ArgumentOutOfRangeException(nameof(perPage), "Per page must be between 1 and 100.");
             
-            var response = await _transport.GetAsync<GameRoundListResponse>($"game_rounds?user_id={userId}", null, cancellationToken);
+            var response = await _transport.GetAsync<GameRoundListResponse>(
+                $"game_rounds?user_id={userId}&page={page}&per_page={perPage}", 
+                null, 
+                cancellationToken);
             return response.GameRounds?.AsReadOnly() ?? new List<GameRound>().AsReadOnly();
         }
 

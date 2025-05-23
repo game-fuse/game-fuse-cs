@@ -89,7 +89,7 @@ namespace GameFuse.Services
             string encodedKey = System.Uri.EscapeDataString(attributeKey);
             string pathWithQuery = $"users/{userId}/remove_game_user_attribute?game_user_attribute_key={encodedKey}";
             UnityEngine.Debug.Log($"[UserService.DeleteUserAttributeAsync] Requesting URL path: {pathWithQuery}"); // LOG THIS
-            return _transport.GetAsync<UserAttributes>($"users/{userId}/remove_game_user_attribute?game_user_attribute_key={encodedKey}", null, cancellationToken);
+            return _transport.DeleteAsync<UserAttributes>($"users/{userId}/remove_game_user_attribute?game_user_attribute_key={encodedKey}", null, cancellationToken);
         }
 
         public Task<User> AddScoreAsync(int userId, int scoreAmount, CancellationToken cancellationToken = default)

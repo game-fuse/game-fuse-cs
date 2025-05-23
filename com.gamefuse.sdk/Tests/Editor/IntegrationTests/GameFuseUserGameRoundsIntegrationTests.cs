@@ -409,6 +409,74 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             Assert.IsTrue(foundRound2, $"Game round with ID {round2.Id} should be in the user's game rounds.");
 
             Debug.Log($"Successfully retrieved {userGameRounds.Count} game rounds for user '{_testUser.Username}'");
+            
+            // Test pagination
+            IReadOnlyList<GameRound> paginatedGameRounds = await _testUser.GetCurrentUserGameRoundsAsync(1, 1);
+            Assert.IsNotNull(paginatedGameRounds, "Paginated game rounds list should not be null.");
+            Assert.AreEqual(1, paginatedGameRounds.Count, "There should be exactly 1 game round with perPage=1.");
+        }
+        
+        [Test]
+        public async Task Test_GetGameRoundsForOtherUser_Succeeds()
+        {
+            Assert.IsNotNull(_testUser, "_testUser was not initialized.");
+            Assert.IsNotNull(_secondUser, "_secondUser was not initialized.");
+            Assert.IsTrue(_testUser.IsAuthenticated(), "_testUser should be authenticated.");
+            Assert.IsTrue(_secondUser.IsAuthenticated(), "_secondUser should be authenticated.");
+
+            // First create a few game rounds for the second user
+            Debug.Log($"Creating game rounds for second user '{_secondUser.Username}'");
+            
+            // Create first game round for second user
+            var round1 = await _secondUser.CreateGameRoundAsync(
+                "battle",
+                DateTime.UtcNow.AddDays(-1).ToString("o"),
+                DateTime.UtcNow.AddDays(-1).AddHours(1).ToString("o"),
+                1500,
+                1,
+                new Dictionary<string, object> { ["level"] = "Hard" });
+            
+            Assert.IsNotNull(round1, "First created game round should not be null.");
+            
+            // Create second game round for second user
+            var round2 = await _secondUser.CreateGameRoundAsync(
+                "adventure",
+                DateTime.UtcNow.AddHours(-5).ToString("o"),
+                DateTime.UtcNow.AddHours(-4).ToString("o"),
+                1700,
+                1,
+                new Dictionary<string, object> { ["level"] = "Medium" });
+            
+            Assert.IsNotNull(round2, "Second created game round should not be null.");
+            
+            Debug.Log($"Created game rounds for second user with IDs: {round1.Id}, {round2.Id}");
+
+            // Act: First user retrieves second user's game rounds
+            IReadOnlyList<GameRound> secondUserGameRounds = await _testUser.GetGameRoundsForUserAsync(_secondUser.Id);
+
+            // Assert
+            Assert.IsNotNull(secondUserGameRounds, "Second user's game rounds list should not be null.");
+            Assert.GreaterOrEqual(secondUserGameRounds.Count, 2, "There should be at least 2 game rounds for the second user.");
+            
+            // Find the created rounds in the list
+            bool foundRound1 = secondUserGameRounds.Any(r => r.Id == round1.Id);
+            bool foundRound2 = secondUserGameRounds.Any(r => r.Id == round2.Id);
+            
+            Assert.IsTrue(foundRound1, $"Game round with ID {round1.Id} should be in the second user's game rounds.");
+            Assert.IsTrue(foundRound2, $"Game round with ID {round2.Id} should be in the second user's game rounds.");
+            
+            // Verify all rounds belong to second user
+            foreach (var round in secondUserGameRounds)
+            {
+                Assert.AreEqual(_secondUser.Id, round.GameUserId, $"Game round {round.Id} should belong to the second user.");
+            }
+
+            Debug.Log($"Successfully retrieved {secondUserGameRounds.Count} game rounds for second user '{_secondUser.Username}'");
+            
+            // Test pagination
+            IReadOnlyList<GameRound> paginatedGameRounds = await _testUser.GetGameRoundsForUserAsync(_secondUser.Id, 1, 1);
+            Assert.IsNotNull(paginatedGameRounds, "Paginated game rounds list should not be null.");
+            Assert.AreEqual(1, paginatedGameRounds.Count, "There should be exactly 1 game round with perPage=1.");
         }
 
         [Test]
