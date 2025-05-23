@@ -266,7 +266,7 @@ namespace GameFuse.Tests.Editor.IntegrationTests
             foreach (var entry in filteredResponse.LeaderboardEntries)
             {   
                 Debug.Log($"[GameFuseUserLeaderboardIntegrationTests] Test_GetUserLeaderboardEntries_Succeeds filteredResponse.LeaderboardEntries entry.LeaderboardName: {entry.LeaderboardName}");
-                //Assert.AreEqual(TEST_LEADERBOARD_NAME, entry.LeaderboardName, "Filtered entries should only be for the specified leaderboard name.");
+                Assert.AreEqual(TEST_LEADERBOARD_NAME, entry.LeaderboardName, "Filtered entries should only be for the specified leaderboard name.");
             }
             
             Debug.Log($"Successfully retrieved {filteredResponse.LeaderboardEntries.Count} filtered leaderboard entries for user '{_testUser.Username}' and leaderboard '{TEST_LEADERBOARD_NAME}'");
