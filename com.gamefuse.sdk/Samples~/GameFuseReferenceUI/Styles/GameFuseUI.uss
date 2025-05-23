@@ -1,0 +1,468 @@
+/* === ROOT CONTAINER === */
+.root-container {
+    width: 100%;
+    height: 100%;
+    background-color: rgb(30, 30, 30);
+    color: rgb(255, 255, 255);
+}
+
+/* === AUTHENTICATION PANEL === */
+.auth-panel {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(40, 40, 40);
+    display: flex;
+}
+
+.auth-header {
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.auth-title {
+    font-size: 32px;
+    color: rgb(100, 180, 255);
+    margin-bottom: 5px;
+    -unity-font-style: bold;
+}
+
+.auth-subtitle {
+    font-size: 16px;
+    color: rgb(180, 180, 180);
+}
+
+.auth-form {
+    width: 400px;
+    background-color: rgb(50, 50, 50);
+    border-radius: 10px;
+    padding: 30px;
+    border-width: 2px;
+    border-color: rgb(70, 70, 70);
+}
+
+.form-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    align-self: center;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+}
+
+.auth-input {
+    margin-bottom: 15px;
+    height: 40px;
+}
+
+.auth-input .unity-text-field__input {
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(80, 80, 80);
+    border-radius: 5px;
+    color: rgb(255, 255, 255);
+    padding: 8px;
+}
+
+.auth-input .unity-text-field__input:focus {
+    border-color: rgb(100, 180, 255);
+}
+
+.auth-input .unity-label {
+    color: rgb(200, 200, 200);
+    margin-bottom: 5px;
+}
+
+.auth-button {
+    height: 45px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border-width: 0;
+    font-size: 16px;
+    -unity-font-style: bold;
+}
+
+.auth-button.primary {
+    background-color: rgb(100, 180, 255);
+    color: rgb(255, 255, 255);
+}
+
+.auth-button.primary:hover {
+    background-color: rgb(120, 190, 255);
+}
+
+.auth-button.primary:disabled {
+    background-color: rgb(80, 80, 80);
+    color: rgb(120, 120, 120);
+}
+
+.form-footer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.form-text {
+    color: rgb(180, 180, 180);
+    margin-right: 5px;
+}
+
+.link-button {
+    background-color: transparent;
+    border-width: 0;
+    color: rgb(100, 180, 255);
+    margin: 0;
+    padding: 2px;
+}
+
+.link-button:hover {
+    color: rgb(120, 190, 255);
+}
+
+/* === SETTINGS === */
+.settings-panel {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    translate: -50% 0;
+    width: 350px;
+    background-color: rgb(45, 45, 45);
+    border-radius: 8px;
+    padding: 20px;
+    border-width: 2px;
+    border-color: rgb(70, 70, 70);
+    display: none;
+}
+
+.settings-title {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+}
+
+.settings-input {
+    margin-bottom: 10px;
+    height: 35px;
+}
+
+.settings-input .unity-text-field__input {
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(80, 80, 80);
+    border-radius: 3px;
+    color: rgb(255, 255, 255);
+    padding: 6px;
+}
+
+.settings-toggle {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    translate: -50% 0;
+    background-color: rgb(70, 70, 70);
+    border-width: 1px;
+    border-color: rgb(90, 90, 90);
+    border-radius: 5px;
+    color: rgb(200, 200, 200);
+    height: 35px;
+    padding: 8px 15px;
+}
+
+.settings-toggle:hover {
+    background-color: rgb(80, 80, 80);
+}
+
+/* === STATUS AND LOADING === */
+.status-label {
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    align-self: center;
+    display: none;
+}
+
+.status-error {
+    background-color: rgb(180, 60, 60);
+    color: rgb(255, 255, 255);
+}
+
+.status-success {
+    background-color: rgb(60, 180, 60);
+    color: rgb(255, 255, 255);
+}
+
+.loading-indicator {
+    align-items: center;
+    margin-top: 15px;
+    display: none;
+}
+
+.loading-text {
+    color: rgb(100, 180, 255);
+    font-size: 14px;
+}
+
+/* === MAIN PANEL === */
+.main-panel {
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+/* === HEADER === */
+.header-panel {
+    height: 70px;
+    background-color: rgb(45, 45, 45);
+    border-bottom-width: 2px;
+    border-bottom-color: rgb(70, 70, 70);
+    flex-direction: row;
+    align-items: center;
+    padding: 0 20px;
+    justify-content: space-between;
+}
+
+.header-left {
+    flex-direction: row;
+    align-items: center;
+}
+
+.header-center {
+    flex-direction: row;
+    align-items: center;
+}
+
+.header-right {
+    flex-direction: row;
+    align-items: center;
+}
+
+.app-title {
+    font-size: 24px;
+    color: rgb(100, 180, 255);
+    -unity-font-style: bold;
+}
+
+.user-name {
+    font-size: 20px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+}
+
+.user-stat {
+    font-size: 14px;
+    color: rgb(200, 200, 200);
+    margin-right: 15px;
+    background-color: rgb(60, 60, 60);
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.sign-out-button {
+    background-color: rgb(180, 60, 60);
+    color: rgb(255, 255, 255);
+    border-width: 0;
+    border-radius: 4px;
+    height: 35px;
+    padding: 8px 15px;
+}
+
+.sign-out-button:hover {
+    background-color: rgb(200, 70, 70);
+}
+
+/* === MAIN CONTENT === */
+.main-content {
+    flex: 1;
+    flex-direction: row;
+}
+
+/* === NAVIGATION === */
+.navigation-panel {
+    width: 200px;
+    background-color: rgb(40, 40, 40);
+    border-right-width: 2px;
+    border-right-color: rgb(60, 60, 60);
+    padding: 20px 0;
+}
+
+.nav-button {
+    height: 40px;
+    margin: 2px 10px;
+    background-color: transparent;
+    border-width: 0;
+    color: rgb(200, 200, 200);
+    border-radius: 4px;
+    padding: 0 15px;
+    -unity-text-align: middle-left;
+}
+
+.nav-button:hover {
+    background-color: rgb(60, 60, 60);
+    color: rgb(255, 255, 255);
+}
+
+.nav-button.nav-active {
+    background-color: rgb(100, 180, 255);
+    color: rgb(255, 255, 255);
+}
+
+/* === CONTENT PANEL === */
+.content-panel {
+    flex: 1;
+    background-color: rgb(35, 35, 35);
+}
+
+.panel-content {
+    width: 100%;
+    height: 100%;
+    padding: 30px;
+    display: none;
+}
+
+.panel-title {
+    font-size: 28px;
+    color: rgb(255, 255, 255);
+    margin-bottom: 20px;
+    -unity-font-style: bold;
+}
+
+.welcome-message {
+    font-size: 18px;
+    color: rgb(100, 180, 255);
+    margin-bottom: 30px;
+}
+
+.profile-section {
+    background-color: rgb(45, 45, 45);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+}
+
+.section-title {
+    font-size: 18px;
+    color: rgb(255, 255, 255);
+    margin-bottom: 15px;
+    -unity-font-style: bold;
+}
+
+.info-text {
+    color: rgb(180, 180, 180);
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.info-item {
+    color: rgb(160, 160, 160);
+    margin-left: 10px;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+/* === LOADING OVERLAY === */
+.loading-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+
+.loading-content {
+    background-color: rgb(50, 50, 50);
+    border-radius: 10px;
+    padding: 30px;
+    border-width: 2px;
+    border-color: rgb(70, 70, 70);
+}
+
+.loading-text-overlay {
+    font-size: 18px;
+    color: rgb(100, 180, 255);
+    -unity-font-style: bold;
+}
+
+/* === ERROR POPUP === */
+.error-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    background-color: rgb(50, 50, 50);
+    border-radius: 8px;
+    padding: 25px;
+    border-width: 2px;
+    border-color: rgb(180, 60, 60);
+    min-width: 300px;
+    align-items: center;
+}
+
+.error-text {
+    color: rgb(255, 180, 180);
+    margin-bottom: 15px;
+    text-align: center;
+    white-space: normal;
+}
+
+.error-button {
+    background-color: rgb(180, 60, 60);
+    color: rgb(255, 255, 255);
+    border-width: 0;
+    border-radius: 4px;
+    height: 35px;
+    padding: 8px 20px;
+}
+
+.error-button:hover {
+    background-color: rgb(200, 70, 70);
+}
+
+/* === RESPONSIVE ADJUSTMENTS === */
+@media (max-width: 1024px) {
+    .navigation-panel {
+        width: 160px;
+    }
+    
+    .auth-form {
+        width: 350px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-panel {
+        height: 60px;
+        padding: 0 15px;
+    }
+    
+    .app-title {
+        font-size: 20px;
+    }
+    
+    .user-name {
+        font-size: 16px;
+    }
+    
+    .navigation-panel {
+        width: 140px;
+    }
+    
+    .nav-button {
+        height: 35px;
+        font-size: 12px;
+    }
+    
+    .panel-content {
+        padding: 20px;
+    }
+    
+    .auth-form {
+        width: 320px;
+        padding: 25px;
+    }
+}
+

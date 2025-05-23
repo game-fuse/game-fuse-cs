@@ -1,140 +1,207 @@
+using GameFuse.Models.Shared;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace GameFuseCSharp
+namespace GameFuse
 {
     public partial class GameFuseUser
     {
         /// <summary>
-        /// Creates a new basic game round for the current user.
+        /// Creates a new non-multiplayer game round for the current user.
         /// </summary>
-        /// <returns>Response containing the created game round.</returns>
-        /// <exception cref="ApiException">Thrown when request fails.</exception>
-        public async Task<GameRoundObject> CreateGameRoundAsync()
+        /// <param name="gameType">Type of game being played.</param>
+        /// <param name="startTime">Start time of the game round.</param>
+        /// <param name="endTime">End time of the game round.</param>
+        /// <param name="score">The score achieved in the game round.</param>
+        /// <param name="place">The place the user finished in during the game round.</param>
+        /// <param name="metadata">Additional metadata related to the game round.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The created game round.</returns>
+        public Task<GameRound> CreateGameRoundAsync(
+            string gameType,
+            string startTime = null,
+            string endTime = null,
+            int? score = null,
+            int? place = null,
+            Dictionary<string, object> metadata = null,
+            CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await gameRoundsService.CreateGameRoundAsync(this.id);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _gameRoundService.CreateGameRoundAsync(
+                Id, 
+                gameType, 
+                startTime, 
+                endTime, 
+                score, 
+                place, 
+                metadata,
+                false, 
+                null, 
+                cancellationToken);
         }
 
         /// <summary>
-        /// Creates a new game round with detailed information for the current user.
+        /// Creates a new multiplayer game round or joins an existing one.
         /// </summary>
-        /// <param name="gameRound">Game round details. The GameUserId will be set to the current user's ID.</param>
-        /// <returns>Response containing the created game round.</returns>
-        /// <exception cref="ApiException">Thrown when request fails.</exception>
-        public async Task<GameRoundObject> CreateGameRoundAsync(GameRoundObject gameRound)
+        /// <param name="gameType">Type of game being played.</param>
+        /// <param name="startTime">Start time of the game round.</param>
+        /// <param name="endTime">End time of the game round.</param>
+        /// <param name="score">The score achieved in the game round.</param>
+        /// <param name="place">The place the user finished in during the game round.</param>
+        /// <param name="metadata">Additional metadata related to the game round.</param>
+        /// <param name="multiplayerGameRoundId">ID of an existing multiplayer game round to join. If null, a new multiplayer round will be created.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The created game round.</returns>
+        public Task<GameRound> CreateMultiplayerGameRoundAsync(
+            string gameType,
+            string startTime = null,
+            string endTime = null,
+            int? score = null,
+            int? place = null,
+            Dictionary<string, object> metadata = null,
+            int? multiplayerGameRoundId = null,
+            CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                gameRound.GameUserId = this.id;
-                return await gameRoundsService.CreateGameRoundAsync(gameRound);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            bool isNewMultiplayerGame = !multiplayerGameRoundId.HasValue;
+            
+            return _gameRoundService.CreateGameRoundAsync(
+                Id, 
+                gameType, 
+                startTime, 
+                endTime, 
+                score, 
+                place, 
+                metadata,
+                isNewMultiplayerGame, 
+                multiplayerGameRoundId, 
+                cancellationToken);
         }
 
         /// <summary>
-        /// Updates an existing game round owned by the current user.
+        /// Gets a game round by ID.
         /// </summary>
-        /// <param name="gameRoundId">ID of the game round to update.</param>
-        /// <param name="gameRound">game round with updated values</param>
-        /// <returns>Response containing the updated game round.</returns>
-        /// <exception cref="ApiException">Thrown when request fails or user doesn't own the game round.</exception>
-        public async Task<GameRoundObject> UpdateGameRoundAsync(int gameRoundId, GameRoundObject gameRound)
+        /// <param name="gameRoundId">The ID of the game round.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The game round.</returns>
+        public Task<GameRound> GetGameRoundAsync(int gameRoundId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await gameRoundsService.UpdateGameRoundAsync(gameRoundId, gameRound);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _gameRoundService.GetGameRoundAsync(gameRoundId, cancellationToken);
         }
 
         /// <summary>
-        /// Retrieves a specific game round by ID.
+        /// Gets all game rounds for the current user.
         /// </summary>
-        /// <param name="gameRoundId">ID of the game round to retrieve.</param>
-        /// <returns>Response containing the game round details.</returns>
-        /// <exception cref="ApiException">Thrown when request fails.</exception>
-        public async Task<GameRoundObject> GetGameRoundAsync(int gameRoundId)
+        /// <param name="page">Page number (default 1).</param>
+        /// <param name="perPage">Number of game rounds per page (default and max 100).</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A list of game rounds.</returns>
+        /// <remarks>
+        /// Note that multiplayer game rounds retrieved in bulk will not have rankings attached.
+        /// To retrieve rankings, use GetGameRoundAsync to fetch individual game rounds.
+        /// </remarks>
+        public Task<IReadOnlyList<GameRound>> GetCurrentUserGameRoundsAsync(
+            int page = 1,
+            int perPage = 100,
+            CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await gameRoundsService.GetGameRoundAsync(gameRoundId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _gameRoundService.GetGameRoundsForUserAsync(Id, page, perPage, cancellationToken);
         }
 
         /// <summary>
-        /// Retrieves all game rounds for the current user.
+        /// Gets all game rounds for a specific user.
         /// </summary>
-        /// <returns>Response containing an array of game rounds.</returns>
-        /// <exception cref="ApiException">Thrown when request fails.</exception>
-        public async Task<GameRoundsResponse> GetMyGameRoundsAsync()
+        /// <param name="userId">The ID of the user whose game rounds to retrieve.</param>
+        /// <param name="page">Page number (default 1).</param>
+        /// <param name="perPage">Number of game rounds per page (default and max 100).</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A list of game rounds.</returns>
+        /// <remarks>
+        /// Note that multiplayer game rounds retrieved in bulk will not have rankings attached.
+        /// To retrieve rankings, use GetGameRoundAsync to fetch individual game rounds.
+        /// </remarks>
+        public Task<IReadOnlyList<GameRound>> GetGameRoundsForUserAsync(
+            int userId, 
+            int page = 1,
+            int perPage = 100,
+            CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await gameRoundsService.GetUserGameRoundsAsync(this.id);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            if (userId <= 0) throw new ArgumentOutOfRangeException(nameof(userId), "User ID must be positive.");
+            return _gameRoundService.GetGameRoundsForUserAsync(userId, page, perPage, cancellationToken);
         }
 
         /// <summary>
-        /// Retrieves all game rounds for a specific user.
+        /// Updates a game round.
         /// </summary>
-        /// <param name="userId">ID of the user whose game rounds to retrieve.</param>
-        /// <returns>Response containing an array of game rounds.</returns>
-        /// <exception cref="ApiException">Thrown when request fails.</exception>
-        public async Task<GameRoundsResponse> GetUserGameRoundsAsync(int userId)
+        /// <param name="gameRoundId">The ID of the game round to update.</param>
+        /// <param name="startTime">The start time of the game round.</param>
+        /// <param name="endTime">The end time of the game round.</param>
+        /// <param name="score">The score achieved in the game round.</param>
+        /// <param name="place">The place the user finished in during the game round.</param>
+        /// <param name="gameType">The type of game being played.</param>
+        /// <param name="metadata">Additional metadata related to the game round.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The updated game round.</returns>
+        public Task<GameRound> UpdateGameRoundAsync(
+            int gameRoundId,
+            string startTime = null,
+            string endTime = null,
+            int? score = null,
+            int? place = null,
+            string gameType = null,
+            Dictionary<string, object> metadata = null,
+            CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await gameRoundsService.GetUserGameRoundsAsync(userId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _gameRoundService.UpdateGameRoundAsync(
+                gameRoundId, 
+                startTime, 
+                endTime, 
+                score, 
+                place, 
+                gameType, 
+                metadata, 
+                cancellationToken);
         }
 
         /// <summary>
-        /// Deletes a specific game round owned by the current user.
+        /// Deletes a game round.
         /// </summary>
-        /// <param name="gameRoundId">ID of the game round to delete.</param>
-        /// <returns>Response confirming the deletion.</returns>
-        /// <exception cref="ApiException">Thrown when request fails or user doesn't own the game round.</exception>
-        public async Task<MessageResponse> DeleteGameRoundAsync(int gameRoundId)
+        /// <param name="gameRoundId">The ID of the game round to delete.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response indicating success.</returns>
+        public Task<GameRoundDeleteResponse> DeleteGameRoundAsync(int gameRoundId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IGameRoundsService gameRoundsService = new GameRoundsService(GameFuse.GetBaseURL(), authenticationToken);
-                return await gameRoundsService.DeleteGameRoundAsync(gameRoundId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return _gameRoundService.DeleteGameRoundAsync(gameRoundId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the leaderboard for the game.
+        /// </summary>
+        /// <param name="limit">The maximum number of entries to return.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A list of leaderboard entries.</returns>
+        public Task<IReadOnlyList<LeaderboardEntry>> GetLeaderboardAsync(int limit = 100, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+            return _gameRoundService.GetLeaderboardAsync(limit, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the current user's rank in the leaderboard.
+        /// </summary>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The user's leaderboard entry.</returns>
+        public Task<LeaderboardEntry> GetUserRankAsync(CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+            return _gameRoundService.GetUserRankAsync(Id, cancellationToken);
         }
     }
 }

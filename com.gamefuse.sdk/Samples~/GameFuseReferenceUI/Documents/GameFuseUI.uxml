@@ -1,0 +1,142 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:gf="GameFuse.UI.Controls" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Style src="../Styles/GameFuseUI.uss" />
+    <ui:Style src="../Styles/ProfilePanelUI.uss" />
+    <ui:VisualElement class="root-container">
+        
+        <!-- Authentication Panel -->
+        <ui:VisualElement name="auth-panel" class="auth-panel">
+            
+            <!-- Header -->
+            <ui:VisualElement class="auth-header">
+                <ui:Label text="GameFuse SDK" class="auth-title" />
+                <ui:Label text="Reference Implementation" class="auth-subtitle" />
+            </ui:VisualElement>
+            
+            <!-- Sign In Form -->
+            <ui:VisualElement name="signin-form" class="auth-form">
+                <ui:Label text="Sign In" class="form-title" />
+                
+                <ui:TextField name="signin-email" label="Email" placeholder-text="Enter your email" class="auth-input" />
+                <ui:TextField name="signin-password" label="Password" placeholder-text="Enter your password" class="auth-input" />
+                
+                <ui:Button name="signin-button" text="Sign In" class="auth-button primary" />
+                
+                <ui:VisualElement class="form-footer">
+                    <ui:Label text="Don't have an account?" class="form-text" />
+                    <ui:Button name="switch-to-signup" text="Sign Up" class="link-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            
+            <!-- Sign Up Form -->
+            <ui:VisualElement name="signup-form" class="auth-form">
+                <ui:Label text="Sign Up" class="form-title" />
+                
+                <ui:TextField name="signup-email" label="Email" placeholder-text="Enter your email" class="auth-input" />
+                <ui:TextField name="signup-username" label="Username" placeholder-text="Choose a username" class="auth-input" />
+                <ui:TextField name="signup-password" label="Password" placeholder-text="Enter your password" class="auth-input" />
+                <ui:TextField name="signup-confirm-password" label="Confirm Password" placeholder-text="Confirm your password" class="auth-input" />
+                
+                <ui:Button name="signup-button" text="Sign Up" class="auth-button primary" />
+                
+                <ui:VisualElement class="form-footer">
+                    <ui:Label text="Already have an account?" class="form-text" />
+                    <ui:Button name="switch-to-signin" text="Sign In" class="link-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            
+            <!-- Status and Loading -->
+            <ui:Label name="status-label" class="status-label" />
+            <ui:VisualElement name="loading-indicator" class="loading-indicator">
+                <ui:Label text="Loading..." class="loading-text" />
+            </ui:VisualElement>
+            
+        </ui:VisualElement>
+        
+        <!-- Main Application Panel -->
+        <ui:VisualElement name="main-panel" class="main-panel">
+            
+            <!-- Header -->
+            <ui:VisualElement name="header-panel" class="header-panel">
+                <ui:VisualElement class="header-left">
+                    <ui:Label text="GameFuse SDK" class="app-title" />
+                </ui:VisualElement>
+                
+                <ui:VisualElement class="header-center">
+                    <ui:Label name="user-name" class="user-name" />
+                </ui:VisualElement>
+                
+                <ui:VisualElement class="header-right">
+                    <ui:Label name="user-score" class="user-stat" />
+                    <ui:Label name="user-credits" class="user-stat" />
+                    <ui:Button name="sign-out-button" text="Sign Out" class="sign-out-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            
+            <!-- Main Content Area -->
+            <ui:VisualElement class="main-content">
+                
+                <!-- Navigation Panel -->
+                <ui:VisualElement name="navigation-panel" class="navigation-panel">
+                    <ui:Button name="nav-profile" text="Profile" class="nav-button" />
+                    <ui:Button name="nav-friends" text="Friends" class="nav-button" />
+                    <ui:Button name="nav-groups" text="Groups" class="nav-button" />
+                    <ui:Button name="nav-store" text="Store" class="nav-button" />
+                    <ui:Button name="nav-gamerounds" text="Game Rounds" class="nav-button" />
+                    <ui:Button name="nav-leaderboards" text="Leaderboards" class="nav-button" />
+                    <ui:Button name="nav-messages" text="Messages" class="nav-button" />
+                </ui:VisualElement>
+                
+                <!-- Content Panel -->
+                <ui:VisualElement name="content-panel" class="content-panel">
+                    
+                    <!-- Profile Panel - Using Custom Control -->
+                    <gf:ProfilePanel name="profile-panel" />
+                    
+                    <!-- Friends Panel - Using Custom Control -->
+                    <gf:FriendsPanel name="friends-panel" />
+                    
+                    <!-- Groups Panel -->
+                    <ui:VisualElement name="groups-panel" class="panel-content">
+                        <ui:Label text="Groups" class="panel-title" />
+                        <ui:Label name="groups-status" class="info-text" />
+                    </ui:VisualElement>
+                    
+                    <!-- Store Panel -->
+                    <ui:VisualElement name="store-panel" class="panel-content">
+                        <ui:Label text="Store" class="panel-title" />
+                        <ui:Label name="store-status" class="info-text" />
+                    </ui:VisualElement>
+                    
+                    <!-- Game Rounds Panel -->
+                    <ui:VisualElement name="gamerounds-panel" class="panel-content">
+                        <ui:Label text="Game Rounds" class="panel-title" />
+                        <ui:Label name="gamerounds-status" class="info-text" />
+                    </ui:VisualElement>
+                    
+                    <!-- Leaderboards Panel -->
+                    <ui:VisualElement name="leaderboards-panel" class="panel-content">
+                        <ui:Label text="Leaderboards" class="panel-title" />
+                        <ui:Label name="leaderboards-status" class="info-text" />
+                    </ui:VisualElement>
+                    
+                    <!-- Messages Panel -->
+                    <ui:VisualElement name="messages-panel" class="panel-content">
+                        <ui:Label text="Messages" class="panel-title" />
+                        <ui:Label name="messages-status" class="info-text" />
+                    </ui:VisualElement>
+                    
+                </ui:VisualElement>
+                
+            </ui:VisualElement>
+            
+        </ui:VisualElement>
+        
+        <!-- Loading Overlay -->
+        <ui:VisualElement name="loading-overlay" class="loading-overlay">
+            <ui:VisualElement class="loading-content">
+                <ui:Label text="Loading..." class="loading-text-overlay" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+    </ui:VisualElement>
+</ui:UXML>

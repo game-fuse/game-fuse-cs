@@ -1,0 +1,110 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Style src="../Styles/GameFuseUI.uss" />
+    <ui:Style src="../Styles/ProfilePanelUI.uss" />
+    <ui:Style src="../Styles/FriendsPanelUI.uss" />
+    
+    <!-- Friends Panel Container -->
+    <ui:VisualElement class="panel-content">
+        <!-- Header with title and status -->
+        <ui:VisualElement class="friends-header">
+            <ui:Label text="Friends" class="panel-title" />
+            <ui:Label name="friends-status" class="status-label" style="display: none;" />
+        </ui:VisualElement>
+        
+        <!-- Loading indicator -->
+        <ui:VisualElement name="friends-loading" class="loading-indicator" style="display: none;">
+            <ui:Label text="Processing..." class="loading-text" />
+        </ui:VisualElement>
+        
+        <!-- Main container with tabs for different sections -->
+        <ui:VisualElement name="friends-main-container">
+            <!-- Tabs container -->
+            <ui:VisualElement name="friends-tabs" class="tabs-container">
+                <ui:Button name="friends-tab-button" text="My Friends" class="tab-button active-tab" />
+                <ui:Button name="requests-tab-button" text="Friend Requests" class="tab-button" />
+                <ui:Button name="search-tab-button" text="Find Friends" class="tab-button" />
+            </ui:VisualElement>
+            
+            <!-- Content container for tab panels -->
+            <ui:VisualElement name="friends-content-container">
+                
+                <!-- Friends List Panel -->
+                <ui:VisualElement name="friends-list-panel" class="tab-panel">
+                    <ui:Label text="These are the people you've connected with." class="info-text" />
+                    
+                    <!-- Friends count -->
+                    <ui:VisualElement style="flex-direction: row; align-items: center; margin-top: 10px; margin-bottom: 15px;">
+                        <ui:Label text="Friends: " class="count-label" />
+                        <ui:Label name="friends-count" text="0" class="count-value" />
+                    </ui:VisualElement>
+                    
+                    <!-- Friends list container -->
+                    <ui:ScrollView name="friends-list-container" class="friends-list">
+                        <!-- Empty state -->
+                        <ui:VisualElement name="friends-empty-state" class="empty-state">
+                            <ui:VisualElement class="empty-icon" />
+                            <ui:Label text="You don't have any friends yet. Add some friends to see them here." class="empty-text" />
+                        </ui:VisualElement>
+                    </ui:ScrollView>
+                </ui:VisualElement>
+                
+                <!-- Friend Requests Panel -->
+                <ui:VisualElement name="friend-requests-panel" class="tab-panel" style="display: none;">
+                    <!-- Incoming Requests Section -->
+                    <ui:VisualElement name="incoming-requests-section" class="requests-section">
+                        <ui:Label text="Incoming Requests" class="section-title" />
+                        <ui:Label text="People who want to connect with you" class="info-text" />
+                        
+                        <ui:ScrollView name="incoming-requests-list" class="requests-list">
+                            <!-- Empty state for incoming -->
+                            <ui:VisualElement name="incoming-empty-state" class="empty-state">
+                                <ui:Label text="No incoming friend requests" class="empty-text" />
+                            </ui:VisualElement>
+                        </ui:ScrollView>
+                    </ui:VisualElement>
+                    
+                    <!-- Outgoing Requests Section -->
+                    <ui:VisualElement name="outgoing-requests-section" class="requests-section" style="margin-top: 20px;">
+                        <ui:Label text="Outgoing Requests" class="section-title" />
+                        <ui:Label text="People you've sent requests to" class="info-text" />
+                        
+                        <ui:ScrollView name="outgoing-requests-list" class="requests-list">
+                            <!-- Empty state for outgoing -->
+                            <ui:VisualElement name="outgoing-empty-state" class="empty-state">
+                                <ui:Label text="No outgoing friend requests" class="empty-text" />
+                            </ui:VisualElement>
+                        </ui:ScrollView>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                
+                <!-- User Search Panel -->
+                <ui:VisualElement name="user-search-panel" class="tab-panel" style="display: none;">
+                    <ui:Label text="Find Users" class="section-title" />
+                    <ui:Label text="Search for users by username to send friend requests" class="info-text" />
+                    
+                    <!-- Search controls -->
+                    <ui:VisualElement class="search-controls">
+                        <ui:TextField name="user-search-input" placeholder-text="Enter username to search" class="search-input" />
+                        <ui:Button name="search-button" text="Search" class="search-button primary" />
+                    </ui:VisualElement>
+                    
+                    <!-- Search results -->
+                    <ui:VisualElement name="search-results-container" class="search-results">
+                        <ui:VisualElement class="results-header">
+                            <ui:Label text="Search Results" class="results-title" />
+                            <ui:Label name="results-count" text="0 results" class="results-count" />
+                        </ui:VisualElement>
+                        
+                        <ui:ScrollView name="search-results-list" class="results-list">
+                            <!-- Default empty state -->
+                            <ui:VisualElement name="search-empty-state" class="empty-state">
+                                <ui:Label text="Enter a username to search for users" class="empty-text" />
+                            </ui:VisualElement>
+                        </ui:ScrollView>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

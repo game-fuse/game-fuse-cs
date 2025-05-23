@@ -1,161 +1,187 @@
+using GameFuse.Models.Shared;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
-namespace GameFuseCSharp
+
+namespace GameFuse
 {
     public partial class GameFuseUser
     {
         /// <summary>
-        /// Sends a friend request to another user.
+        /// Retrieves the list of incoming friend requests for this user.
         /// </summary>
-        /// <param name="otherUserName">Username of the player to send friend request to</param>
-        /// <returns>Response containing friendship_id and confirmation message</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<FriendRequestResponse> SendFriendRequestAsync(string otherUserName)
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A read-only list of incoming friend requests.</returns>
+        public async Task<IReadOnlyList<FriendRequest>> GetIncomingFriendRequestsAsync(CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                return await friendshipService.SendFriendRequestAsync(otherUserName);
+            EnsureAuthenticated();
 
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
-        }
-        /// <summary>
-        /// Cancels a pending friend request that was previously sent.
-        /// Only the request sender can cancel it.
-        /// </summary>
-        /// <param name="friedshipId">ID of the friendship request to cancel</param>
-        /// <returns>Response confirming cancellation</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<FriendshipStatusResponse> CancelFriendRequestAsync(int friedshipId)
-        {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                return await friendshipService.CancelFriendRequestAsync(friedshipId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            // Get the full friendship data that includes incoming requests
+            FriendshipDataResponse friendshipData = await GetFriendshipDataAsync(cancellationToken);
+
+            // Return the incoming requests
+            return friendshipData.IncomingFriendRequests.AsReadOnly();
         }
 
         /// <summary>
-        /// Accepts a pending friend request.
-        /// Only the request recipient can accept it.
+        /// Retrieves the list of outgoing friend requests for this user.
         /// </summary>
-        /// <param name="friendshipId">ID of the friendship request to accept</param>
-        /// <returns>Response confirming acceptance</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<FriendshipStatusResponse> AcceptFriendRequestAsync(int friendshipId)
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A read-only list of outgoing friend requests.</returns>
+        public async Task<IReadOnlyList<FriendRequest>> GetOutgoingFriendRequestsAsync(CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                return await friendshipService.AcceptFriendRequestAsync(friendshipId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+
+            // Get the full friendship data that includes outgoing requests
+            FriendshipDataResponse friendshipData = await GetFriendshipDataAsync(cancellationToken);
+
+            // Return the outgoing requests
+            return friendshipData.OutgoingFriendRequests.AsReadOnly();
+        }
+        /*
+        /// <summary>
+        /// Gets all friends for the current user.
+        /// </summary>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A list of friends.</returns>
+        public Task<IReadOnlyList<Friend>> GetFriendsAsync(CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+            return _friendService.GetFriendsAsync(Id, cancellationToken);
+        }
+        */
+        /// <summary>
+        /// Sends a friend request to another user by their username.
+        /// </summary>
+        /// <param name="friendUsername">The username of the user to send the request to.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response object containing a message and the friendship ID.</returns>
+        public async Task<FriendshipResponse> SendFriendRequestAsync(string friendUsername, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated(); // Ensures the current GameFuseUser instance is authenticated
+            // The FriendService.SendFriendRequestAsync doesn't need the current user's ID,
+            // as it's inferred from the authentication token provided by this GameFuseUser instance's transport.
+            return await _friendService.SendFriendRequestAsync(friendUsername, cancellationToken);
         }
 
         /// <summary>
-        /// Declines a pending friend request.
-        /// Only the request recipient can decline it.
+        /// Accepts a pending friend request. This action is performed by the current GameFuseUser instance.
         /// </summary>
-        /// <param name="friendshipId">ID of the friendship request to decline</param>
-        /// <returns>Response confirming decline</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<FriendshipStatusResponse> DeclineFriendRequestAsync(int friendshipId)
+        /// <param name="friendshipId">The ID of the friendship request to accept.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response object containing a confirmation message.</returns>
+        public async Task<FriendshipStatusResponse> AcceptFriendRequestAsync(int friendshipId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                return await friendshipService.DeclineFriendRequestAsync(friendshipId);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
+            EnsureAuthenticated(); // Ensures this GameFuseUser instance is authenticated
+            // The FriendService.AcceptFriendRequestAsync uses the auth token of the calling GameFuseUser instance.
+            return await _friendService.AcceptFriendRequestAsync(friendshipId, cancellationToken);
         }
 
         /// <summary>
-        /// Gets the list of current friends for this user.
+        /// Declines a pending friend request. This action is performed by the current GameFuseUser instance.
         /// </summary>
-        /// <returns>Array of UserInfo objects containing friend details</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<UserInfo[]> GetFriendsAsync()
+        /// <param name="friendshipId">The ID of the friendship request to decline.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response object containing a confirmation message.</returns>
+        public async Task<FriendshipStatusResponse> DeclineFriendRequestAsync(int friendshipId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                FriendsResponse friendsResponse = await friendshipService.GetFriendsAsync();
-                return friendsResponse.Friends;
-            }
-            catch
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return await _friendService.DeclineFriendRequestAsync(friendshipId, cancellationToken);
         }
 
         /// <summary>
-        /// Gets the list of pending friend requests sent to this user.
+        /// Cancels a friend request previously sent by this user.
         /// </summary>
-        /// <returns>Array of FriendRequest objects containing incoming request details</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<FriendRequest[]> GetIncomingFriendRequestsAsync()
+        /// <param name="friendshipId">The ID of the friendship request to cancel.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response object containing a confirmation message.</returns>
+        public async Task<FriendshipStatusResponse> CancelFriendRequestAsync(int friendshipId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                IncomingFriendRequestsResponse friendRequestsResponse = await friendshipService.GetIncomingFriendRequestsAsync();
-                return friendRequestsResponse.IncomingFriendRequests;
-            }
-            catch
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return await _friendService.CancelFriendRequestAsync(friendshipId, cancellationToken);
         }
 
         /// <summary>
-        /// Gets the list of pending friend requests sent by this user.
+        /// Removes a friend from this user's friend list.
         /// </summary>
-        /// <returns>Array of FriendRequest objects containing outgoing request details</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<FriendRequest[]> GetOutgoingFriendRequestsAsync()
+        /// <param name="friendUserId">The ID of the user to unfriend.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response object containing a confirmation message.</returns>
+        public async Task<FriendshipResponse> UnfriendPlayerAsync(int friendUserId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                OutgoingFriendRequestsResponse friendRequestsResponse = await friendshipService.GetOutgoingFriendRequestsAsync();
-                return friendRequestsResponse.OutgoingFriendRequests;
-            }
-            catch
-            {
-                throw;
-            }
+            EnsureAuthenticated();
+            return await _friendService.UnfriendPlayerAsync(friendUserId, cancellationToken);
         }
 
         /// <summary>
-        /// Removes a friend from the user's friend list.
+        /// Retrieves the list of friends, outgoing, and incoming friendship requests for this user.
+        /// Updates the internal state of this GameFuseUser instance with the fetched data.
         /// </summary>
-        /// <param name="userId">ID of the user to unfriend</param>
-        /// <returns>Response confirming the unfriend action</returns>
-        /// <exception cref="ApiException">Thrown when request fails</exception>
-        public async Task<FriendshipStatusResponse> UnFriendAsync(int userId)
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A response object containing lists of friends, outgoing requests, and incoming requests.</returns>
+        public async Task<FriendshipDataResponse> GetFriendshipDataAsync(CancellationToken cancellationToken = default)
         {
-            try
+            EnsureAuthenticated(); // Ensures this GameFuseUser instance is authenticated
+
+            FriendshipDataResponse friendshipData = await _friendService.GetFriendshipDataAsync(cancellationToken);
+
+            // Update the internal _userData state of this GameFuseUser instance
+            if (friendshipData != null)
             {
-                IFriendshipService friendshipService = new FriendshipService(GameFuse.GetBaseURL(), authenticationToken);
-                return await friendshipService.UnfriendPlayerAsync(userId);
+                // Assuming _userData.Friends, _userData.OutgoingFriendRequests, etc. are writable lists or IReadOnlyList
+                // If they are IReadOnlyList, you might need to re-assign the _userData object or have internal setters.
+                // For simplicity, let's assume User model properties are settable internally or the model is replaced.
+                // A common pattern is to have internal setters for these collections in the User model.
+                _userData.Friends = friendshipData.Friends; // Or new ReadOnlyCollection<Friend>(friendshipData.Friends)
+                _userData.OutgoingFriendRequests = friendshipData.OutgoingFriendRequests;
+                _userData.IncomingFriendRequests = friendshipData.IncomingFriendRequests;
             }
-            catch (ApiException)
+
+            return friendshipData;
+        }
+
+        /// <summary>
+        /// Retrieves the list of all accepted friends for this user.
+        /// Updates the internal friends list of this GameFuseUser instance.
+        /// </summary>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A read-only list of friends.</returns>
+        public async Task<IReadOnlyList<Friend>> GetFriendsListAsync(CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated();
+
+            FriendsListResponse response = await _friendService.GetFriendsListAsync(cancellationToken);
+
+            if (response?.Friends != null)
             {
-                throw;
+                _userData.Friends = response.Friends; // Update internal state
+                return response.Friends.AsReadOnly();
             }
+
+            _userData.Friends = new List<Friend>(); // Ensure it's an empty list if response or Friends is null
+            return _userData.Friends;
+        }
+
+        /// <summary>
+        /// Retrieves the list of all accepted friends for a SPECIFIED OTHER user.
+        /// This GameFuseUser instance (authenticated user) is making the request.
+        /// </summary>
+        /// <param name="otherUserId">The ID of the user whose friends list to fetch.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A read-only list of the other user's friends.</returns>
+        public async Task<IReadOnlyList<Friend>> GetFriendsListForOtherUserAsync(int otherUserId, CancellationToken cancellationToken = default)
+        {
+            EnsureAuthenticated(); // The calling user must be authenticated
+            if (otherUserId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(otherUserId), "Other User ID must be positive.");
+            }
+
+            FriendsListResponse response = await _friendService.GetFriendsListAsync(otherUserId, cancellationToken);
+
+            // We don't update the current _userData.Friends here, as this is for another user.
+            return response?.Friends?.AsReadOnly() ?? (IReadOnlyList<Friend>)new List<Friend>().AsReadOnly();
         }
     }
 }

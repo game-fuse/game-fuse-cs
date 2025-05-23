@@ -1,0 +1,460 @@
+/* === ENHANCED PROFILE PANEL STYLES - FIXED LAYOUT === */
+
+/* Profile Information Grid */
+.profile-info-grid {
+    flex-direction: column;
+}
+
+.profile-info-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 8px 0;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.profile-label {
+    width: 120px;
+    color: rgb(200, 200, 200);
+    font-size: 14px;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.profile-value {
+    color: rgb(255, 255, 255);
+    font-size: 14px;
+    flex: 1;
+}
+
+.score-value {
+    color: rgb(100, 180, 255);
+    font-weight: bold;
+}
+
+.credits-value {
+    color: rgb(255, 200, 100);
+    font-weight: bold;
+}
+
+/* Management Controls - FIXED */
+.management-controls {
+    flex-direction: row;
+    align-items: flex-end;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.management-input {
+    flex: 1;
+    margin-right: 15px;
+    height: 35px;
+    min-width: 200px;
+    max-width: 300px;
+}
+
+.management-input .unity-text-field__input {
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(80, 80, 80);
+    border-radius: 4px;
+    color: rgb(255, 255, 255);
+    padding: 8px;
+    height: 35px;
+}
+
+.management-input .unity-text-field__input:focus {
+    border-color: rgb(100, 180, 255);
+}
+
+.management-buttons {
+    flex-direction: row;
+    flex-shrink: 0;
+    align-items: center;
+}
+
+.management-button {
+    height: 35px;
+    margin-left: 8px;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-radius: 4px;
+    border-width: 0;
+    padding: 8px 15px;
+    font-size: 14px;
+    min-width: 80px;
+    flex-shrink: 0;
+}
+
+.management-button.primary {
+    background-color: rgb(100, 180, 255);
+    color: rgb(255, 255, 255);
+}
+
+.management-button.primary:hover {
+    background-color: rgb(120, 190, 255);
+}
+
+.management-button.secondary {
+    background-color: rgb(80, 80, 80);
+    color: rgb(255, 255, 255);
+}
+
+.management-button.secondary:hover {
+    background-color: rgb(100, 100, 100);
+}
+
+.management-button.danger {
+    background-color: rgb(180, 60, 60);
+    color: rgb(255, 255, 255);
+}
+
+.management-button.danger:hover {
+    background-color: rgb(200, 70, 70);
+}
+
+.management-button:disabled {
+    background-color: rgb(60, 60, 60);
+    color: rgb(120, 120, 120);
+}
+
+.help-text {
+    color: rgb(160, 160, 160);
+    font-size: 12px;
+    font-style: italic;
+    margin-top: 5px;
+}
+
+/* Section Header - FIXED */
+.section-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.refresh-button {
+    background-color: rgb(70, 70, 70);
+    color: rgb(200, 200, 200);
+    border-width: 1px;
+    border-color: rgb(90, 90, 90);
+    border-radius: 4px;
+    height: 30px;
+    padding: 6px 12px;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.refresh-button:hover {
+    background-color: rgb(90, 90, 90);
+    color: rgb(255, 255, 255);
+}
+
+/* Attributes - FIXED */
+.add-attribute-controls {
+    flex-direction: row;
+    align-items: flex-end;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.attribute-input {
+    flex: 1;
+    margin-right: 10px;
+    height: 35px;
+    min-width: 150px;
+}
+
+.attribute-input .unity-text-field__input {
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(80, 80, 80);
+    border-radius: 4px;
+    color: rgb(255, 255, 255);
+    padding: 8px;
+    height: 35px;
+}
+
+.attribute-input .unity-text-field__input:focus {
+    border-color: rgb(100, 180, 255);
+}
+
+/* Fix for Add Attribute button alignment */
+.add-attribute-controls .management-button {
+    flex-shrink: 0;
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+.attributes-scroll {
+    max-height: 200px;
+    background-color: rgb(40, 40, 40);
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+}
+
+.attributes-list {
+    padding: 10px;
+}
+
+.attribute-row {
+    flex-direction: row;
+    align-items: center;
+    padding: 8px;
+    margin-bottom: 5px;
+    background-color: rgb(50, 50, 50);
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+}
+
+.attribute-key {
+    width: 150px;
+    color: rgb(100, 180, 255);
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.attribute-value {
+    flex: 1;
+    color: rgb(255, 255, 255);
+    font-size: 14px;
+    margin-right: 15px;
+    word-wrap: break-word;
+}
+
+.delete-attribute-button {
+    background-color: rgb(180, 60, 60);
+    color: rgb(255, 255, 255);
+    border-width: 0;
+    border-radius: 3px;
+    height: 25px;
+    padding: 4px 8px;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.delete-attribute-button:hover {
+    background-color: rgb(200, 70, 70);
+}
+
+.no-data-label {
+    color: rgb(150, 150, 150);
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Batch Attributes - FIXED */
+.batch-controls {
+    flex-direction: row;
+    margin-bottom: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.batch-controls .management-button {
+    margin-right: 8px;
+    margin-bottom: 5px;
+}
+
+.batch-attributes-scroll {
+    max-height: 250px;
+    background-color: rgb(40, 40, 40);
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+}
+
+.batch-attributes-list {
+    padding: 10px;
+}
+
+.batch-attribute-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 5px;
+    background-color: rgb(50, 50, 50);
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+    width: 100%;
+}
+
+.batch-attribute-key,
+.batch-attribute-value {
+    flex: 1;
+    margin-right: 10px;
+    height: 30px;
+}
+
+.batch-attribute-key .unity-text-field__input,
+.batch-attribute-value .unity-text-field__input {
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(80, 80, 80);
+    border-radius: 3px;
+    color: rgb(255, 255, 255);
+    padding: 6px;
+    font-size: 12px;
+    height: 30px;
+}
+
+.batch-attribute-key .unity-text-field__input:focus,
+.batch-attribute-value .unity-text-field__input:focus {
+    border-color: rgb(100, 180, 255);
+}
+
+.remove-batch-row-button {
+    background-color: rgb(180, 60, 60);
+    color: rgb(255, 255, 255);
+    border-width: 0;
+    border-radius: 3px;
+    height: 25px;
+    width: 25px;
+    font-size: 14px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.remove-batch-row-button:hover {
+    background-color: rgb(200, 70, 70);
+}
+
+/* Loading and Status Enhancements */
+.loading-indicator {
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+    display: none;
+}
+
+.loading-text {
+    color: rgb(100, 180, 255);
+    font-size: 14px;
+    font-style: italic;
+}
+
+.status-label {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    display: none;
+    font-size: 14px;
+}
+
+.status-success {
+    background-color: rgba(60, 180, 60, 0.2);
+    border-width: 1px;
+    border-color: rgb(60, 180, 60);
+    color: rgb(120, 255, 120);
+}
+
+.status-error {
+    background-color: rgba(180, 60, 60, 0.2);
+    border-width: 1px;
+    border-color: rgb(180, 60, 60);
+    color: rgb(255, 120, 120);
+}
+
+/* Responsive Adjustments for Profile Panel - IMPROVED */
+@media (max-width: 1024px) {
+    .management-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .management-input {
+        margin-right: 0;
+        margin-bottom: 10px;
+        max-width: none;
+    }
+    
+    .management-buttons {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+    
+    .management-button {
+        margin-left: 0;
+        margin-right: 8px;
+        margin-bottom: 5px;
+    }
+    
+    .add-attribute-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .attribute-input {
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
+    
+    .add-attribute-controls .management-button {
+        margin-left: 0;
+        margin-top: 5px;
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-info-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .profile-label {
+        width: auto;
+        margin-bottom: 4px;
+        margin-right: 0;
+    }
+    
+    .attribute-row {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 10px;
+    }
+    
+    .attribute-key,
+    .attribute-value {
+        width: auto;
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+    
+    .delete-attribute-button {
+        align-self: flex-end;
+    }
+    
+    .batch-attribute-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .batch-attribute-key,
+    .batch-attribute-value {
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
+    
+    .remove-batch-row-button {
+        align-self: flex-end;
+        margin-top: 5px;
+    }
+    
+    .batch-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .batch-controls .management-button {
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
+}

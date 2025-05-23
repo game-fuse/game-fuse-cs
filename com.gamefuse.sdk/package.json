@@ -1,32 +1,23 @@
 {
-    "name": "com.gamefuse.sdk",
-    "version": "1.0.0",
-    "displayName": "GameFuse Unity SDK",
-    "description": "A Unity package for GameFuse integration.",
-    "unity": "2020.3",
-    "keywords": [
-        "gamefuse",
-        "sdk",
-        "unity"
-    ],
-    "author": {
-        "name": "Mitchell Meyer",
-        "email": "support@gamefuse.co",
-        "url": "https://gamefuse.co"
-    },
-    "dependencies": {
-        "com.unity.nuget.newtonsoft-json": "3.2.1" 
-    },
-    "samples": [
-        {
-            "displayName": "GameFuse Example",
-            "description": "An example scene demonstrating how to use the GameFuse SDK.",
-            "path": "Samples~/GameFuse Example"
-        }
-    ],
-    "testDependencies": {
-        "com.unity.test-framework": "1.4.5"
-    },
-    "testables": [ "com.gamefuse.sdk" ]
+  "name": "com.gamefuse.sdk",
+  "version": "1.0.0",
+  "displayName": "GameFuse SDK",
+  "description": "GameFuse SDK for Unity provides integration with the GameFuse API for user management, store, credits, friends, groups, messaging, and leaderboards.",
+  "unity": "2022.3",
+  "unityRelease": "0f1",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+  },
+  "keywords": [
+    "gamefuse",
+    "sdk",
+    "api",
+    "backend",
+    "game"
+  ],
+  "author": {
+    "name": "GameFuse",
+    "email": "info@gamefuse.co",
+    "url": "https://gamefuse.co"
+  }
 }
-  

@@ -1,0 +1,597 @@
+/* Friends Panel Specific Styles */
+
+.friends-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Tab Navigation */
+.tabs-container {
+    flex-direction: row;
+    margin-bottom: 15px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+    padding-bottom: 5px;
+}
+
+.tab-button {
+    margin: 0 5px;
+    padding: 8px 15px;
+    background-color: transparent;
+    border-width: 0;
+    border-radius: 5px;
+    color: #666;
+    font-size: 14px;
+    -unity-font-style: normal;
+    transition-property: background-color, color;
+    transition-duration: 0.2s;
+}
+
+.tab-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.active-tab {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #222;
+    -unity-font-style: bold;
+}
+
+.tab-panel {
+    padding: 10px;
+}
+
+/* Friends List */
+.friends-list {
+    background-color: rgb(40, 40, 40);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+    padding: 10px;
+    height: 400px;
+    min-height: 300px;
+}
+
+.friend-item {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    margin: 3px 0;
+    background-color: rgb(50, 50, 50);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+    transition-property: background-color;
+    transition-duration: 0.2s;
+}
+
+.friend-item:hover {
+    background-color: rgb(60, 60, 60);
+}
+
+.friend-info {
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.friend-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    background-color: #ddd;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.friend-details {
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.friend-name {
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.friend-status {
+    font-size: 12px;
+    color: rgb(180, 180, 180);
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.friend-actions {
+    flex-direction: row;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+
+.friend-action-button {
+    margin-left: 5px;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+    border-width: 0;
+    height: 30px; /* Explicit height to avoid size inconsistencies */
+}
+
+/* Explicitly define primary color for friend-action-button */
+.friend-action-button.primary {
+    background-color: rgb(100, 180, 255) !important;
+    color: rgb(255, 255, 255) !important;
+}
+
+.friend-action-button.primary:hover {
+    background-color: rgb(120, 190, 255) !important;
+}
+
+/* Ensure danger color works */
+.friend-action-button.danger {
+    background-color: rgb(180, 60, 60) !important;
+    color: rgb(255, 255, 255) !important;
+}
+
+.friend-action-button.danger:hover {
+    background-color: rgb(200, 70, 70) !important;
+}
+
+/* Profile Popup */
+.profile-popup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+
+.profile-popup {
+    width: 500px;
+    max-width: 90%;
+    background-color: rgb(45, 45, 45);
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: rgb(70, 70, 70);
+    padding: 20px;
+    max-height: 80%;
+}
+
+.profile-popup-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(80, 80, 80);
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.profile-popup-title {
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+}
+
+.profile-popup-close {
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    background-color: rgb(180, 60, 60); /* Changed to red color */
+    color: white;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    -unity-font-style: bold;
+}
+
+.profile-popup-close:hover {
+    background-color: rgb(200, 70, 70);
+}
+
+.profile-popup-content {
+    flex-direction: column;
+}
+
+.profile-info-section {
+    flex-direction: row;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(80, 80, 80);
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+    background-color: rgb(60, 60, 60);
+    margin-right: 15px;
+}
+
+.profile-details {
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.profile-username {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    margin-bottom: 5px;
+}
+
+.profile-stat {
+    flex-direction: row;
+    margin-bottom: 5px;
+}
+
+.profile-stat-label {
+    font-size: 14px;
+    color: rgb(180, 180, 180);
+    min-width: 100px;
+}
+
+.profile-stat-value {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+}
+
+.profile-attributes-section {
+    flex-direction: column;
+}
+
+.profile-attributes-title {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    margin-bottom: 10px;
+}
+
+.profile-attributes-list {
+    max-height: 200px;
+    background-color: rgb(50, 50, 50);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgb(80, 80, 80);
+    padding: 10px;
+}
+
+.profile-attribute-item {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 8px;
+    margin: 3px 0;
+    background-color: rgb(60, 60, 60);
+    border-radius: 3px;
+}
+
+.profile-attribute-key {
+    font-size: 14px;
+    color: rgb(200, 200, 200);
+}
+
+.profile-attribute-value {
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+}
+
+.profile-empty-attributes {
+    color: rgb(150, 150, 150);
+    -unity-text-align: middle-center;
+    padding: 15px;
+}
+
+/* Friend Requests */
+.requests-section {
+    margin-bottom: 20px;
+}
+
+.send-request-form {
+    flex-direction: row;
+    align-items: flex-end;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.friend-input-field {
+    flex: 1;
+    margin-right: 15px;
+    height: 35px;
+    min-width: 200px;
+    background-color: rgb(60, 60, 60);
+    color: rgb(255, 255, 255);
+}
+
+.friend-input-field .unity-base-field__label {
+    display: none;
+}
+
+.friend-input-field .unity-text-field__input {
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(80, 80, 80);
+    border-radius: 4px;
+    color: rgb(255, 255, 255);
+    padding: 8px;
+    height: 35px;
+    font-size: 14px;
+}
+
+.friend-input-field .unity-text-field__placeholder {
+    color: rgb(180, 180, 180);
+    -unity-font-style: italic;
+}
+
+.friend-input-field .unity-text-field__input:focus {
+    border-color: rgb(100, 180, 255);
+}
+
+#friend-username-input {
+    /* Specific override styles for the friend username input if needed */
+}
+
+#send-request-button {
+    height: 35px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-radius: 4px;
+    border-width: 0;
+    padding: 8px 15px;
+    font-size: 14px;
+    min-width: 120px;
+    flex-shrink: 0;
+}
+
+.requests-list {
+    background-color: rgb(40, 40, 40);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+    padding: 10px;
+    height: 180px;
+    min-height: 120px;
+}
+
+.request-item {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    margin: 5px 0;
+    background-color: rgb(50, 50, 50);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+}
+
+.request-item:hover {
+    background-color: rgb(60, 60, 60);
+}
+
+.request-actions {
+    flex-direction: row;
+}
+
+/* User Search */
+.search-controls {
+    flex-direction: row;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.search-input {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.search-button {
+    padding: 5px 15px;
+}
+
+.search-results {
+    margin-top: 10px;
+}
+
+.results-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.results-title {
+    font-size: 16px;
+    -unity-font-style: bold;
+}
+
+.results-count {
+    font-size: 14px;
+    color: #666;
+}
+
+.results-list {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    height: 300px;
+    min-height: 200px;
+}
+
+.search-result-item {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    margin: 5px 0;
+    background-color: white;
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.user-info {
+    flex-direction: row;
+    align-items: center;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: #ddd;
+    margin-right: 10px;
+}
+
+.user-details {
+    flex-direction: column;
+}
+
+.user-name {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+}
+
+.user-status {
+    font-size: 12px;
+    color: rgb(180, 180, 180);
+}
+
+.request-date {
+    font-size: 11px;
+    color: rgb(160, 160, 160);
+    -unity-font-style: italic;
+}
+
+.add-friend-button {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+/* Empty States */
+.empty-state {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.empty-icon {
+    width: 60px;
+    height: 60px;
+    background-color: #ddd;
+    border-radius: 30px;
+    margin-bottom: 10px;
+}
+
+.empty-text {
+    color: rgb(180, 180, 180);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    max-width: 80%;
+}
+
+/* Counters */
+.count-label {
+    font-size: 14px;
+    color: rgb(200, 200, 200);
+}
+
+.count-value {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+}
+
+/* Buttons */
+.primary {
+    background-color: rgb(100, 180, 255);
+    color: rgb(255, 255, 255);
+}
+
+.primary:hover {
+    background-color: rgb(120, 190, 255);
+}
+
+.secondary {
+    background-color: rgb(80, 80, 80);
+    color: rgb(255, 255, 255);
+}
+
+.secondary:hover {
+    background-color: rgb(100, 100, 100);
+}
+
+.danger {
+    background-color: rgb(180, 60, 60);
+    color: rgb(255, 255, 255);
+}
+
+.danger:hover {
+    background-color: rgb(200, 70, 70);
+}
+
+.accept-button {
+    background-color: rgb(60, 180, 120);
+    color: white;
+    height: 35px;
+    border-radius: 4px;
+    border-width: 0;
+    padding: 8px 15px;
+    font-size: 14px;
+}
+
+.accept-button:hover {
+    background-color: rgb(70, 200, 130);
+}
+
+.decline-button {
+    background-color: rgb(180, 60, 60);
+    color: white;
+    height: 35px;
+    border-radius: 4px;
+    border-width: 0;
+    padding: 8px 15px;
+    font-size: 14px;
+}
+
+.decline-button:hover {
+    background-color: rgb(200, 70, 70);
+}
+
+.cancel-button {
+    background-color: rgb(100, 100, 100);
+    color: white;
+    height: 35px;
+    border-radius: 4px;
+    border-width: 0;
+    padding: 8px 15px;
+    font-size: 14px;
+}
+
+.cancel-button:hover {
+    background-color: rgb(120, 120, 120);
+}
