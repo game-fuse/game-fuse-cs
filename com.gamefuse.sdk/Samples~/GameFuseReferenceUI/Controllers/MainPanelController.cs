@@ -51,6 +51,7 @@ namespace GameFuse.UI
         private FriendsPanelController friendsController;
         private GroupsPanelController groupsController;
         private StorePanelController storeController;
+        private GameRoundsPanelController gameRoundsController;
 
         // Current user and state
         private GameFuseUser currentUser;
@@ -70,6 +71,10 @@ namespace GameFuse.UI
             headerPanel = root.Q<VisualElement>("header-panel");
             navigationPanel = root.Q<VisualElement>("navigation-panel");
             contentPanel = root.Q<VisualElement>("content-panel");
+            
+            if (headerPanel == null) Debug.LogError("header-panel not found");
+            if (navigationPanel == null) Debug.LogError("navigation-panel not found");
+            if (contentPanel == null) Debug.LogError("content-panel not found");
 
             // Header elements
             userNameLabel = root.Q<Label>("user-name");
@@ -125,24 +130,34 @@ namespace GameFuse.UI
                 storeController = new StorePanelController(storePanel);
             }
 
+            // Game Rounds Panel Controller (Phase 6)
+            if (gameRoundsPanel != null)
+            {
+                var gameRoundsControl = gameRoundsPanel.Q<GameRoundsPanel>("game-rounds-control");
+                if (gameRoundsControl != null)
+                {
+                    gameRoundsController = new GameRoundsPanelController(gameRoundsControl);
+                }
+            }
+
             // Future panel controllers will be initialized here in subsequent phases
-            // Phase 6: gameRoundsController = new GameRoundsPanelController(gameRoundsPanel);
+            // Phase 7: leaderboardsController = new LeaderboardsPanelController(leaderboardsPanel);
             // etc.
         }
 
         private void SetupEventHandlers()
         {
             // Header actions
-            signOutButton.clicked += () => OnSignOutRequested?.Invoke();
+            if (signOutButton != null) signOutButton.clicked += () => OnSignOutRequested?.Invoke();
 
             // Navigation
-            profileNavButton.clicked += () => ShowPanel("profile");
-            friendsNavButton.clicked += () => ShowPanel("friends");
-            groupsNavButton.clicked += () => ShowPanel("groups");
-            storeNavButton.clicked += () => ShowPanel("store");
-            gameRoundsNavButton.clicked += () => ShowPanel("gamerounds");
-            leaderboardsNavButton.clicked += () => ShowPanel("leaderboards");
-            messagesNavButton.clicked += () => ShowPanel("messages");
+            if (profileNavButton != null) profileNavButton.clicked += () => ShowPanel("profile");
+            if (friendsNavButton != null) friendsNavButton.clicked += () => ShowPanel("friends");
+            if (groupsNavButton != null) groupsNavButton.clicked += () => ShowPanel("groups");
+            if (storeNavButton != null) storeNavButton.clicked += () => ShowPanel("store");
+            if (gameRoundsNavButton != null) gameRoundsNavButton.clicked += () => ShowPanel("gamerounds");
+            if (leaderboardsNavButton != null) leaderboardsNavButton.clicked += () => ShowPanel("leaderboards");
+            if (messagesNavButton != null) messagesNavButton.clicked += () => ShowPanel("messages");
 
             // Profile Panel Events (Phase 2)
             ProfilePanelController.OnUserDataUpdated += HandleUserDataUpdated;
@@ -199,6 +214,7 @@ namespace GameFuse.UI
             friendsController?.SetCurrentUser(user);
             groupsController?.SetCurrentUser(user);
             storeController?.SetCurrentUser(user);
+            gameRoundsController?.Initialize(user);
 
             // Future panel controllers will also receive the user here
         }
@@ -215,59 +231,59 @@ namespace GameFuse.UI
         private void ShowPanel(string panelName)
         {
             // Hide all panels
-            profilePanel.style.display = DisplayStyle.None;
-            friendsPanel.style.display = DisplayStyle.None;
-            groupsPanel.style.display = DisplayStyle.None;
-            storePanel.style.display = DisplayStyle.None;
-            gameRoundsPanel.style.display = DisplayStyle.None;
-            leaderboardsPanel.style.display = DisplayStyle.None;
-            messagesPanel.style.display = DisplayStyle.None;
+            if (profilePanel != null) profilePanel.style.display = DisplayStyle.None;
+            if (friendsPanel != null) friendsPanel.style.display = DisplayStyle.None;
+            if (groupsPanel != null) groupsPanel.style.display = DisplayStyle.None;
+            if (storePanel != null) storePanel.style.display = DisplayStyle.None;
+            if (gameRoundsPanel != null) gameRoundsPanel.style.display = DisplayStyle.None;
+            if (leaderboardsPanel != null) leaderboardsPanel.style.display = DisplayStyle.None;
+            if (messagesPanel != null) messagesPanel.style.display = DisplayStyle.None;
 
             // Remove active class from all nav buttons
-            profileNavButton.RemoveFromClassList("nav-active");
-            friendsNavButton.RemoveFromClassList("nav-active");
-            groupsNavButton.RemoveFromClassList("nav-active");
-            storeNavButton.RemoveFromClassList("nav-active");
-            gameRoundsNavButton.RemoveFromClassList("nav-active");
-            leaderboardsNavButton.RemoveFromClassList("nav-active");
-            messagesNavButton.RemoveFromClassList("nav-active");
+            if (profileNavButton != null) profileNavButton.RemoveFromClassList("nav-active");
+            if (friendsNavButton != null) friendsNavButton.RemoveFromClassList("nav-active");
+            if (groupsNavButton != null) groupsNavButton.RemoveFromClassList("nav-active");
+            if (storeNavButton != null) storeNavButton.RemoveFromClassList("nav-active");
+            if (gameRoundsNavButton != null) gameRoundsNavButton.RemoveFromClassList("nav-active");
+            if (leaderboardsNavButton != null) leaderboardsNavButton.RemoveFromClassList("nav-active");
+            if (messagesNavButton != null) messagesNavButton.RemoveFromClassList("nav-active");
 
             // Show selected panel and mark nav button as active
             switch (panelName)
             {
                 case "profile":
-                    profilePanel.style.display = DisplayStyle.Flex;
-                    profileNavButton.AddToClassList("nav-active");
+                    if (profilePanel != null) profilePanel.style.display = DisplayStyle.Flex;
+                    if (profileNavButton != null) profileNavButton.AddToClassList("nav-active");
                     SetupProfilePanel();
                     break;
                 case "friends":
-                    friendsPanel.style.display = DisplayStyle.Flex;
-                    friendsNavButton.AddToClassList("nav-active");
+                    if (friendsPanel != null) friendsPanel.style.display = DisplayStyle.Flex;
+                    if (friendsNavButton != null) friendsNavButton.AddToClassList("nav-active");
                     SetupFriendsPanel();
                     break;
                 case "groups":
-                    groupsPanel.style.display = DisplayStyle.Flex;
-                    groupsNavButton.AddToClassList("nav-active");
+                    if (groupsPanel != null) groupsPanel.style.display = DisplayStyle.Flex;
+                    if (groupsNavButton != null) groupsNavButton.AddToClassList("nav-active");
                     SetupGroupsPanel();
                     break;
                 case "store":
-                    storePanel.style.display = DisplayStyle.Flex;
-                    storeNavButton.AddToClassList("nav-active");
+                    if (storePanel != null) storePanel.style.display = DisplayStyle.Flex;
+                    if (storeNavButton != null) storeNavButton.AddToClassList("nav-active");
                     SetupStorePanel();
                     break;
                 case "gamerounds":
-                    gameRoundsPanel.style.display = DisplayStyle.Flex;
-                    gameRoundsNavButton.AddToClassList("nav-active");
+                    if (gameRoundsPanel != null) gameRoundsPanel.style.display = DisplayStyle.Flex;
+                    if (gameRoundsNavButton != null) gameRoundsNavButton.AddToClassList("nav-active");
                     SetupGameRoundsPanel();
                     break;
                 case "leaderboards":
-                    leaderboardsPanel.style.display = DisplayStyle.Flex;
-                    leaderboardsNavButton.AddToClassList("nav-active");
+                    if (leaderboardsPanel != null) leaderboardsPanel.style.display = DisplayStyle.Flex;
+                    if (leaderboardsNavButton != null) leaderboardsNavButton.AddToClassList("nav-active");
                     SetupLeaderboardsPanel();
                     break;
                 case "messages":
-                    messagesPanel.style.display = DisplayStyle.Flex;
-                    messagesNavButton.AddToClassList("nav-active");
+                    if (messagesPanel != null) messagesPanel.style.display = DisplayStyle.Flex;
+                    if (messagesNavButton != null) messagesNavButton.AddToClassList("nav-active");
                     SetupMessagesPanel();
                     break;
             }
@@ -314,11 +330,10 @@ namespace GameFuse.UI
 
         private void SetupGameRoundsPanel()
         {
-            // Placeholder for game rounds functionality (Phase 6)
-            var statusLabel = gameRoundsPanel.Q<Label>("gamerounds-status");
-            if (statusLabel != null)
+            // Game Rounds panel is now managed by GameRoundsPanelController (Phase 6)
+            if (gameRoundsController != null && currentUser != null)
             {
-                statusLabel.text = "Game Rounds panel - Coming in Phase 6";
+                gameRoundsController.Initialize(currentUser);
             }
         }
 
@@ -357,6 +372,7 @@ namespace GameFuse.UI
             friendsController?.SetCurrentUser(user);
             groupsController?.SetCurrentUser(user);
             storeController?.SetCurrentUser(user);
+            gameRoundsController?.Initialize(user);
             // Future panel controllers will also be updated here
         }
 
@@ -380,6 +396,7 @@ namespace GameFuse.UI
             friendsController?.Reset();
             groupsController?.Reset();
             storeController?.Reset();
+            gameRoundsController?.Cleanup();
             // Future panel controllers will also be reset here
 
             // Show default panel
