@@ -1,0 +1,342 @@
+.panel-container {
+    flex: 1;
+    padding: 20px;
+}
+
+.panel-title {
+    font-size: 24px;
+    -unity-font-style: bold;
+    margin-bottom: 20px;
+    color: rgb(255, 255, 255);
+}
+
+.content-area {
+    flex: 1;
+}
+
+/* Form Containers */
+.form-container {
+    background-color: rgb(45, 45, 45);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+}
+
+.form-title {
+    font-size: 18px;
+    -unity-font-style: bold;
+    margin-bottom: 15px;
+    color: rgb(255, 255, 255);
+}
+
+.form-field {
+    margin-bottom: 15px;
+}
+
+.form-field Label {
+    min-width: 150px;
+    -unity-font-style: bold;
+    color: rgb(220, 220, 220);
+}
+
+.form-field .unity-text-field__input,
+.form-field .unity-float-field__input {
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(80, 80, 80);
+    border-radius: 4px;
+    color: rgb(255, 255, 255);
+    padding: 6px;
+}
+
+.form-field .unity-text-field__input:focus,
+.form-field .unity-float-field__input:focus {
+    border-color: rgb(100, 180, 255);
+}
+
+.metadata-field TextInput {
+    height: 60px;
+}
+
+.button-row {
+    flex-direction: row;
+    margin-top: 20px;
+}
+
+.button-row Button {
+    margin-right: 10px;
+}
+
+/* List Container */
+.list-container {
+    flex: 1;
+}
+
+.list-header {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+/* Filter Controls */
+.filter-controls {
+    flex-direction: row;
+    margin-bottom: 15px;
+    align-items: center;
+    background-color: rgb(40, 40, 40);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.filter-input {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.filter-input .unity-text-field__input {
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(80, 80, 80);
+    border-radius: 4px;
+    color: rgb(255, 255, 255);
+    padding: 8px;
+}
+
+.filter-input .unity-text-field__input:focus {
+    border-color: rgb(100, 180, 255);
+}
+
+.limit-field {
+    width: 100px;
+    margin-right: 10px;
+}
+
+.limit-field .unity-integer-field__input {
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(80, 80, 80);
+    border-radius: 4px;
+    color: rgb(255, 255, 255);
+    padding: 6px;
+}
+
+.filter-toggle {
+    margin-right: 10px;
+}
+
+.filter-toggle .unity-toggle__checkmark {
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(80, 80, 80);
+}
+
+.filter-toggle .unity-toggle__checkmark:checked {
+    background-color: rgb(33, 150, 243);
+    border-color: rgb(33, 150, 243);
+}
+
+.filter-button {
+    padding: 5px 15px;
+    margin-left: 5px;
+}
+
+/* Other User Controls */
+.other-user-controls {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 15px;
+    background-color: rgb(40, 40, 40);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.user-id-field {
+    width: 150px;
+    margin-right: 10px;
+}
+
+.user-id-field .unity-integer-field__input {
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(80, 80, 80);
+    border-radius: 4px;
+    color: rgb(255, 255, 255);
+    padding: 6px;
+}
+
+/* Entries List */
+.entries-list-scroll {
+    flex: 1;
+    background-color: rgb(40, 40, 40);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+    padding: 10px;
+}
+
+.entries-list {
+    padding: 5px;
+}
+
+.leaderboard-entry {
+    background-color: rgb(50, 50, 50);
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+    flex-direction: row;
+    align-items: center;
+}
+
+.leaderboard-entry:hover {
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(80, 80, 80);
+}
+
+/* Rank-based styling */
+.gold-rank {
+    background-color: rgb(70, 55, 20);
+    border-color: rgb(255, 215, 0);
+}
+
+.gold-rank:hover {
+    background-color: rgb(80, 65, 30);
+}
+
+.silver-rank {
+    background-color: rgb(60, 60, 65);
+    border-color: rgb(192, 192, 192);
+}
+
+.silver-rank:hover {
+    background-color: rgb(70, 70, 75);
+}
+
+.bronze-rank {
+    background-color: rgb(60, 45, 35);
+    border-color: rgb(205, 127, 50);
+}
+
+.bronze-rank:hover {
+    background-color: rgb(70, 55, 45);
+}
+
+.rank-label {
+    font-size: 24px;
+    -unity-font-style: bold;
+    min-width: 60px;
+    -unity-text-align: middle-center;
+    margin-right: 15px;
+    color: rgb(255, 255, 255);
+}
+
+.entry-details {
+    flex: 1;
+}
+
+.entry-user {
+    font-size: 16px;
+    -unity-font-style: bold;
+    margin-bottom: 5px;
+    color: rgb(255, 255, 255);
+}
+
+.entry-score {
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: rgb(100, 180, 255);
+}
+
+.entry-leaderboard {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: rgb(180, 180, 180);
+}
+
+.entry-metadata {
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: rgb(150, 150, 150);
+}
+
+.entry-date {
+    font-size: 12px;
+    color: rgb(150, 150, 150);
+}
+
+/* Popup Overlay */
+.popup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-container {
+    background-color: rgb(45, 45, 45);
+    border-radius: 8px;
+    padding: 20px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+    width: 600px;
+    max-height: 80%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.popup-title {
+    font-size: 18px;
+    -unity-font-style: bold;
+    margin-bottom: 15px;
+    color: rgb(255, 255, 255);
+}
+
+.popup-scroll {
+    flex: 1;
+    margin-bottom: 15px;
+    max-height: 400px;
+}
+
+/* Common Styles */
+.primary-button {
+    background-color: rgb(33, 150, 243);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 4px;
+    -unity-font-style: bold;
+}
+
+.primary-button:hover {
+    background-color: rgb(30, 136, 229);
+}
+
+.secondary-button {
+    background-color: rgb(158, 158, 158);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 4px;
+}
+
+.secondary-button:hover {
+    background-color: rgb(117, 117, 117);
+}
+
+.danger-button {
+    background-color: rgb(244, 67, 54);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 4px;
+    -unity-font-style: bold;
+}
+
+.danger-button:hover {
+    background-color: rgb(229, 57, 53);
+}
+
+.empty-message {
+    -unity-text-align: middle-center;
+    padding: 40px;
+    color: rgb(150, 150, 150);
+    font-size: 16px;
+}

@@ -52,6 +52,7 @@ namespace GameFuse.UI
         private GroupsPanelController groupsController;
         private StorePanelController storeController;
         private GameRoundsPanelController gameRoundsController;
+        private LeaderboardsPanelController leaderboardsController;
 
         // Current user and state
         private GameFuseUser currentUser;
@@ -140,8 +141,18 @@ namespace GameFuse.UI
                 }
             }
 
+            // Leaderboards Panel Controller (Phase 7)
+            if (leaderboardsPanel != null)
+            {
+                var leaderboardsControl = leaderboardsPanel.Q<LeaderboardsPanel>("leaderboards-control");
+                if (leaderboardsControl != null)
+                {
+                    leaderboardsController = new LeaderboardsPanelController(leaderboardsControl);
+                }
+            }
+
             // Future panel controllers will be initialized here in subsequent phases
-            // Phase 7: leaderboardsController = new LeaderboardsPanelController(leaderboardsPanel);
+            // Phase 8: messagesController = new MessagesPanelController(messagesPanel);
             // etc.
         }
 
@@ -215,6 +226,7 @@ namespace GameFuse.UI
             groupsController?.SetCurrentUser(user);
             storeController?.SetCurrentUser(user);
             gameRoundsController?.Initialize(user);
+            leaderboardsController?.Initialize(user);
 
             // Future panel controllers will also receive the user here
         }
@@ -339,11 +351,10 @@ namespace GameFuse.UI
 
         private void SetupLeaderboardsPanel()
         {
-            // Placeholder for leaderboards functionality (Phase 7)
-            var statusLabel = leaderboardsPanel.Q<Label>("leaderboards-status");
-            if (statusLabel != null)
+            // Leaderboards panel is now managed by LeaderboardsPanelController (Phase 7)
+            if (leaderboardsController != null && currentUser != null)
             {
-                statusLabel.text = "Leaderboards panel - Coming in Phase 7";
+                leaderboardsController.Initialize(currentUser);
             }
         }
 

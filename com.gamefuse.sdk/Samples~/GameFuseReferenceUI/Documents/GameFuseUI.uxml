@@ -5,6 +5,7 @@
     <ui:Style src="../Styles/GroupsPanelUI.uss" />
     <ui:Style src="../Styles/StorePanelUI.uss" />
     <ui:Style src="../Styles/GameRoundsPanelUI.uss" />
+    <ui:Style src="../Styles/LeaderboardsPanelUI.uss" />
     <ui:VisualElement class="root-container">
         
         <!-- Authentication Panel -->
@@ -110,10 +111,9 @@
                         <gf2:GameRoundsPanel name="game-rounds-control" />
                     </ui:VisualElement>
                     
-                    <!-- Leaderboards Panel -->
+                    <!-- Leaderboards Panel - Using Custom Control -->
                     <ui:VisualElement name="leaderboards-panel" class="panel-content">
-                        <ui:Label text="Leaderboards" class="panel-title" />
-                        <ui:Label name="leaderboards-status" class="info-text" />
+                        <gf2:LeaderboardsPanel name="leaderboards-control" />
                     </ui:VisualElement>
                     
                     <!-- Messages Panel -->
