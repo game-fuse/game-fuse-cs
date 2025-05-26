@@ -2,12 +2,12 @@
     <ui:Style src="../Styles/ProfilePanelUI.uss" />
     <!-- Profile Panel Container -->
     <ui:VisualElement class="panel-content">
-        <ui:Label text="Profile" class="panel-title" />
-        
-        <!-- Status and Loading -->
-        <ui:Label name="profile-status" class="status-label" />
-        <ui:VisualElement name="profile-loading" class="loading-indicator">
-            <ui:Label text="Processing..." class="loading-text" />
+        <!-- Status and Loading Container -->
+        <ui:VisualElement name="status-container" class="status-container">
+            <ui:Label name="profile-status" class="status-label" />
+            <ui:VisualElement name="profile-loading" class="loading-indicator">
+                <ui:Label text="Processing..." class="loading-text" />
+            </ui:VisualElement>
         </ui:VisualElement>
         
         <!-- Profile Information Section -->
@@ -47,28 +47,34 @@
 
         <!-- Score Management Section -->
         <ui:VisualElement name="score-management-section" class="profile-section">
-            <ui:Label text="Score Management" class="section-title" />
-            <ui:VisualElement class="management-controls">
-                <ui:TextField name="score-input" placeholder-text="Enter score amount" class="management-input" />
-                <ui:VisualElement name="score-buttons" class="management-buttons">
-                    <ui:Button name="set-score-button" text="Set Score" class="management-button primary" />
-                    <ui:Button name="add-score-button" text="Add Score" class="management-button secondary" />
+            <ui:VisualElement class="section-content-wrapper">
+                <ui:Label text="Score Management" class="section-title" />
+                <ui:VisualElement class="section-spacer" />
+                <ui:VisualElement class="management-controls">
+                    <ui:TextField name="score-input" placeholder-text="Enter score amount" class="management-input" />
+                    <ui:VisualElement name="score-buttons" class="management-buttons">
+                        <ui:Button name="set-score-button" text="Set Score" class="management-button primary" />
+                        <ui:Button name="add-score-button" text="Add Score" class="management-button secondary" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
+                <ui:Label text="Set an absolute score value or add to the current score" class="help-text" />
             </ui:VisualElement>
-            <ui:Label text="Set an absolute score value or add to the current score" class="help-text" />
         </ui:VisualElement>
 
         <!-- Credits Management Section -->
         <ui:VisualElement name="credits-management-section" class="profile-section">
-            <ui:Label text="Credits Management" class="section-title" />
-            <ui:VisualElement class="management-controls">
-                <ui:TextField name="credits-input" placeholder-text="Enter credits amount" class="management-input" />
-                <ui:VisualElement name="credits-buttons" class="management-buttons">
-                    <ui:Button name="set-credits-button" text="Set Credits" class="management-button primary" />
-                    <ui:Button name="add-credits-button" text="Add Credits" class="management-button secondary" />
+            <ui:VisualElement class="section-content-wrapper">
+                <ui:Label text="Credits Management" class="section-title" />
+                <ui:VisualElement class="section-spacer" />
+                <ui:VisualElement class="management-controls">
+                    <ui:TextField name="credits-input" placeholder-text="Enter credits amount" class="management-input" />
+                    <ui:VisualElement name="credits-buttons" class="management-buttons">
+                        <ui:Button name="set-credits-button" text="Set Credits" class="management-button primary" />
+                        <ui:Button name="add-credits-button" text="Add Credits" class="management-button secondary" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
+                <ui:Label text="Set absolute credits value or add to the current balance" class="help-text" />
             </ui:VisualElement>
-            <ui:Label text="Set absolute credits value or add to the current balance" class="help-text" />
         </ui:VisualElement>
 
         <!-- User Attributes Section -->
@@ -89,25 +95,6 @@
             <ui:ScrollView class="attributes-scroll">
                 <ui:VisualElement name="attributes-list" class="attributes-list">
                     <!-- Attributes will be populated dynamically -->
-                </ui:VisualElement>
-            </ui:ScrollView>
-        </ui:VisualElement>
-
-        <!-- Batch Attributes Section -->
-        <ui:VisualElement name="batch-attributes-section" class="profile-section">
-            <ui:Label text="Batch Attribute Operations" class="section-title" />
-            <ui:Label text="Add multiple attributes at once for efficient bulk operations" class="help-text" />
-            
-            <ui:VisualElement class="batch-controls">
-                <ui:Button name="add-batch-row-button" text="+ Add Row" class="management-button secondary" />
-                <ui:Button name="save-batch-attributes-button" text="Save All" class="management-button primary" />
-                <ui:Button name="clear-batch-button" text="Clear All" class="management-button danger" />
-            </ui:VisualElement>
-            
-            <!-- Batch Attributes List -->
-            <ui:ScrollView class="batch-attributes-scroll">
-                <ui:VisualElement name="batch-attributes-list" class="batch-attributes-list">
-                    <!-- Batch rows will be populated dynamically -->
                 </ui:VisualElement>
             </ui:ScrollView>
         </ui:VisualElement>

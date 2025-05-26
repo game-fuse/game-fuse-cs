@@ -12,21 +12,62 @@
     margin-bottom: 15px;
     flex-grow: 0;
     flex-shrink: 0;
+    width: 100%;
 }
 
-/* Fix for management sections */
+/* Management Sections - New Structure */
 #score-management-section,
 #credits-management-section {
     display: flex;
     flex-direction: column;
 }
 
+/* Content wrapper for better control */
+.section-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+    overflow: visible;
+}
+
+/* Ensure all children in wrapper maintain their size */
+.section-content-wrapper > * {
+    flex-shrink: 0;
+    position: relative;
+}
+
+/* Section spacer - guaranteed height */
+.section-spacer {
+    height: 25px;
+    min-height: 25px;
+    max-height: 25px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    width: 100%;
+    background-color: transparent;
+    /* Debug: uncomment to see spacer */
+    /* background-color: rgba(255, 0, 0, 0.1); */
+}
+
+/* Management section titles */
 #score-management-section .section-title,
 #credits-management-section .section-title {
-    margin-bottom: 15px;
-    display: flex;
+    margin-bottom: 0;
+    margin-top: 0;
+    padding: 0;
+    font-size: 18px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    flex-shrink: 0;
+}
+
+/* Ensure management controls have no top margin */
+#score-management-section .management-controls,
+#credits-management-section .management-controls {
+    margin-top: 0;
+    margin-bottom: 10px;
     position: relative;
-    z-index: 1;
 }
 
 /* Profile Information Grid */
@@ -72,14 +113,16 @@
     flex-direction: row;
     align-items: flex-end;
     margin-bottom: 10px;
-    margin-top: 5px;
+    margin-top: 0;
     width: 100%;
     position: relative;
+    flex-shrink: 0;
 }
 
 .management-input {
     flex: 1;
     margin-right: 15px;
+    margin-top: 0;
     height: 35px;
     min-width: 200px;
     max-width: 300px;
@@ -154,9 +197,10 @@
     color: rgb(160, 160, 160);
     font-size: 12px;
     font-style: italic;
-    margin-top: 5px;
+    margin-top: 0;
     margin-bottom: 0;
     line-height: 1.4;
+    flex-shrink: 0;
 }
 
 /* Section Header - FIXED */
@@ -173,6 +217,8 @@
 .section-header .section-title {
     margin-bottom: 0;
     margin-right: 10px;
+    line-height: 30px;
+    align-self: center;
 }
 
 .refresh-button {
@@ -193,19 +239,53 @@
     color: rgb(255, 255, 255);
 }
 
-/* Attributes - FIXED */
+/* Attributes - FIXED WITH PROPER SPACING */
 #attributes-section {
-    overflow: visible;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+#attributes-section > * {
+    position: relative;
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+
+#attributes-section .section-header {
+    margin-bottom: 30px !important;
+    padding-bottom: 15px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    order: 1;
 }
 
 .add-attribute-controls {
     flex-direction: row;
     align-items: flex-end;
     margin-bottom: 20px;
-    margin-top: 10px;
+    margin-top: 0;
+    padding-top: 0;
     width: 100%;
     gap: 10px;
     overflow: visible;
+    position: relative;
+    order: 2;
+}
+
+.attributes-scroll {
+    order: 3;
+    flex: 1 1 0;
+    min-height: 150px;
+    max-height: 250px;
+    margin-bottom: 15px;
+    margin-top: 0;
+    background-color: rgb(40, 40, 40);
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+    overflow: hidden;
 }
 
 .attribute-input {
@@ -236,13 +316,7 @@
     min-width: 120px;
 }
 
-.attributes-scroll {
-    max-height: 200px;
-    background-color: rgb(40, 40, 40);
-    border-radius: 4px;
-    border-width: 1px;
-    border-color: rgb(70, 70, 70);
-}
+/* Merged with earlier definition - removed duplicate */
 
 .attributes-list {
     padding: 10px;
@@ -298,89 +372,45 @@
     padding: 20px;
 }
 
-/* Batch Attributes - FIXED */
-.batch-controls {
-    flex-direction: row;
-    margin-bottom: 15px;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-}
 
-.batch-controls .management-button {
-    margin-right: 0;
-    margin-bottom: 0;
-}
-
-.batch-attributes-scroll {
-    max-height: 250px;
-    background-color: rgb(40, 40, 40);
-    border-radius: 4px;
-    border-width: 1px;
-    border-color: rgb(70, 70, 70);
-}
-
-.batch-attributes-list {
-    padding: 10px;
-}
-
-.batch-attribute-row {
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 8px;
-    padding: 5px;
-    background-color: rgb(50, 50, 50);
-    border-radius: 4px;
-    border-width: 1px;
-    border-color: rgb(70, 70, 70);
-    width: 100%;
-}
-
-.batch-attribute-key,
-.batch-attribute-value {
-    flex: 1;
-    margin-right: 10px;
-    height: 30px;
-}
-
-.batch-attribute-key .unity-text-field__input,
-.batch-attribute-value .unity-text-field__input {
-    background-color: rgb(60, 60, 60);
-    border-color: rgb(80, 80, 80);
-    border-radius: 3px;
-    color: rgb(255, 255, 255);
-    padding: 6px;
-    font-size: 12px;
-    height: 30px;
-}
-
-.batch-attribute-key .unity-text-field__input:focus,
-.batch-attribute-value .unity-text-field__input:focus {
-    border-color: rgb(100, 180, 255);
-}
-
-.remove-batch-row-button {
-    background-color: rgb(180, 60, 60);
-    color: rgb(255, 255, 255);
-    border-width: 0;
-    border-radius: 3px;
-    height: 25px;
-    width: 25px;
-    font-size: 14px;
-    font-weight: bold;
+/* Status Container - Fixed Height */
+.status-container {
+    height: 60px;
+    min-height: 60px;
+    max-height: 60px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    position: relative;
     flex-shrink: 0;
 }
 
-.remove-batch-row-button:hover {
-    background-color: rgb(200, 70, 70);
-}
-
-/* Loading and Status Enhancements */
-.loading-indicator {
+/* Loading and Status Enhancements - Fixed Layout */
+#profile-status {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex !important;
+    visibility: hidden;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+    height: 40px;
     align-items: center;
     justify-content: center;
-    margin: 10px 0;
-    display: none;
+}
+
+#profile-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex !important;
+    visibility: hidden;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
 }
 
 .loading-text {
@@ -389,23 +419,28 @@
     font-style: italic;
 }
 
-.status-label {
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 4px;
-    text-align: center;
-    display: none;
-    font-size: 14px;
+/* Show status and loading when active */
+#profile-status.show,
+#profile-loading.show {
+    visibility: visible;
 }
 
-.status-success {
+/* When status has success or error class, make it visible */
+#profile-status.status-success,
+#profile-status.status-error {
+    visibility: visible;
+}
+
+/* Merged with earlier definition - removed duplicate */
+
+#profile-status.status-success {
     background-color: rgba(60, 180, 60, 0.2);
     border-width: 1px;
     border-color: rgb(60, 180, 60);
     color: rgb(120, 255, 120);
 }
 
-.status-error {
+#profile-status.status-error {
     background-color: rgba(180, 60, 60, 0.2);
     border-width: 1px;
     border-color: rgb(180, 60, 60);
@@ -484,29 +519,4 @@
         align-self: flex-end;
     }
     
-    .batch-attribute-row {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .batch-attribute-key,
-    .batch-attribute-value {
-        margin-right: 0;
-        margin-bottom: 8px;
-    }
-    
-    .remove-batch-row-button {
-        align-self: flex-end;
-        margin-top: 5px;
-    }
-    
-    .batch-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .batch-controls .management-button {
-        margin-right: 0;
-        margin-bottom: 8px;
-    }
 }
