@@ -132,11 +132,25 @@ namespace GameFuse.UI.Controls
             panel.Add(infoText);
             
             // Friends count
+            // Friends controls container (count, filter, refresh)
+            var controlsContainer = new VisualElement();
+            controlsContainer.name = "friends-controls";
+            controlsContainer.AddToClassList("friends-controls");
+            controlsContainer.style.flexDirection = FlexDirection.Row;
+            controlsContainer.style.justifyContent = Justify.SpaceBetween;
+            controlsContainer.style.alignItems = Align.Center;
+            controlsContainer.style.marginTop = 10;
+            controlsContainer.style.marginBottom = 15;
+            
+            // Left side - count and filter
+            var leftControls = new VisualElement();
+            leftControls.style.flexDirection = FlexDirection.Row;
+            leftControls.style.alignItems = Align.Center;
+            
             var countContainer = new VisualElement();
             countContainer.style.flexDirection = FlexDirection.Row;
             countContainer.style.alignItems = Align.Center;
-            countContainer.style.marginTop = 10;
-            countContainer.style.marginBottom = 15;
+            countContainer.style.marginRight = 20;
             
             var countLabel = new Label("Friends: ");
             countLabel.AddToClassList("count-label");
@@ -146,7 +160,27 @@ namespace GameFuse.UI.Controls
             
             countContainer.Add(countLabel);
             countContainer.Add(countValue);
-            panel.Add(countContainer);
+            leftControls.Add(countContainer);
+            
+            // Filter input
+            var filterInput = new TextField();
+            filterInput.name = "friends-filter-input";
+            filterInput.AddToClassList("filter-input");
+            filterInput.textEdition.placeholder = "Filter friends...";
+            filterInput.style.width = 200;
+            leftControls.Add(filterInput);
+            
+            controlsContainer.Add(leftControls);
+            
+            // Right side - refresh button
+            var refreshButton = new Button();
+            refreshButton.name = "friends-refresh-button";
+            refreshButton.text = "Refresh";
+            refreshButton.AddToClassList("refresh-button");
+            refreshButton.AddToClassList("secondary");
+            controlsContainer.Add(refreshButton);
+            
+            panel.Add(controlsContainer);
             
             // Friends list container
             var listContainer = new ScrollView();
@@ -170,6 +204,39 @@ namespace GameFuse.UI.Controls
             
             listContainer.Add(emptyState);
             panel.Add(listContainer);
+            
+            // Pagination controls
+            var paginationContainer = new VisualElement();
+            paginationContainer.name = "friends-pagination";
+            paginationContainer.AddToClassList("pagination-controls");
+            paginationContainer.style.flexDirection = FlexDirection.Row;
+            paginationContainer.style.justifyContent = Justify.Center;
+            paginationContainer.style.alignItems = Align.Center;
+            paginationContainer.style.marginTop = 10;
+            paginationContainer.style.display = DisplayStyle.None; // Hidden by default
+            
+            var prevButton = new Button();
+            prevButton.name = "friends-prev-page";
+            prevButton.text = "Previous";
+            prevButton.AddToClassList("pagination-button");
+            prevButton.AddToClassList("secondary");
+            paginationContainer.Add(prevButton);
+            
+            var pageInfo = new Label("Page 1 of 1");
+            pageInfo.name = "friends-page-info";
+            pageInfo.AddToClassList("page-info");
+            pageInfo.style.marginLeft = 15;
+            pageInfo.style.marginRight = 15;
+            paginationContainer.Add(pageInfo);
+            
+            var nextButton = new Button();
+            nextButton.name = "friends-next-page";
+            nextButton.text = "Next";
+            nextButton.AddToClassList("pagination-button");
+            nextButton.AddToClassList("secondary");
+            paginationContainer.Add(nextButton);
+            
+            panel.Add(paginationContainer);
             
             parent.Add(panel);
         }

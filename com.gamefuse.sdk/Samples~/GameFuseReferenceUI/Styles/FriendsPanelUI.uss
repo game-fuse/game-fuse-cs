@@ -43,6 +43,39 @@
     padding: 10px;
 }
 
+/* Friends Controls */
+.friends-controls {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.filter-input {
+    width: 200px;
+    height: 35px;
+}
+
+.filter-input .unity-text-field__input {
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(80, 80, 80);
+    border-radius: 4px;
+    color: rgb(255, 255, 255);
+    padding: 8px;
+    height: 35px;
+    font-size: 14px;
+}
+
+.filter-input .unity-text-field__input:focus {
+    border-color: rgb(100, 180, 255);
+}
+
+.refresh-button {
+    height: 35px;
+    padding: 8px 15px;
+    font-size: 14px;
+}
+
 /* Friends List */
 .friends-list {
     background-color: rgb(40, 40, 40);
@@ -594,4 +627,31 @@
 
 .cancel-button:hover {
     background-color: rgb(120, 120, 120);
+}
+
+/* Pagination Controls */
+.pagination-controls {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    padding: 10px;
+}
+
+.pagination-button {
+    margin: 0 5px;
+    padding: 8px 15px;
+    font-size: 14px;
+    height: 35px;
+}
+
+.pagination-button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.page-info {
+    font-size: 14px;
+    color: rgb(200, 200, 200);
+    margin: 0 15px;
 }

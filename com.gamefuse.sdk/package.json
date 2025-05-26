@@ -19,5 +19,12 @@
     "name": "GameFuse",
     "email": "info@gamefuse.co",
     "url": "https://gamefuse.co"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "GameFuse Sample UI",
+      "description": "Sample UI implementation for GameFuse SDK showing sign-in, sign-up, and data fetching",
+      "path": "Samples~/GameFuseReferenceUI"
+    }
+  ]
 }

@@ -49,6 +49,8 @@ namespace GameFuse.UI
         // Panel Controllers
         private ProfilePanelController profileController;
         private FriendsPanelController friendsController;
+        private GroupsPanelController groupsController;
+        private StorePanelController storeController;
 
         // Current user and state
         private GameFuseUser currentUser;
@@ -111,8 +113,20 @@ namespace GameFuse.UI
                 friendsController = new FriendsPanelController(friendsPanel);
             }
 
+            // Groups Panel Controller (Phase 4)
+            if (groupsPanel != null)
+            {
+                groupsController = new GroupsPanelController(groupsPanel);
+            }
+
+            // Store Panel Controller (Phase 5)
+            if (storePanel != null)
+            {
+                storeController = new StorePanelController(storePanel);
+            }
+
             // Future panel controllers will be initialized here in subsequent phases
-            // Phase 4: groupsController = new GroupsPanelController(groupsPanel);
+            // Phase 6: gameRoundsController = new GameRoundsPanelController(gameRoundsPanel);
             // etc.
         }
 
@@ -138,6 +152,15 @@ namespace GameFuse.UI
             // Friends Panel Events (Phase 3)
             FriendsPanelController.OnError += HandlePanelError;
             FriendsPanelController.OnSuccess += HandlePanelSuccess;
+            
+            // Groups Panel Events (Phase 4)
+            GroupsPanelController.OnError += HandlePanelError;
+            GroupsPanelController.OnSuccess += HandlePanelSuccess;
+            
+            // Store Panel Events (Phase 5)
+            StorePanelController.OnError += HandlePanelError;
+            StorePanelController.OnSuccess += HandlePanelSuccess;
+            StorePanelController.OnUserDataUpdated += HandleUserDataUpdated;
         }
 
         private void HandleUserDataUpdated(GameFuseUser updatedUser)
@@ -174,6 +197,8 @@ namespace GameFuse.UI
             // Pass user to active panel controllers
             profileController?.SetCurrentUser(user);
             friendsController?.SetCurrentUser(user);
+            groupsController?.SetCurrentUser(user);
+            storeController?.SetCurrentUser(user);
 
             // Future panel controllers will also receive the user here
         }
@@ -271,21 +296,19 @@ namespace GameFuse.UI
 
         private void SetupGroupsPanel()
         {
-            // Placeholder for groups functionality (Phase 4)
-            var statusLabel = groupsPanel.Q<Label>("groups-status");
-            if (statusLabel != null)
+            // Groups panel is now managed by GroupsPanelController (Phase 4)
+            if (groupsController != null && currentUser != null)
             {
-                statusLabel.text = "Groups panel - Coming in Phase 4";
+                groupsController.SetCurrentUser(currentUser);
             }
         }
 
         private void SetupStorePanel()
         {
-            // Placeholder for store functionality (Phase 5)
-            var statusLabel = storePanel.Q<Label>("store-status");
-            if (statusLabel != null)
+            // Store panel is now managed by StorePanelController (Phase 5)
+            if (storeController != null && currentUser != null)
             {
-                statusLabel.text = "Store panel - Coming in Phase 5";
+                storeController.SetCurrentUser(currentUser);
             }
         }
 
@@ -332,6 +355,8 @@ namespace GameFuse.UI
             // Update active panel controllers
             profileController?.SetCurrentUser(user);
             friendsController?.SetCurrentUser(user);
+            groupsController?.SetCurrentUser(user);
+            storeController?.SetCurrentUser(user);
             // Future panel controllers will also be updated here
         }
 
@@ -353,6 +378,8 @@ namespace GameFuse.UI
             // Reset panel controllers
             profileController?.Reset();
             friendsController?.Reset();
+            groupsController?.Reset();
+            storeController?.Reset();
             // Future panel controllers will also be reset here
 
             // Show default panel
@@ -369,6 +396,15 @@ namespace GameFuse.UI
             // Unsubscribe from friends panel events
             FriendsPanelController.OnError -= HandlePanelError;
             FriendsPanelController.OnSuccess -= HandlePanelSuccess;
+            
+            // Unsubscribe from groups panel events
+            GroupsPanelController.OnError -= HandlePanelError;
+            GroupsPanelController.OnSuccess -= HandlePanelSuccess;
+            
+            // Unsubscribe from store panel events
+            StorePanelController.OnError -= HandlePanelError;
+            StorePanelController.OnSuccess -= HandlePanelSuccess;
+            StorePanelController.OnUserDataUpdated -= HandleUserDataUpdated;
         }
     }
 }

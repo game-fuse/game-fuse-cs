@@ -51,8 +51,21 @@ namespace GameFuse.UI
 
         // Data Containers
         private List<Friend> friends = new List<Friend>();
+        private List<Friend> filteredFriends = new List<Friend>();
         private List<FriendRequest> incomingRequests = new List<FriendRequest>();
         private List<FriendRequest> outgoingRequests = new List<FriendRequest>();
+
+        // Pagination
+        private int friendsPerPage = 10;
+        private int currentPage = 0;
+        private int totalPages = 0;
+
+        // Filter and search
+        private TextField filterInput;
+        private Button refreshButton;
+        private Label pageInfo;
+        private Button prevPageButton;
+        private Button nextPageButton;
 
         public FriendsPanelController(VisualElement panelContainer)
         {
@@ -106,6 +119,13 @@ namespace GameFuse.UI
             // Loading and Status
             loadingIndicator = root.Q<VisualElement>("friends-loading");
             statusLabel = root.Q<Label>("friends-status");
+
+            // Filter and pagination elements
+            filterInput = root.Q<TextField>("friends-filter-input");
+            refreshButton = root.Q<Button>("friends-refresh-button");
+            pageInfo = root.Q<Label>("friends-page-info");
+            prevPageButton = root.Q<Button>("friends-prev-page");
+            nextPageButton = root.Q<Button>("friends-next-page");
         }
 
         private void SetupEventHandlers()
@@ -120,6 +140,28 @@ namespace GameFuse.UI
                 if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
                     HandleSendFriendRequest();
             });
+
+            // Filter and refresh functionality
+            if (filterInput != null)
+            {
+                filterInput.RegisterValueChangedCallback(evt => ApplyFilter(evt.newValue));
+            }
+            
+            if (refreshButton != null)
+            {
+                refreshButton.clicked += RefreshFriendsList;
+            }
+
+            // Pagination
+            if (prevPageButton != null)
+            {
+                prevPageButton.clicked += () => ChangePage(-1);
+            }
+            
+            if (nextPageButton != null)
+            {
+                nextPageButton.clicked += () => ChangePage(1);
+            }
         }
 
         private void SwitchTab(string tabName)
@@ -184,6 +226,9 @@ namespace GameFuse.UI
 
         private void DisplayFriendsList()
         {
+            // Apply filter first
+            ApplyFilter(filterInput?.value ?? "");
+            
             // Clear existing items except empty state
             var children = friendsListContainer.Children().ToList();
             foreach (var child in children)
@@ -194,13 +239,14 @@ namespace GameFuse.UI
                 }
             }
             
-            // Update counter
-            friendsCount.text = friends.Count.ToString();
+            // Update counter to show filtered count
+            friendsCount.text = filteredFriends.Count.ToString();
             
             // Show/hide empty state
-            if (friends.Count == 0)
+            if (filteredFriends.Count == 0)
             {
                 friendsEmptyState.style.display = DisplayStyle.Flex;
+                HidePagination();
                 return;
             }
             else
@@ -208,12 +254,24 @@ namespace GameFuse.UI
                 friendsEmptyState.style.display = DisplayStyle.None;
             }
             
-            // Add friend items
-            foreach (var friend in friends)
+            // Calculate pagination
+            totalPages = (int)Math.Ceiling((double)filteredFriends.Count / friendsPerPage);
+            currentPage = Math.Min(currentPage, totalPages - 1);
+            currentPage = Math.Max(currentPage, 0);
+            
+            // Get friends for current page
+            int startIndex = currentPage * friendsPerPage;
+            int endIndex = Math.Min(startIndex + friendsPerPage, filteredFriends.Count);
+            
+            // Add friend items for current page
+            for (int i = startIndex; i < endIndex; i++)
             {
-                var friendItem = CreateFriendItem(friend);
+                var friendItem = CreateFriendItem(filteredFriends[i]);
                 friendsListContainer.Add(friendItem);
             }
+            
+            // Update pagination controls
+            UpdatePaginationControls();
         }
 
         private VisualElement CreateFriendItem(Friend friend)
@@ -374,6 +432,74 @@ namespace GameFuse.UI
             {
                 SetLoading(false);
             }
+        }
+
+        private void ApplyFilter(string filterText)
+        {
+            if (string.IsNullOrWhiteSpace(filterText))
+            {
+                filteredFriends = new List<Friend>(friends);
+            }
+            else
+            {
+                var lowerFilter = filterText.ToLower();
+                filteredFriends = friends.Where(f => 
+                    f.Username.ToLower().Contains(lowerFilter)
+                ).ToList();
+            }
+            
+            // Reset to first page when filter changes
+            currentPage = 0;
+        }
+
+        private void UpdatePaginationControls()
+        {
+            var paginationContainer = root.Q<VisualElement>("friends-pagination");
+            
+            if (totalPages <= 1)
+            {
+                HidePagination();
+                return;
+            }
+            
+            // Show pagination
+            if (paginationContainer != null)
+            {
+                paginationContainer.style.display = DisplayStyle.Flex;
+            }
+            
+            // Update page info
+            if (pageInfo != null)
+            {
+                pageInfo.text = $"Page {currentPage + 1} of {totalPages}";
+            }
+            
+            // Update button states
+            if (prevPageButton != null)
+            {
+                prevPageButton.SetEnabled(currentPage > 0);
+            }
+            
+            if (nextPageButton != null)
+            {
+                nextPageButton.SetEnabled(currentPage < totalPages - 1);
+            }
+        }
+
+        private void HidePagination()
+        {
+            var paginationContainer = root.Q<VisualElement>("friends-pagination");
+            if (paginationContainer != null)
+            {
+                paginationContainer.style.display = DisplayStyle.None;
+            }
+        }
+
+        private void ChangePage(int direction)
+        {
+            currentPage += direction;
+            currentPage = Math.Max(0, Math.Min(currentPage, totalPages - 1));
+            DisplayFriendsList();
         }
 
         #endregion
@@ -754,11 +880,18 @@ namespace GameFuse.UI
             // Clear inputs
             if (friendUsernameInput != null)
                 friendUsernameInput.value = "";
+            if (filterInput != null)
+                filterInput.value = "";
 
             // Clear data collections
             friends.Clear();
+            filteredFriends.Clear();
             incomingRequests.Clear();
             outgoingRequests.Clear();
+
+            // Reset pagination
+            currentPage = 0;
+            totalPages = 0;
 
             // Reset UI displays
             DisplayFriendsList();
