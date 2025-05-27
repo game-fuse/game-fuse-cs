@@ -6,6 +6,7 @@
     <ui:Style src="../Styles/StorePanelUI.uss" />
     <ui:Style src="../Styles/GameRoundsPanelUI.uss" />
     <ui:Style src="../Styles/LeaderboardsPanelUI.uss" />
+    <ui:Style src="../Styles/MessagesPanelUI.uss" />
     <ui:VisualElement class="root-container">
         
         <!-- Authentication Panel -->
@@ -116,11 +117,8 @@
                         <gf2:LeaderboardsPanel name="leaderboards-control" />
                     </ui:VisualElement>
                     
-                    <!-- Messages Panel -->
-                    <ui:VisualElement name="messages-panel" class="panel-content">
-                        <ui:Label text="Messages" class="panel-title" />
-                        <ui:Label name="messages-status" class="info-text" />
-                    </ui:VisualElement>
+                    <!-- Messages Panel - Using Custom Control -->
+                    <gf:MessagesPanel name="messages-panel" />
                     
                 </ui:VisualElement>
                 

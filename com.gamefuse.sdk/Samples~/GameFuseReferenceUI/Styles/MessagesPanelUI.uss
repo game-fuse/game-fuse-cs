@@ -1,0 +1,207 @@
+/* Messages Panel Styles */
+
+/* Text Input Styling */
+.form-input .unity-text-field__input {
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(80, 80, 80);
+    border-radius: 5px;
+    color: rgb(255, 255, 255);
+    padding: 8px;
+    border-width: 1px;
+}
+
+.form-input .unity-text-field__input:focus {
+    border-color: rgb(100, 180, 255);
+}
+
+.message-input .unity-text-field__input {
+    background-color: rgb(50, 50, 50);
+    border-color: rgb(70, 70, 70);
+    border-radius: 5px;
+    color: rgb(255, 255, 255);
+    padding: 8px;
+    border-width: 1px;
+}
+
+.message-input .unity-text-field__input:focus {
+    border-color: rgb(100, 180, 255);
+}
+
+/* Chats List */
+.chats-list {
+    border-width: 1px;
+    border-color: rgb(60, 60, 60);
+    border-radius: 5px;
+    background-color: rgb(40, 40, 40);
+    padding: 10px;
+}
+
+.chat-item {
+    transition-duration: 0.2s;
+}
+
+.chat-item:hover {
+    background-color: rgb(50, 50, 50);
+    scale: 1.02;
+}
+
+/* Message View */
+.message-view {
+    background-color: rgb(30, 30, 30);
+    border-radius: 5px;
+}
+
+.message-view-header {
+    background-color: rgb(40, 40, 40);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.chat-title {
+    font-size: 16px;
+    -unity-font-style: bold;
+}
+
+/* Messages List */
+.messages-list {
+    background-color: rgb(25, 25, 25);
+    padding: 10px;
+}
+
+.message-item {
+    max-width: 70%;
+    transition-duration: 0.1s;
+}
+
+.message-item:hover {
+    scale: 1.01;
+}
+
+/* Message Input Area */
+.message-input-area {
+    background-color: rgb(40, 40, 40);
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+/* Form Styling */
+.form-container {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: rgb(40, 40, 40);
+    border-radius: 10px;
+}
+
+.form-field {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: rgb(200, 200, 200);
+}
+
+.form-buttons {
+    margin-top: 20px;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+/* Empty State */
+.empty-state {
+    margin: 50px auto;
+    text-align: middle;
+    color: rgb(150, 150, 150);
+    font-size: 14px;
+}
+
+/* Count Label */
+.count-label {
+    font-size: 14px;
+    color: rgb(180, 180, 180);
+}
+
+/* Pagination */
+.pagination-container {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: rgb(40, 40, 40);
+    border-radius: 5px;
+}
+
+/* Status Messages */
+.status-label {
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    margin-left: auto;
+}
+
+.status-success {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: rgb(129, 199, 132);
+}
+
+.status-error {
+    background-color: rgba(244, 67, 54, 0.2);
+    color: rgb(239, 83, 80);
+}
+
+/* Loading Indicator */
+.loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.loading-text {
+    color: white;
+    font-size: 14px;
+}
+
+/* Tab Styling */
+.tabs-container {
+    flex-direction: row;
+    margin-bottom: 20px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(60, 60, 60);
+}
+
+.tab-button {
+    background-color: transparent;
+    border-width: 0;
+    border-bottom-width: 2px;
+    border-bottom-color: transparent;
+    padding: 10px 20px;
+    margin-right: 10px;
+    color: rgb(150, 150, 150);
+    transition-duration: 0.2s;
+}
+
+.tab-button:hover {
+    color: rgb(200, 200, 200);
+}
+
+.tab-button.active-tab {
+    color: white;
+    border-bottom-color: rgb(100, 150, 255);
+}
+
+/* Panel Header */
+.panel-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.panel-title {
+    font-size: 24px;
+    -unity-font-style: bold;
+}

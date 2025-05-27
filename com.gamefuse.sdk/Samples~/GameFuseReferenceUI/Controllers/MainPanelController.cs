@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 using GameFuse.Models.Shared;
+using GameFuse.UI.Controls;
 using System;
 
 namespace GameFuse.UI
@@ -53,6 +54,7 @@ namespace GameFuse.UI
         private StorePanelController storeController;
         private GameRoundsPanelController gameRoundsController;
         private LeaderboardsPanelController leaderboardsController;
+        private MessagesPanelController messagesController;
 
         // Current user and state
         private GameFuseUser currentUser;
@@ -151,9 +153,11 @@ namespace GameFuse.UI
                 }
             }
 
-            // Future panel controllers will be initialized here in subsequent phases
-            // Phase 8: messagesController = new MessagesPanelController(messagesPanel);
-            // etc.
+            // Messages Panel Controller (Phase 8)
+            if (messagesPanel != null)
+            {
+                messagesController = new MessagesPanelController(messagesPanel);
+            }
         }
 
         private void SetupEventHandlers()
@@ -227,8 +231,7 @@ namespace GameFuse.UI
             storeController?.SetCurrentUser(user);
             gameRoundsController?.Initialize(user);
             leaderboardsController?.Initialize(user);
-
-            // Future panel controllers will also receive the user here
+            messagesController?.SetCurrentUser(user);
         }
 
         private void UpdateUserDisplay()
@@ -360,11 +363,10 @@ namespace GameFuse.UI
 
         private void SetupMessagesPanel()
         {
-            // Placeholder for messages functionality (Phase 8)
-            var statusLabel = messagesPanel.Q<Label>("messages-status");
-            if (statusLabel != null)
+            // Messages panel is now managed by MessagesPanelController (Phase 8)
+            if (messagesController != null && currentUser != null)
             {
-                statusLabel.text = "Messages panel - Coming in Phase 8";
+                messagesController.SetCurrentUser(currentUser);
             }
         }
 
@@ -384,7 +386,8 @@ namespace GameFuse.UI
             groupsController?.SetCurrentUser(user);
             storeController?.SetCurrentUser(user);
             gameRoundsController?.Initialize(user);
-            // Future panel controllers will also be updated here
+            leaderboardsController?.Initialize(user);
+            messagesController?.SetCurrentUser(user);
         }
 
         public GameFuseUser GetCurrentUser()
