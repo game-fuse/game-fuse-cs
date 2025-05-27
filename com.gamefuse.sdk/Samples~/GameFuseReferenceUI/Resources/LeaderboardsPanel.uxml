@@ -1,0 +1,72 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="leaderboards-panel" class="panel-container">
+        <ui:Label text="Leaderboards" class="panel-title"/>
+        
+        <ui:VisualElement name="content-area" class="content-area">
+            <!-- Submit Entry Form -->
+            <ui:VisualElement name="submit-entry-form" class="form-container">
+                <ui:Label text="Submit Leaderboard Entry" class="form-title"/>
+                
+                <ui:TextField name="leaderboard-name-field" label="Leaderboard Name" class="form-field"/>
+                <ui:FloatField name="score-field" label="Score" value="0" class="form-field"/>
+                <ui:TextField name="metadata-field" label="Metadata (JSON)" multiline="true" class="form-field metadata-field"/>
+                
+                <ui:VisualElement class="button-row">
+                    <ui:Button name="submit-button" text="Submit Entry" class="primary-button"/>
+                    <ui:Button name="cancel-submit-button" text="Cancel" class="secondary-button"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            
+            <!-- Clear Entries Form -->
+            <ui:VisualElement name="clear-entries-form" class="form-container">
+                <ui:Label text="Clear Leaderboard Entries" class="form-title"/>
+                
+                <ui:TextField name="clear-leaderboard-name-field" label="Leaderboard Name" class="form-field"/>
+                
+                <ui:VisualElement class="button-row">
+                    <ui:Button name="clear-entries-button" text="Clear Entries" class="danger-button"/>
+                    <ui:Button name="cancel-clear-button" text="Cancel" class="secondary-button"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            
+            <!-- Entries List -->
+            <ui:VisualElement name="entries-list-container" class="list-container">
+                <ui:VisualElement class="list-header">
+                    <ui:Button name="show-submit-form-button" text="Submit Entry" class="primary-button"/>
+                    <ui:Button name="show-clear-form-button" text="Clear Entries" class="secondary-button"/>
+                    <ui:Button name="refresh-button" text="Refresh" class="secondary-button"/>
+                </ui:VisualElement>
+                
+                <!-- Filter Controls -->
+                <ui:VisualElement class="filter-controls">
+                    <ui:TextField name="leaderboard-filter-field" placeholder="Filter by leaderboard name..." class="filter-input"/>
+                    <ui:IntegerField name="limit-field" label="Limit" value="10" class="limit-field"/>
+                    <ui:Toggle name="show-user-entries-toggle" label="Show My Entries Only" class="filter-toggle"/>
+                    <ui:Button name="apply-filter-button" text="Apply" class="filter-button"/>
+                    <ui:Button name="clear-filter-button" text="Clear" class="filter-button"/>
+                </ui:VisualElement>
+                
+                <!-- View Other User -->
+                <ui:VisualElement class="other-user-controls">
+                    <ui:IntegerField name="other-user-id-field" label="View User ID" class="user-id-field"/>
+                    <ui:Button name="view-other-user-button" text="View User Entries" class="secondary-button"/>
+                </ui:VisualElement>
+                
+                <ui:ScrollView name="entries-scroll-view" class="entries-list-scroll">
+                    <ui:VisualElement name="entries-list" class="entries-list"/>
+                </ui:ScrollView>
+            </ui:VisualElement>
+            
+            <!-- Other User Entries Popup -->
+            <ui:VisualElement name="other-user-popup" class="popup-overlay">
+                <ui:VisualElement class="popup-container">
+                    <ui:Label name="other-user-title" text="User Leaderboard Entries" class="popup-title"/>
+                    <ui:ScrollView name="other-user-scroll-view" class="popup-scroll">
+                        <ui:VisualElement name="other-user-entries-list" class="entries-list"/>
+                    </ui:ScrollView>
+                    <ui:Button name="close-other-user-button" text="Close" class="secondary-button"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

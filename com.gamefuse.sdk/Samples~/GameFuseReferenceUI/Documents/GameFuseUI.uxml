@@ -1,6 +1,12 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:gf="GameFuse.UI.Controls" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:gf="GameFuse.UI.Controls" xmlns:gf2="GameFuse.UI" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:Style src="../Styles/GameFuseUI.uss" />
     <ui:Style src="../Styles/ProfilePanelUI.uss" />
+    <ui:Style src="../Styles/FriendsPanelUI.uss" />
+    <ui:Style src="../Styles/GroupsPanelUI.uss" />
+    <ui:Style src="../Styles/StorePanelUI.uss" />
+    <ui:Style src="../Styles/GameRoundsPanelUI.uss" />
+    <ui:Style src="../Styles/LeaderboardsPanelUI.uss" />
+    <ui:Style src="../Styles/MessagesPanelUI.uss" />
     <ui:VisualElement class="root-container">
         
         <!-- Authentication Panel -->
@@ -95,35 +101,24 @@
                     <!-- Friends Panel - Using Custom Control -->
                     <gf:FriendsPanel name="friends-panel" />
                     
-                    <!-- Groups Panel -->
-                    <ui:VisualElement name="groups-panel" class="panel-content">
-                        <ui:Label text="Groups" class="panel-title" />
-                        <ui:Label name="groups-status" class="info-text" />
-                    </ui:VisualElement>
+                    <!-- Groups Panel - Using Custom Control -->
+                    <gf:GroupsPanel name="groups-panel" />
                     
-                    <!-- Store Panel -->
-                    <ui:VisualElement name="store-panel" class="panel-content">
-                        <ui:Label text="Store" class="panel-title" />
-                        <ui:Label name="store-status" class="info-text" />
-                    </ui:VisualElement>
+                    <!-- Store Panel - Using Custom Control -->
+                    <gf:StorePanel name="store-panel" />
                     
-                    <!-- Game Rounds Panel -->
+                    <!-- Game Rounds Panel - Using Custom Control -->
                     <ui:VisualElement name="gamerounds-panel" class="panel-content">
-                        <ui:Label text="Game Rounds" class="panel-title" />
-                        <ui:Label name="gamerounds-status" class="info-text" />
+                        <gf2:GameRoundsPanel name="game-rounds-control" />
                     </ui:VisualElement>
                     
-                    <!-- Leaderboards Panel -->
+                    <!-- Leaderboards Panel - Using Custom Control -->
                     <ui:VisualElement name="leaderboards-panel" class="panel-content">
-                        <ui:Label text="Leaderboards" class="panel-title" />
-                        <ui:Label name="leaderboards-status" class="info-text" />
+                        <gf2:LeaderboardsPanel name="leaderboards-control" />
                     </ui:VisualElement>
                     
-                    <!-- Messages Panel -->
-                    <ui:VisualElement name="messages-panel" class="panel-content">
-                        <ui:Label text="Messages" class="panel-title" />
-                        <ui:Label name="messages-status" class="info-text" />
-                    </ui:VisualElement>
+                    <!-- Messages Panel - Using Custom Control -->
+                    <gf:MessagesPanel name="messages-panel" />
                     
                 </ui:VisualElement>
                 
