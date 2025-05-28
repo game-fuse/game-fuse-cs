@@ -113,7 +113,7 @@ namespace GameFuse.Models.Shared
         /// <summary>
         /// The list of store items owned by the user.
         /// </summary>
-        [JsonProperty("store_items")]
+        [JsonProperty("game_user_store_items")]
         public List<StoreItem> StoreItems { get; internal set; }
 
         /// <summary>

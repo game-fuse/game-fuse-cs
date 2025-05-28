@@ -174,7 +174,11 @@ namespace GameFuse.UI
             if (currentUser != null)
             {
                 UpdateCreditsDisplay();
-                RefreshAvailableItems();
+                // Only refresh if we're on the available tab
+                if (availableTabButton.ClassListContains("active-tab"))
+                {
+                    RefreshAvailableItems();
+                }
             }
         }
 
@@ -196,11 +200,19 @@ namespace GameFuse.UI
             
             try
             {
+                // Get all available store items
                 var itemsList = await currentUser.GetAvailableStoreItemsAsync();
-                availableItems = itemsList.ToList();
+                var allItems = itemsList.ToList();
                 
-                // Extract unique categories
-                ExtractCategories();
+                // Get user's owned items to filter them out
+                var userStore = await currentUser.GetUserStoreItemsAsync();
+                var ownedItemIds = userStore?.StoreItems?.Select(item => item.Id).ToHashSet() ?? new HashSet<int>();
+                
+                // Filter out items the user already owns
+                availableItems = allItems.Where(item => !ownedItemIds.Contains(item.Id)).ToList();
+                
+                // Extract unique categories from all items (not just available)
+                ExtractCategories(allItems);
                 
                 // Apply filters and display
                 ApplyFilters();
@@ -218,12 +230,12 @@ namespace GameFuse.UI
             }
         }
 
-        private void ExtractCategories()
+        private void ExtractCategories(List<StoreItem> items)
         {
             categories.Clear();
             categories.Add("All Categories");
             
-            var uniqueCategories = availableItems
+            var uniqueCategories = items
                 .Where(item => !string.IsNullOrEmpty(item.Category))
                 .Select(item => item.Category)
                 .Distinct()
