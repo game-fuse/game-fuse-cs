@@ -1,37 +1,5 @@
 # GameFuse SDK for Unity
 
-GameFuse SDK provides Unity developers with a straightforward way to integrate GameFuse backend services into their games.
-
-## Installation
-
-### Option 1: Unity Package Manager (UPM)
-
-1. Open your Unity project
-2. Navigate to Window > Package Manager
-3. Click the "+" button in the top-left corner
-4. Select "Add package from git URL..."
-5. Enter the repository URL: `https://github.com/gamefuse/unity-sdk.git`
-6. Click "Add"
-
-### Option 2: Manual Installation
-
-1. Download the latest release from the [Releases](https://github.com/gamefuse/unity-sdk/releases) page
-2. Extract the contents into your project's Assets folder
-
-## Getting Started
-
-### 1. Configure GameFuse Settings
-
-Before using the SDK, you need to configure your GameFuse credentials:
-
-1. In Unity, navigate to Assets > Create > GameFuse > Settings
-2. This will create a GameFuseSettings asset in your project
-3. Select the created asset and enter your Game ID and Game API Key in the Inspector
-
-Alternatively, you can provide these credentials directly in your code when making API calls.
-
-### 2. Authentication
-
 #### Sign Up a New User
 
 ```csharp
@@ -70,7 +38,7 @@ catch (GameFuseApiException ex)
 }
 ```
 
-### 3. Using the GameFuse API
+### Using the GameFuse API
 
 After authentication, you can access all GameFuse features through the `GameFuseUser` facade:
 
@@ -103,7 +71,3 @@ The SDK includes a sample UI implementation to help you get started. To use it:
 ## API Documentation
 
 For detailed API documentation, see the [API Reference](https://docs.gamefuse.co/api).
-
-## License
-
-This SDK is distributed under the MIT license. See the [LICENSE](LICENSE) file for details.

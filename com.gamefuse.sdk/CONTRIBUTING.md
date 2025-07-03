@@ -61,7 +61,3 @@ If you find a bug in the SDK:
 - Update the documentation when adding or modifying features
 - Use XML documentation comments for all public APIs
 - Keep the README and other documentation files up-to-date
-
-## License
-
-By contributing to the GameFuse SDK, you agree that your contributions will be licensed under the same [MIT License](LICENSE) that covers the project.
