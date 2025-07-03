@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:gf="GameFuse.UI.Controls" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <gf:MessagesPanel name="messages-panel" class="panel-content">
+        <!-- Content is generated programmatically in MessagesPanel.cs -->
+    </gf:MessagesPanel>
+</ui:UXML>

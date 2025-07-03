@@ -1,0 +1,58 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="game-rounds-panel" class="panel-container">
+        <ui:Label text="Game Rounds &amp; Competition" class="panel-title"/>
+        
+        <ui:VisualElement name="content-area" class="content-area">
+            <!-- Create Round Form -->
+            <ui:VisualElement name="create-round-form" class="form-container">
+                <ui:Label text="Create New Game Round" class="form-title"/>
+                
+                <ui:TextField name="game-type-field" label="Game Type" class="form-field"/>
+                <ui:IntegerField name="score-field" label="Score" value="0" class="form-field"/>
+                <ui:IntegerField name="place-field" label="Place" value="1" class="form-field"/>
+                <ui:TextField name="metadata-field" label="Metadata (JSON)" multiline="true" class="form-field metadata-field"/>
+                
+                <ui:Toggle name="multiplayer-toggle" label="Multiplayer Round" class="form-field"/>
+                <ui:IntegerField name="multiplayer-id-field" label="Multiplayer Round ID (0 for new)" value="0" class="form-field"/>
+                
+                <ui:VisualElement class="button-row">
+                    <ui:Button name="create-round-button" text="Create Round" class="primary-button"/>
+                    <ui:Button name="cancel-button" text="Cancel" class="secondary-button"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            
+            <!-- Rounds List -->
+            <ui:VisualElement name="rounds-list" class="list-container">
+                <ui:VisualElement class="list-header">
+                    <ui:Button name="show-create-form-button" text="Create New Round" class="primary-button"/>
+                    <ui:Button name="refresh-button" text="Refresh" class="secondary-button"/>
+                </ui:VisualElement>
+                
+                <!-- Filter Controls -->
+                <ui:VisualElement class="filter-controls">
+                    <ui:TextField name="game-type-filter" placeholder="Filter by game type..." class="filter-input"/>
+                    <ui:Button name="filter-button" text="Filter" class="filter-button"/>
+                    <ui:Button name="clear-filter-button" text="Clear" class="filter-button"/>
+                </ui:VisualElement>
+                
+                <ui:ScrollView name="rounds-scroll-view" class="rounds-list"/>
+                
+                <!-- Pagination -->
+                <ui:VisualElement class="pagination-controls">
+                    <ui:Button name="prev-page-button" text="Previous" class="pagination-button"/>
+                    <ui:Label name="page-label" text="Page 1 of 1" class="page-label"/>
+                    <ui:Button name="next-page-button" text="Next" class="pagination-button"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            
+            <!-- Details Panel -->
+            <ui:VisualElement name="details-panel" class="details-panel">
+                <ui:Label text="Round Details" class="details-title"/>
+                <ui:ScrollView class="details-scroll">
+                    <ui:Label name="details-content" class="details-content"/>
+                </ui:ScrollView>
+                <ui:Button name="close-details-button" text="Close" class="secondary-button"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
