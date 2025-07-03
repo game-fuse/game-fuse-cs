@@ -368,11 +368,9 @@ namespace GameFuse.UI.Controls
             // Auto-hide after 3 seconds
             var hideTask = System.Threading.Tasks.Task.Delay(3000).ContinueWith(_ =>
             {
-                UnityEditor.EditorApplication.delayCall += () =>
-                {
-                    _statusLabel.style.display = DisplayStyle.None;
-                };
-            });
+                UnityEngine.Application.isPlaying = UnityEngine.Application.isPlaying; // Ensure we're on main thread
+                _statusLabel.style.display = DisplayStyle.None;
+            }, System.Threading.Tasks.TaskScheduler.FromCurrentSynchronizationContext());
         }
         
         public void UpdateChatsDisplay(List<Chat> chats, int currentPage, int totalPages)
