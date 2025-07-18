@@ -1,6 +1,7 @@
 # GameFuse SDK for Unity
 
 GameFuse SDK provides Unity developers with a straightforward way to integrate GameFuse backend services into their games.
+Note: GameFuse SDK requires a free GameFuse account to use. Registration is required at https://gamefuse.co/ before accessing features.
 
 ## Getting Started
 
